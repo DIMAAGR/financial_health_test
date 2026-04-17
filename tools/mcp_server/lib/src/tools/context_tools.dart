@@ -13,8 +13,7 @@ void registerContextTools(McpServer server, {required String docsPath}) {
   // ── get_project_context ──────────────────────────────────────────────
   server.registerTool(
     'get_project_context',
-    description:
-        'Returns the full project architecture documentation including '
+    description: 'Returns the full project architecture documentation including '
         'folder conventions, state management rules, DI setup, '
         'and design trade-offs. Use this before making any structural change.',
     annotations: ToolAnnotations(readOnlyHint: true),
@@ -37,8 +36,7 @@ void registerContextTools(McpServer server, {required String docsPath}) {
   // ── get_rules ────────────────────────────────────────────────────────
   server.registerTool(
     'get_rules',
-    description:
-        'Returns the IA governance rules for this project. '
+    description: 'Returns the IA governance rules for this project. '
         'Includes mandatory logging rules, TDD rules, widget creation '
         'rules, and the pre-implementation checklist.',
     annotations: ToolAnnotations(readOnlyHint: true),
@@ -52,8 +50,7 @@ void registerContextTools(McpServer server, {required String docsPath}) {
   // ── get_learnings ────────────────────────────────────────────────────
   server.registerTool(
     'get_learnings',
-    description:
-        'Returns all documented mistakes and lessons learned from past '
+    description: 'Returns all documented mistakes and lessons learned from past '
         'AI interactions. Each entry has root cause and prevention steps. '
         'Check this BEFORE implementing to avoid known pitfalls.',
     annotations: ToolAnnotations(readOnlyHint: true),
@@ -67,8 +64,7 @@ void registerContextTools(McpServer server, {required String docsPath}) {
   // ── search_prompt_log ────────────────────────────────────────────────
   server.registerTool(
     'search_prompt_log',
-    description:
-        'Searches the AI prompt log for entries matching a query. '
+    description: 'Searches the AI prompt log for entries matching a query. '
         'Returns matching entries with their full context (decision, '
         'trade-offs, result). Useful for finding past decisions about '
         'a specific topic.',
@@ -86,8 +82,7 @@ void registerContextTools(McpServer server, {required String docsPath}) {
       final content = readDoc(docsPath, 'ia/prompt_log.md');
 
       final entries = splitLogEntries(content);
-      final matches =
-          entries.where((e) => e.toLowerCase().contains(query)).toList();
+      final matches = entries.where((e) => e.toLowerCase().contains(query)).toList();
 
       if (matches.isEmpty) {
         return CallToolResult(

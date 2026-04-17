@@ -26,8 +26,7 @@ void main() {
     File('$docsPath/architecture/ia_in_process.md')
         .writeAsStringSync('# IA in Process\nLog every decision.');
 
-    File('$docsPath/ia/rules.md')
-        .writeAsStringSync('# Rules\n1. Always log.\n2. TDD for domain.');
+    File('$docsPath/ia/rules.md').writeAsStringSync('# Rules\n1. Always log.\n2. TDD for domain.');
 
     File('$docsPath/ia/learnings.md').writeAsStringSync(
       '# Learnings\n\n### 1. State flags | 2026-04-14\n\n'
@@ -50,8 +49,7 @@ void main() {
 
     // Create Flutter project structure
     Directory(flutterRoot).createSync(recursive: true);
-    File('$flutterRoot/pubspec.yaml')
-        .writeAsStringSync('name: test_app\nversion: 1.0.0');
+    File('$flutterRoot/pubspec.yaml').writeAsStringSync('name: test_app\nversion: 1.0.0');
   });
 
   tearDown(() {
@@ -105,8 +103,7 @@ void main() {
       final content = File('$docsPath/ia/prompt_log.md').readAsStringSync();
       final entries = splitLogEntries(content);
       final query = 'shimmer';
-      final matches =
-          entries.where((e) => e.toLowerCase().contains(query)).toList();
+      final matches = entries.where((e) => e.toLowerCase().contains(query)).toList();
 
       expect(matches, hasLength(1));
       expect(matches.first, contains('Shimmer animation'));
@@ -115,9 +112,7 @@ void main() {
     test('returns empty when no match', () {
       final content = File('$docsPath/ia/prompt_log.md').readAsStringSync();
       final entries = splitLogEntries(content);
-      final matches = entries
-          .where((e) => e.toLowerCase().contains('nonexistent_xyz'))
-          .toList();
+      final matches = entries.where((e) => e.toLowerCase().contains('nonexistent_xyz')).toList();
 
       expect(matches, isEmpty);
     });
@@ -200,8 +195,7 @@ void main() {
     test('generates init file with correct function name', () {
       final files = featureFiles('transaction_detail', '/base/transaction_detail');
 
-      final initPath =
-          '/base/transaction_detail/transaction_detail_init.dart';
+      final initPath = '/base/transaction_detail/transaction_detail_init.dart';
       expect(files.containsKey(initPath), isTrue);
       expect(files[initPath], contains('transactionDetailInit'));
       expect(files[initPath], contains('GetIt'));
@@ -214,17 +208,14 @@ void main() {
           '/base/transaction_detail/domain/failures/transaction_detail_failure.dart';
       expect(files.containsKey(failurePath), isTrue);
       expect(files[failurePath], contains('TransactionDetailFailure'));
-      expect(
-          files[failurePath], contains('TransactionDetailNetworkFailure'));
+      expect(files[failurePath], contains('TransactionDetailNetworkFailure'));
     });
 
     test('generates repository contract and implementation', () {
       final files = featureFiles('my_feature', '/base/my_feature');
 
-      final repoPath =
-          '/base/my_feature/domain/repositories/my_feature_repository.dart';
-      final implPath =
-          '/base/my_feature/data/repositories/my_feature_repository_impl.dart';
+      final repoPath = '/base/my_feature/domain/repositories/my_feature_repository.dart';
+      final implPath = '/base/my_feature/data/repositories/my_feature_repository_impl.dart';
 
       expect(files.containsKey(repoPath), isTrue);
       expect(files[repoPath], contains('MyFeatureRepository'));
@@ -293,8 +284,7 @@ void main() {
     test('extracts public methods', () {
       final analysis = analyzeCubit(_sampleCubitSource)!;
 
-      final methodNames =
-          analysis.publicMethods.map((m) => m.name).toList();
+      final methodNames = analysis.publicMethods.map((m) => m.name).toList();
       expect(methodNames, contains('loadData'));
       expect(methodNames, contains('onRefresh'));
       expect(methodNames, contains('submitForm'));
@@ -305,18 +295,15 @@ void main() {
     test('identifies async and return types', () {
       final analysis = analyzeCubit(_sampleCubitSource)!;
 
-      final loadData =
-          analysis.publicMethods.firstWhere((m) => m.name == 'loadData');
+      final loadData = analysis.publicMethods.firstWhere((m) => m.name == 'loadData');
       expect(loadData.isAsync, isTrue);
       expect(loadData.returnsBool, isFalse);
 
-      final submitForm =
-          analysis.publicMethods.firstWhere((m) => m.name == 'submitForm');
+      final submitForm = analysis.publicMethods.firstWhere((m) => m.name == 'submitForm');
       expect(submitForm.isAsync, isTrue);
       expect(submitForm.returnsBool, isTrue);
 
-      final onRefresh =
-          analysis.publicMethods.firstWhere((m) => m.name == 'onRefresh');
+      final onRefresh = analysis.publicMethods.firstWhere((m) => m.name == 'onRefresh');
       expect(onRefresh.isAsync, isFalse);
     });
 
@@ -331,8 +318,7 @@ void main() {
       final analysis = analyzeCubit(_sampleCubitSource)!;
       final code = generateCubitTest(
         analysis: analysis,
-        cubitImportPath:
-            'src/features/sample/presentation/view_model/sample/sample_cubit.dart',
+        cubitImportPath: 'src/features/sample/presentation/view_model/sample/sample_cubit.dart',
         packageName: 'test_app',
       );
 
@@ -423,4 +409,3 @@ class SampleCubit extends Cubit<SampleState> {
   }
 }
 ''';
-

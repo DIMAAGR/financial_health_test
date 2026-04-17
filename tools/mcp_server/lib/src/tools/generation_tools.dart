@@ -12,8 +12,7 @@ void registerGenerationTools(McpServer server, {required String flutterRoot}) {
   // ── generate_feature_structure ───────────────────────────────────────
   server.registerTool(
     'generate_feature_structure',
-    description:
-        'Scaffolds the full folder hierarchy for a new feature following '
+    description: 'Scaffolds the full folder hierarchy for a new feature following '
         'the project architecture: data (datasources, models, repositories), '
         'domain (entities, enum, failures, policies, repositories, use_cases), '
         'and presentation (mappers, models, view, view_model, widgets). '
@@ -21,8 +20,7 @@ void registerGenerationTools(McpServer server, {required String flutterRoot}) {
     inputSchema: ToolInputSchema(
       properties: {
         'feature_name': JsonSchema.string(
-          description:
-              'Snake_case name of the feature (e.g. "transaction_detail")',
+          description: 'Snake_case name of the feature (e.g. "transaction_detail")',
         ),
         'dry_run': JsonSchema.boolean(
           description: 'If true, returns what would be created without '
@@ -89,16 +87,14 @@ void registerGenerationTools(McpServer server, {required String flutterRoot}) {
   // ── generate_cubit_test ──────────────────────────────────────────────
   server.registerTool(
     'generate_cubit_test',
-    description:
-        'Reads a Cubit source file and generates a complete test scaffold '
+    description: 'Reads a Cubit source file and generates a complete test scaffold '
         'following the project patterns: fake dependencies, group structure, '
         'AAA pattern, and one test per public method. '
         'Returns the generated test code as text.',
     inputSchema: ToolInputSchema(
       properties: {
         'cubit_file_path': JsonSchema.string(
-          description:
-              'Path to the cubit .dart file, relative to the Flutter project root '
+          description: 'Path to the cubit .dart file, relative to the Flutter project root '
               '(e.g. "lib/src/features/dashboard/presentation/view_model/dashboard/dashboard_cubit.dart")',
         ),
       },
@@ -138,9 +134,8 @@ void registerGenerationTools(McpServer server, {required String flutterRoot}) {
       );
 
       // Suggest output path
-      final suggestedPath = relativePath
-          .replaceFirst('lib/src/', 'test/')
-          .replaceFirst('.dart', '_test.dart');
+      final suggestedPath =
+          relativePath.replaceFirst('lib/src/', 'test/').replaceFirst('.dart', '_test.dart');
 
       return CallToolResult(
         content: [
@@ -298,8 +293,7 @@ class PublicMethod {
   final String params;
 
   bool get isAsync => returnType.startsWith('Future');
-  bool get returnsBool =>
-      returnType == 'Future<bool>' || returnType == 'bool';
+  bool get returnsBool => returnType == 'Future<bool>' || returnType == 'bool';
 }
 
 CubitAnalysis? analyzeCubit(String content) {

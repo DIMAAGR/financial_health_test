@@ -11,8 +11,7 @@ void registerLoggingTools(McpServer server, {required String docsPath}) {
   // ── log_interaction ──────────────────────────────────────────────────
   server.registerTool(
     'log_interaction',
-    description:
-        'Appends a new entry to the AI prompt log (prompt_log.md). '
+    description: 'Appends a new entry to the AI prompt log (prompt_log.md). '
         'Call this after every significant AI decision to maintain the '
         'project audit trail. Returns the formatted entry that was added.',
     inputSchema: ToolInputSchema(
@@ -74,8 +73,7 @@ void registerLoggingTools(McpServer server, {required String docsPath}) {
   // ── add_learning ─────────────────────────────────────────────────────
   server.registerTool(
     'add_learning',
-    description:
-        'Records a new mistake/learning in learnings.md. Call this whenever '
+    description: 'Records a new mistake/learning in learnings.md. Call this whenever '
         'an error pattern is identified. Each learning includes root cause '
         'and prevention steps so the same mistake is not repeated.',
     inputSchema: ToolInputSchema(
