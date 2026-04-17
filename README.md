@@ -1,48 +1,42 @@
 # Financial Health Test
 
-Repositório organizado para concentrar as entregas do processo técnico, separando cada desafio em sua própria pasta para manter o contexto, a evolução e a documentação mais claros.
+Repositório principal do teste técnico assíncrono de Flutter.
 
-A ideia aqui não foi apenas resolver os testes, mas estruturar cada entrega de forma que ela pudesse ser lida como um projeto real: com separação de responsabilidades, documentação complementar e decisões técnicas explicadas.
+Este repositório está organizado para separar código da aplicação e documentação de decisão técnica, com foco em clareza para revisão.
 
----
-
-## Sobre a organização deste repositório
-
-Novamente, cada teste foi isolado em sua própria pasta para evitar mistura de contexto e permitir que cada entrega tivesse sua própria estrutura, implementação e documentação.
+## Estrutura
 
 ```txt
 financial_health_test/
-  financial_health_dashboard/   # teste 1
-  refactoring_ia/               # teste 2
-  doc_automation/             # teste 3
-  docs/
+  financial_health_dashboard/   # app Flutter
+  docs/                         # documentação técnica e de processo
   README.md
 ```
- -   financial_health_dashboard/: implementação do mini-app principal, com foco em dashboard financeiro, score de saúde da carteira, estados de UI e separação em camadas.
- -   refactoring_ia/: espaço reservado para o segundo teste, voltado à atividade de refatoração com apoio de IA.
- -   doc_automation/: espaço reservado para o terceiro teste, voltado à proposta de automação de documentação.
- -   docs/: documentação complementar do processo, incluindo requisitos, arquitetura, design e decisões relacionadas ao uso de IA.
 
- ---
+## Onde encontrar cada informação
 
-## Sobre o uso de IA
+- Código da aplicação: [financial_health_dashboard/README.md](./financial_health_dashboard/README.md)
+- Requisitos e decisões de produto: [docs/requirements/requirements.md](./docs/requirements/requirements.md)
+- Arquitetura e trade-offs técnicos: [docs/architecture/architecture.md](./docs/architecture/architecture.md)
+- Processo de IA (regras, log e learnings): [docs/ia/README.md](./docs/ia/README.md)
 
-IA foi utilizada ao longo do processo como ferramenta de apoio, principalmente para explorar alternativas de arquitetura, estruturação inicial, organização de documentação, geração de variações de interface e apoio em partes operacionais do desenvolvimento.
+## Uso de IA
 
-Nenhuma sugestão foi aplicada de forma cega. As decisões finais, refinamentos, correções e cortes de escopo foram feitos manualmente, inclusive na própria documentação.
+A IA foi usada como ferramenta assistiva para acelerar exploração, boilerplate e revisão de escrita.
 
-A proposta aqui não foi terceirizar pensamento técnico para IA, mas usar a ferramenta para acelerar partes do processo sem abrir mão de análise crítica e responsabilidade sobre a solução final.
+As decisões finais de arquitetura, escopo e validação de qualidade foram feitas manualmente.
 
-## Documentação complementar
+No contexto deste teste, "uso crítico de IA" foi tratado como critério de peso alto: toda sugestão relevante passou por filtro técnico, validação manual, decisão com trade-off e registro de evidência.
 
-Para evitar concentrar toda a explicação técnica no README principal, a documentação foi separada por tema na pasta `docs/`.
+### Exemplo de validação crítica aplicada
 
-```txt
-docs/
-  requirements/
-    requirements.md
-  architecture/
-    architecture.md
-  design/
-    design.md
-```
+Um caso concreto de correção foi a remoção de textos de exibição do `domain` para `presentation` (via mapper), para manter separação estrita de camadas.
+
+- Detalhe do caso: [financial_health_dashboard/README.md](./financial_health_dashboard/README.md)
+- Regras criadas: [docs/ia/rules.md](./docs/ia/rules.md)
+- Registro da correção: [docs/ia/prompt_log.md](./docs/ia/prompt_log.md)
+
+## Objetivo de documentação
+
+A documentação foi separada por tema para evitar um README único muito extenso e reduzir repetição.
+Cada arquivo deve ter responsabilidade única e apontar links para os demais quando necessário.
