@@ -10,6 +10,7 @@ Este repositório está organizado para separar código da aplicação e documen
 financial_health_test/
   financial_health_dashboard/   # app Flutter
   docs/                         # documentação técnica e de processo
+  tools/mcp_server/             # MCP server para automação com IA
   README.md
 ```
 
@@ -19,6 +20,7 @@ financial_health_test/
 - Requisitos e decisões de produto: [docs/requirements/requirements.md](./docs/requirements/requirements.md)
 - Arquitetura e trade-offs técnicos: [docs/architecture/architecture.md](./docs/architecture/architecture.md)
 - Processo de IA (regras, log e learnings): [docs/ia/README.md](./docs/ia/README.md)
+- **MCP Server (automação IA)**: [tools/mcp_server/README.md](./tools/mcp_server/README.md)
 
 ## Uso de IA
 
@@ -40,3 +42,13 @@ Um caso concreto de correção foi a remoção de textos de exibição do `domai
 
 A documentação foi separada por tema para evitar um README único muito extenso e reduzir repetição.
 Cada arquivo deve ter responsabilidade única e apontar links para os demais quando necessário.
+
+## Bônus: MCP Server (Script/Agente de Automação)
+
+O diretório [`tools/mcp_server/`](./tools/mcp_server/) contém um servidor MCP em Dart que automatiza tarefas repetitivas do desenvolvimento Flutter:
+
+- **Problema**: Perda de contexto entre sessões de IA, inconsistência no uso, scaffolding manual repetitivo
+- **Solução**: 8 ferramentas MCP que conectam a IA diretamente ao contexto do projeto (docs, regras, learnings, geração de código)
+- **Produtividade estimada**: 1-2h/dev/semana economizadas → 10-20h/semana para um time de 10 devs
+
+Documentação completa: [tools/mcp_server/README.md](./tools/mcp_server/README.md)
