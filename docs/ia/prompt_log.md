@@ -365,3 +365,14 @@ Registro objetivo de interações com IA que influenciaram decisões do projeto.
 - Validação humana aplicada: `flutter analyze` sem issues e `flutter test` passando.
 - Trade-offs identificados: nenhum trade-off real — apenas organização mais coerente.
 - Decisão final: manter resolvers/mappers de apresentação em um único diretório por feature.
+
+## 2026-04-17 | MCP Server — automação de contexto e scaffolding
+
+- Objetivo: criar um servidor MCP em Dart que conecta assistentes de IA ao contexto do projeto, padroniza logging e automatiza scaffolding de features e testes.
+- Prompt: implementar MCP server com ferramentas para leitura de docs (rules, learnings, prompt_log, architecture), logging de interações, geração de feature structure e geração de teste a partir de Cubit.
+- Saída da IA (resumo): servidor Dart usando `mcp_dart` SDK com 8 ferramentas MCP (get_project_context, get_rules, get_learnings, search_prompt_log, log_interaction, add_learning, generate_feature_structure, generate_cubit_test), 28 testes unitários, README completo com estimativa de produtividade.
+- O que foi aproveitado: todas as 8 ferramentas implementadas; funções helper expostas como API pública para testabilidade direta; `.vscode/mcp.json` configurado; README com documentação, exemplos e análise de ganho.
+- O que foi descartado: testes via protocolo MCP (complexidade desnecessária — testar as funções diretamente é mais robusto e rápido).
+- Validação humana aplicada: `dart analyze` sem issues, `dart test` 28 testes passando, `flutter test` 118 testes do app inalterados.
+- Trade-offs identificados: funções helper públicas (não-privadas) para testabilidade vs. encapsulamento estrito; leitura de docs a cada chamada vs. cache em memória (docs são pequenos, cache adiciona complexidade de invalidação).
+- Decisão final: MCP server como pacote Dart puro em `tools/mcp_server/`, independente do app Flutter, configurado como stdio server para VS Code.

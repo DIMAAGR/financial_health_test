@@ -1,0 +1,17 @@
+name: mcp_server
+description: >
+  MCP (Model Context Protocol) server for the Financial Health Dashboard project.
+  Provides AI assistants with structured access to project context, logging,
+  and automated code generation tools.
+version: 1.0.0
+
+environment:
+  sdk: ^3.0.0
+
+dependencies:
+  mcp_dart: ^2.1.0
+  args: ^2.4.0
+  path: ^1.9.0
+
+dev_dependencies:
+  test: ^1.24.0
