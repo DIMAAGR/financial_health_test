@@ -1,5 +1,8 @@
+import 'package:financial_health_dashboard/src/core/dependencies/injection.dart';
 import 'package:financial_health_dashboard/src/core/router/app_routes.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/presentation/view/dashboard_view.dart';
+import 'package:financial_health_dashboard/src/features/dashboard/presentation/view_model/dashboard/dashboard_cubit.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 GoRouter buildRoute() {
@@ -8,7 +11,10 @@ GoRouter buildRoute() {
       GoRoute(
         path: AppRoutesPath.main,
         name: AppRouteName.main,
-        builder: (context, state) => DashboardView(),
+        builder: (context, state) => BlocProvider(
+          create: (_) => getIt<DashboardCubit>()..loadOverview(),
+          child: const DashboardView(),
+        ),
       ),
     ],
   );
