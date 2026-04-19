@@ -10,9 +10,11 @@ import 'package:financial_health_dashboard/src/features/dashboard/presentation/w
 import 'package:financial_health_dashboard/src/features/dashboard/presentation/widgets/header_section.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/presentation/widgets/metrics_overview_section.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/presentation/widgets/monthly_goal_card.dart';
+import 'package:financial_health_dashboard/src/core/router/app_routes.dart';
 import 'package:financial_health_dashboard/src/shared/presentation/design/tokens/app_spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 class DashboardView extends StatelessWidget {
   const DashboardView({super.key});
@@ -123,9 +125,24 @@ class _DashboardContent extends StatelessWidget {
                       balance: state.balance,
                       income: state.income,
                       expenses: state.expense,
-                      onBalanceTap: () {},
-                      onExpensesTap: () {},
-                      onIncomeTap: () {},
+                      onBalanceTap: () async {
+                        await context.pushNamed(AppRouteName.transactions);
+                        if (context.mounted) {
+                          context.read<DashboardCubit>().loadOverview();
+                        }
+                      },
+                      onIncomeTap: () async {
+                        await context.pushNamed(AppRouteName.incomes);
+                        if (context.mounted) {
+                          context.read<DashboardCubit>().loadOverview();
+                        }
+                      },
+                      onExpensesTap: () async {
+                        await context.pushNamed(AppRouteName.receipts);
+                        if (context.mounted) {
+                          context.read<DashboardCubit>().loadOverview();
+                        }
+                      },
                     ),
                     const SizedBox(height: AppSpacing.xl),
                     FlowAnalysisSection(data: state.flowAnalysis, onTap: () {}),

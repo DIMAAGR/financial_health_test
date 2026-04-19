@@ -12,4 +12,8 @@ abstract class AppIcons {
   static const close = 'assets/icons/ic_close.svg';
   static const gift = 'assets/icons/ic_gift.svg';
   static const doneCircle = 'assets/icons/ic_done_circle.svg';
+  static const arrowBack = 'assets/icons/ic_arrow_back.svg';
+  static const calendar = 'assets/icons/ic_calendar.svg';
+  static const filter = 'assets/icons/ic_filter.svg';
+  static const add = 'assets/icons/ic_add.svg';
 }

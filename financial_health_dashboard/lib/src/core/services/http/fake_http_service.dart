@@ -44,7 +44,7 @@ class FakeHttpService implements HttpService {
         _state.addIncome(
           amount,
           title: _readTextOrFallback(data, 'title', fallback: 'Receita extra'),
-          category: _readTextOrFallback(data, 'category', fallback: 'Outros'),
+          category: _readTextOrFallback(data, 'category', fallback: 'other'),
         );
         await _persistState();
         return HttpResponse(statusCode: 200, data: _state.toOverviewJson());
@@ -53,7 +53,7 @@ class FakeHttpService implements HttpService {
         _state.addExpense(
           amount,
           title: _readTextOrFallback(data, 'title', fallback: 'Nova despesa'),
-          category: _readTextOrFallback(data, 'category', fallback: 'Outros'),
+          category: _readTextOrFallback(data, 'category', fallback: 'other'),
         );
         await _persistState();
         return HttpResponse(statusCode: 200, data: _state.toOverviewJson());
@@ -198,22 +198,24 @@ class _FakeDashboardState {
     final transactions = <_Transaction>[
       ...List<_Transaction>.generate(
         5,
-        (_) => _Transaction(
+        (i) => _Transaction(
           id: _randomId(random, prefix: 'inc'),
           title: _incomeTitles[random.nextInt(_incomeTitles.length)],
           category: _incomeCategories[random.nextInt(_incomeCategories.length)],
           value: _randomInRange(random, min: 150, max: income * 0.16),
           type: _TransactionType.income,
+          date: now.subtract(Duration(days: random.nextInt(7))),
         ),
       ),
       ...List<_Transaction>.generate(
         5,
-        (_) => _Transaction(
+        (i) => _Transaction(
           id: _randomId(random, prefix: 'exp'),
           title: _expenseTitles[random.nextInt(_expenseTitles.length)],
           category: _expenseCategories[random.nextInt(_expenseCategories.length)],
           value: _randomInRange(random, min: 80, max: expense * 0.14),
           type: _TransactionType.expense,
+          date: now.subtract(Duration(days: random.nextInt(7))),
         ),
       ),
     ];
@@ -263,6 +265,7 @@ class _FakeDashboardState {
             type: (item['type'] as String? ?? '').toLowerCase() == 'expense'
                 ? _TransactionType.expense
                 : _TransactionType.income,
+            date: DateTime.tryParse(item['date'] as String? ?? '') ?? DateTime.now(),
           ),
         )
         .where((item) => item.id.isNotEmpty)
@@ -322,6 +325,7 @@ class _FakeDashboardState {
         category: category,
         value: amount,
         type: _TransactionType.income,
+        date: DateTime.now(),
       ),
     );
     _touchCurrentFlow(incomeDelta: amount, expenseDelta: 0);
@@ -338,6 +342,7 @@ class _FakeDashboardState {
         category: category,
         value: amount,
         type: _TransactionType.expense,
+        date: DateTime.now(),
       ),
     );
     _touchCurrentFlow(incomeDelta: 0, expenseDelta: amount);
@@ -358,12 +363,27 @@ class _FakeDashboardState {
     currentLiquidityIndex = min(newIndex, 4.0);
   }
 
+  double _changePercent(double current, double previous) {
+    if (previous <= 0) return current > 0 ? 100 : 0;
+    return ((current - previous) / previous) * 100;
+  }
+
   Map<String, dynamic> toOverviewJson() {
+    final previousMonth = flow.length >= 2
+        ? flow[flow.length - 2]
+        : const _FlowMonth(income: 0, expense: 0);
+
     return {
       'userName': userName,
       'income': income,
       'expense': expense,
       'balance': balance,
+      'incomeChangePercent': _changePercent(income, previousMonth.income),
+      'expenseChangePercent': _changePercent(expense, previousMonth.expense),
+      'balanceChangePercent': _changePercent(
+        income - expense,
+        previousMonth.income - previousMonth.expense,
+      ),
       'liquidity': {'previousIndex': previousLiquidityIndex, 'currentIndex': currentLiquidityIndex},
       'commitment': {
         'percent': commitmentPercent,
@@ -451,6 +471,7 @@ class _Transaction {
     required this.category,
     required this.value,
     required this.type,
+    required this.date,
   });
 
   final String id;
@@ -458,6 +479,7 @@ class _Transaction {
   final String category;
   final double value;
   final _TransactionType type;
+  final DateTime date;
 
   factory _Transaction.fromJson(Map<String, dynamic> json) {
     return _Transaction(
@@ -468,11 +490,19 @@ class _Transaction {
       type: (json['type'] as String? ?? '').toLowerCase() == 'expense'
           ? _TransactionType.expense
           : _TransactionType.income,
+      date: DateTime.tryParse(json['date'] as String? ?? '') ?? DateTime.now(),
     );
   }
 
   Map<String, dynamic> toJson() {
-    return {'id': id, 'title': title, 'category': category, 'value': value, 'type': type.name};
+    return {
+      'id': id,
+      'title': title,
+      'category': category,
+      'value': value,
+      'type': type.name,
+      'date': date.toIso8601String(),
+    };
   }
 }
 
@@ -484,8 +514,8 @@ const _incomeTitles = <String>[
   'Rendimento',
 ];
 
-const _incomeCategories = <String>['Salário', 'Serviços', 'Investimento', 'Outros'];
+const _incomeCategories = <String>['salary', 'services', 'investment', 'other'];
 
 const _expenseTitles = <String>['Mercado', 'Transporte', 'Internet', 'Assinatura', 'Compra do mês'];
 
-const _expenseCategories = <String>['Alimentação', 'Transporte', 'Compras', 'Moradia', 'Outros'];
+const _expenseCategories = <String>['food', 'transport', 'shopping', 'housing', 'other'];

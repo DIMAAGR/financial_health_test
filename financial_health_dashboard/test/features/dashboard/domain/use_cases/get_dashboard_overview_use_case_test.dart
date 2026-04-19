@@ -49,6 +49,9 @@ void main() {
       balance: 10000,
       income: 8000,
       expense: 3000,
+      incomeChangePercent: 12.5,
+      expenseChangePercent: -5.0,
+      balanceChangePercent: 8.0,
       previousLiquidityIndex: 1.2,
       currentLiquidityIndex: 1.3,
       commitmentPercent: 37.5,
@@ -76,7 +79,7 @@ void main() {
         DashboardTransactionData(
           id: '1',
           title: 'Venda',
-          category: 'Serviços',
+          category: 'services',
           value: 300,
           type: DashboardTransactionType.income,
         ),

@@ -7,6 +7,9 @@ import 'package:financial_health_dashboard/src/core/services/network/network_inf
 import 'package:financial_health_dashboard/src/core/services/router/router_service.dart';
 import 'package:financial_health_dashboard/src/core/services/storage/key_value_wrapper.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/dashboard_init.dart';
+import 'package:financial_health_dashboard/src/features/expenses/expenses_init.dart';
+import 'package:financial_health_dashboard/src/features/incomes/incomes_init.dart';
+import 'package:financial_health_dashboard/src/features/transactions/transactions_init.dart';
 import 'package:get_it/get_it.dart';
 
 final GetIt getIt = GetIt.instance;
@@ -32,6 +35,9 @@ void _registerCore() {
 
 void _registerFeatures() {
   DashboardFeatureDependencies(getIt);
+  TransactionsFeatureDependencies(getIt);
+  IncomesFeatureDependencies(getIt);
+  ExpensesFeatureDependencies(getIt);
 }
 
 // ---------------- ROUTER ----------------------

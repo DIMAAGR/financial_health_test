@@ -7,6 +7,7 @@ class DashboardTransactionData {
     required this.category,
     required this.value,
     required this.type,
+    this.date,
   });
 
   final String id;
@@ -14,4 +15,5 @@ class DashboardTransactionData {
   final String category;
   final double value;
   final DashboardTransactionType type;
+  final DateTime? date;
 }

@@ -76,18 +76,10 @@ void main() {
     final useCase = AddDashboardIncomeUseCase(repo);
 
     final zeroResult = await useCase(
-      AddDashboardIncomeInput(
-        amount: 0,
-        title: 'Freelance',
-        category: IncomeCategory.salary,
-      ),
+      AddDashboardIncomeInput(amount: 0, title: 'Freelance', category: IncomeCategory.salary),
     );
     final negativeResult = await useCase(
-      AddDashboardIncomeInput(
-        amount: -1,
-        title: 'Freelance',
-        category: IncomeCategory.salary,
-      ),
+      AddDashboardIncomeInput(amount: -1, title: 'Freelance', category: IncomeCategory.salary),
     );
 
     expect(repo.addIncomeCalls, 0);
@@ -105,11 +97,7 @@ void main() {
     final useCase = AddDashboardIncomeUseCase(repo);
 
     final result = await useCase(
-      AddDashboardIncomeInput(
-        amount: 500,
-        title: '   ',
-        category: IncomeCategory.salary,
-      ),
+      AddDashboardIncomeInput(amount: 500, title: '   ', category: IncomeCategory.salary),
     );
 
     expect(repo.addIncomeCalls, 0);
@@ -121,24 +109,15 @@ void main() {
   });
 
   test('retorna Left quando repository falha', () async {
-    final repo = _FakeDashboardRepository(
-      Left(const DashboardFailure('erro de rede')),
-    );
+    final repo = _FakeDashboardRepository(Left(const DashboardFailure('erro de rede')));
     final useCase = AddDashboardIncomeUseCase(repo);
 
     final result = await useCase(
-      AddDashboardIncomeInput(
-        amount: 500,
-        title: 'Freelance',
-        category: IncomeCategory.investment,
-      ),
+      AddDashboardIncomeInput(amount: 500, title: 'Freelance', category: IncomeCategory.investment),
     );
 
     expect(result.isLeft(), isTrue);
-    result.fold(
-      (failure) => expect(failure.message, 'erro de rede'),
-      (_) => fail('esperava Left'),
-    );
+    result.fold((failure) => expect(failure.message, 'erro de rede'), (_) => fail('esperava Left'));
   });
 }
 
@@ -148,6 +127,9 @@ DashboardOverviewData _overview() {
     balance: 10000,
     income: 8000,
     expense: 3000,
+    incomeChangePercent: 12.5,
+    expenseChangePercent: -5.0,
+    balanceChangePercent: 8.0,
     previousLiquidityIndex: 1.2,
     currentLiquidityIndex: 1.3,
     commitmentPercent: 37.5,
@@ -175,7 +157,7 @@ DashboardOverviewData _overview() {
       DashboardTransactionData(
         id: '1',
         title: 'Venda',
-        category: 'Serviços',
+        category: 'services',
         value: 100,
         type: DashboardTransactionType.income,
       ),

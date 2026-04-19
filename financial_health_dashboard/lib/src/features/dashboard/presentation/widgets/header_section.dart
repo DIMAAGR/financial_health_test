@@ -55,17 +55,13 @@ class HeaderSection extends StatelessWidget {
             children: [
               Text(
                 'Bem-vindo de volta,',
-                style: AppTextStyles.headerSubtitle.copyWith(
-                  color: colors.headerSubtitle,
-                ),
+                style: AppTextStyles.headerSubtitle.copyWith(color: colors.headerSubtitle),
               ),
               Text(
                 userName,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: AppTextStyles.headerTitle.copyWith(
-                  color: colors.headerTitle,
-                ),
+                style: AppTextStyles.headerTitle.copyWith(color: colors.headerTitle),
               ),
             ],
           ),
@@ -106,7 +102,7 @@ class HeaderSection extends StatelessWidget {
               value: _HeaderMenuOption.editLayout,
               label: 'Editar Layout',
               icon: AppIcons.edit,
-              iconSize: 17,
+
               iconColor: colors.headerMenuIcon,
             ),
             _buildMenuItem(
@@ -147,7 +143,7 @@ class HeaderSection extends StatelessWidget {
     required _HeaderMenuOption value,
     required String label,
     required String icon,
-    double iconSize = 10,
+    double iconSize = 24,
     required Color iconColor,
   }) {
     final colors = context.appColors;
@@ -164,9 +160,7 @@ class HeaderSection extends StatelessWidget {
             const SizedBox(width: 12),
             Text(
               label,
-              style: AppTextStyles.financialCardTitle.copyWith(
-                color: colors.headerMenuText,
-              ),
+              style: AppTextStyles.financialCardTitle.copyWith(color: colors.headerMenuText),
             ),
           ],
         ),

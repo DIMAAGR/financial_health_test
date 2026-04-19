@@ -56,14 +56,14 @@ class AppTextStyles {
   );
 
   static const TextStyle metricLabelLarge = TextStyle(
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: FontWeight.w600,
     height: 1.5,
     letterSpacing: 0.8,
   );
 
   static const TextStyle metricValue = TextStyle(
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: FontWeight.w700,
     height: 1.33,
     letterSpacing: -0.6,

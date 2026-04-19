@@ -40,7 +40,7 @@ void main() {
       final after = await dataSource.addIncome(
         amount: 500,
         title: 'Freelance',
-        category: 'Investimento',
+        category: 'investment',
       );
 
       expect(after.income, closeTo(before.income + 500, 0.001));
@@ -54,7 +54,7 @@ void main() {
       final after = await dataSource.addExpense(
         amount: 250,
         title: 'Mercado',
-        category: 'Alimentação',
+        category: 'food',
       );
 
       expect(after.expense, closeTo(before.expense + 250, 0.001));
@@ -89,20 +89,20 @@ void main() {
       final spy = _SpyHttpService();
       final ds = DashboardRemoteDataSourceImpl(spy, const _AlwaysConnected());
 
-      await ds.addIncome(amount: 321.5, title: 'Freelance', category: 'Investimento');
+      await ds.addIncome(amount: 321.5, title: 'Freelance', category: 'investment');
 
       expect(spy.lastPostPath, '/dashboard/income');
-      expect(spy.lastPostData, {'amount': 321.5, 'title': 'Freelance', 'category': 'Investimento'});
+      expect(spy.lastPostData, {'amount': 321.5, 'title': 'Freelance', 'category': 'investment'});
     });
 
     test('usa endpoint e payload corretos para addExpense', () async {
       final spy = _SpyHttpService();
       final ds = DashboardRemoteDataSourceImpl(spy, const _AlwaysConnected());
 
-      await ds.addExpense(amount: 123.4, title: 'Mercado', category: 'Alimentação');
+      await ds.addExpense(amount: 123.4, title: 'Mercado', category: 'food');
 
       expect(spy.lastPostPath, '/dashboard/expense');
-      expect(spy.lastPostData, {'amount': 123.4, 'title': 'Mercado', 'category': 'Alimentação'});
+      expect(spy.lastPostData, {'amount': 123.4, 'title': 'Mercado', 'category': 'food'});
     });
 
     test('faz parse resiliente quando payload vem incompleto', () async {

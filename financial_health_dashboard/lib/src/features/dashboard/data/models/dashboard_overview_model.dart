@@ -10,6 +10,9 @@ class DashboardOverviewModel {
     required this.balance,
     required this.income,
     required this.expense,
+    required this.incomeChangePercent,
+    required this.expenseChangePercent,
+    required this.balanceChangePercent,
     required this.previousLiquidityIndex,
     required this.currentLiquidityIndex,
     required this.commitmentPercent,
@@ -47,6 +50,7 @@ class DashboardOverviewModel {
             type: (item['type'] as String? ?? '').toLowerCase() == 'expense'
                 ? DashboardTransactionType.expense
                 : DashboardTransactionType.income,
+            date: DateTime.tryParse(item['date'] as String? ?? ''),
           ),
         )
         .where((item) => item.id.isNotEmpty)
@@ -57,6 +61,9 @@ class DashboardOverviewModel {
       balance: _toDouble(json['balance']),
       income: _toDouble(json['income']),
       expense: _toDouble(json['expense']),
+      incomeChangePercent: _toDouble(json['incomeChangePercent']),
+      expenseChangePercent: _toDouble(json['expenseChangePercent']),
+      balanceChangePercent: _toDouble(json['balanceChangePercent']),
       previousLiquidityIndex: _toDouble(liquidity['previousIndex']),
       currentLiquidityIndex: _toDouble(liquidity['currentIndex']),
       commitmentPercent: _toDouble(commitment['percent']),
@@ -75,6 +82,10 @@ class DashboardOverviewModel {
   final double balance;
   final double income;
   final double expense;
+
+  final double incomeChangePercent;
+  final double expenseChangePercent;
+  final double balanceChangePercent;
 
   final double previousLiquidityIndex;
   final double currentLiquidityIndex;
@@ -95,17 +106,16 @@ class DashboardOverviewModel {
     final safeTarget = goalTargetAmount <= 0 ? 1.0 : goalTargetAmount;
     final achievedPercent = (goalAchievedAmount / safeTarget) * 100;
 
-    final normalizedReferenceDate = DateTime(
-      referenceDate.year,
-      referenceDate.month,
-      goalDay,
-    );
+    final normalizedReferenceDate = DateTime(referenceDate.year, referenceDate.month, goalDay);
 
     return DashboardOverviewData(
       userName: userName,
       balance: balance,
       income: income,
       expense: expense,
+      incomeChangePercent: incomeChangePercent,
+      expenseChangePercent: expenseChangePercent,
+      balanceChangePercent: balanceChangePercent,
       previousLiquidityIndex: previousLiquidityIndex,
       currentLiquidityIndex: currentLiquidityIndex,
       commitmentPercent: commitmentPercent,

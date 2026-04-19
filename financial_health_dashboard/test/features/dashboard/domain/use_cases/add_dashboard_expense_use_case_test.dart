@@ -56,11 +56,7 @@ void main() {
     final useCase = AddDashboardExpenseUseCase(repo);
 
     final result = await useCase(
-      AddDashboardExpenseInput(
-        amount: 250,
-        title: '  Mercado  ',
-        category: ExpenseCategory.food,
-      ),
+      AddDashboardExpenseInput(amount: 250, title: '  Mercado  ', category: ExpenseCategory.food),
     );
 
     expect(repo.addExpenseCalls, 1);
@@ -76,18 +72,10 @@ void main() {
     final useCase = AddDashboardExpenseUseCase(repo);
 
     final zeroResult = await useCase(
-      AddDashboardExpenseInput(
-        amount: 0,
-        title: 'Mercado',
-        category: ExpenseCategory.food,
-      ),
+      AddDashboardExpenseInput(amount: 0, title: 'Mercado', category: ExpenseCategory.food),
     );
     final negativeResult = await useCase(
-      AddDashboardExpenseInput(
-        amount: -1,
-        title: 'Mercado',
-        category: ExpenseCategory.food,
-      ),
+      AddDashboardExpenseInput(amount: -1, title: 'Mercado', category: ExpenseCategory.food),
     );
 
     expect(repo.addExpenseCalls, 0);
@@ -105,11 +93,7 @@ void main() {
     final useCase = AddDashboardExpenseUseCase(repo);
 
     final result = await useCase(
-      AddDashboardExpenseInput(
-        amount: 250,
-        title: '   ',
-        category: ExpenseCategory.food,
-      ),
+      AddDashboardExpenseInput(amount: 250, title: '   ', category: ExpenseCategory.food),
     );
 
     expect(repo.addExpenseCalls, 0);
@@ -121,17 +105,11 @@ void main() {
   });
 
   test('retorna Left quando repository falha', () async {
-    final repo = _FakeDashboardRepository(
-      Left(const DashboardFailure('erro inesperado')),
-    );
+    final repo = _FakeDashboardRepository(Left(const DashboardFailure('erro inesperado')));
     final useCase = AddDashboardExpenseUseCase(repo);
 
     final result = await useCase(
-      AddDashboardExpenseInput(
-        amount: 250,
-        title: 'Mercado',
-        category: ExpenseCategory.food,
-      ),
+      AddDashboardExpenseInput(amount: 250, title: 'Mercado', category: ExpenseCategory.food),
     );
 
     expect(result.isLeft(), isTrue);
@@ -148,6 +126,9 @@ DashboardOverviewData _overview() {
     balance: 10000,
     income: 8000,
     expense: 3000,
+    incomeChangePercent: 12.5,
+    expenseChangePercent: -5.0,
+    balanceChangePercent: 8.0,
     previousLiquidityIndex: 1.2,
     currentLiquidityIndex: 1.3,
     commitmentPercent: 37.5,
@@ -175,7 +156,7 @@ DashboardOverviewData _overview() {
       DashboardTransactionData(
         id: '1',
         title: 'Mercado',
-        category: 'Alimentação',
+        category: 'food',
         value: 120,
         type: DashboardTransactionType.expense,
       ),

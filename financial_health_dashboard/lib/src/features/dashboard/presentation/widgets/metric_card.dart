@@ -64,11 +64,7 @@ class MetricCard extends StatelessWidget {
           width: colors.metricCardBorder.a == 0 ? 0 : 1,
         ),
         boxShadow: [
-          BoxShadow(
-            color: colors.metricCardShadow,
-            blurRadius: 20,
-            offset: const Offset(0, 4),
-          ),
+          BoxShadow(color: colors.metricCardShadow, blurRadius: 20, offset: const Offset(0, 4)),
         ],
       ),
       child: Material(
@@ -84,20 +80,16 @@ class MetricCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                AppSvgIcon(asset: iconAsset, size: 18, color: iconColor),
-                const SizedBox(height: AppSpacing.md),
+                AppSvgIcon(asset: iconAsset, size: 24, color: iconColor),
+                const SizedBox(height: AppSpacing.sm),
                 Text(
                   label,
-                  style: AppTextStyles.metricLabelLarge.copyWith(
-                    color: colors.metricCardLabel,
-                  ),
+                  style: AppTextStyles.metricLabelLarge.copyWith(color: colors.metricCardLabel),
                 ),
                 const SizedBox(height: AppSpacing.xs),
                 Text(
                   value.toBRL(),
-                  style: AppTextStyles.metricValue.copyWith(
-                    color: colors.metricCardValue,
-                  ),
+                  style: AppTextStyles.metricValue.copyWith(color: colors.metricCardValue),
                 ),
               ],
             ),

@@ -13,6 +13,9 @@ class DashboardOverviewData {
     required this.balance,
     required this.income,
     required this.expense,
+    required this.incomeChangePercent,
+    required this.expenseChangePercent,
+    required this.balanceChangePercent,
     required this.previousLiquidityIndex,
     required this.currentLiquidityIndex,
     required this.commitmentPercent,
@@ -29,6 +32,10 @@ class DashboardOverviewData {
   final double balance;
   final double income;
   final double expense;
+
+  final double incomeChangePercent;
+  final double expenseChangePercent;
+  final double balanceChangePercent;
 
   final double previousLiquidityIndex;
   final double currentLiquidityIndex;

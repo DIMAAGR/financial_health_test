@@ -76,6 +76,9 @@ Map<String, dynamic> _validJson() {
     'income': 12000,
     'expense': 7200,
     'balance': 18000,
+    'incomeChangePercent': 15.5,
+    'expenseChangePercent': -3.2,
+    'balanceChangePercent': 10.0,
     'liquidity': {'previousIndex': 1.2, 'currentIndex': 1.3},
     'commitment': {'percent': 60, 'benchmarkPercent': 65},
     'monthlyGoal': {
@@ -90,17 +93,11 @@ Map<String, dynamic> _validJson() {
       {'income': 1200, 'expense': 900},
     ],
     'transactions': [
-      {
-        'id': 'tx-1',
-        'title': 'Salário',
-        'category': 'Salário',
-        'value': 2000,
-        'type': 'income',
-      },
+      {'id': 'tx-1', 'title': 'Salário', 'category': 'salary', 'value': 2000, 'type': 'income'},
       {
         'id': 'tx-2',
         'title': 'Mercado',
-        'category': 'Alimentação',
+        'category': 'food',
         'value': 400,
         'type': 'expense',
       },

@@ -1,8 +1,12 @@
 import 'package:financial_health_dashboard/src/shared/presentation/design/theme/app_semantic_colors.dart';
 import 'package:financial_health_dashboard/src/shared/presentation/design/theme/add_income_sheet_theme_ext.dart';
+import 'package:financial_health_dashboard/src/shared/presentation/design/theme/category_breakdown_theme_ext.dart';
+import 'package:financial_health_dashboard/src/shared/presentation/design/theme/contextual_fab_theme_ext.dart';
 import 'package:financial_health_dashboard/src/shared/presentation/design/theme/financial_health_score_theme_ext.dart';
 import 'package:financial_health_dashboard/src/shared/presentation/design/theme/flow_analysis_theme_ext.dart';
 import 'package:financial_health_dashboard/src/shared/presentation/design/theme/monthly_goal_theme_ext.dart';
+import 'package:financial_health_dashboard/src/shared/presentation/design/theme/month_summary_theme_ext.dart';
+import 'package:financial_health_dashboard/src/shared/presentation/design/theme/transaction_list_theme_ext.dart';
 import 'package:flutter/material.dart';
 
 final ThemeData appLightTheme = ThemeData(
@@ -138,6 +142,55 @@ final ThemeData appLightTheme = ThemeData(
       primaryButtonText: Color(0xFFFFFFFF),
       sheetShadow: Color(0x1E2D3435),
     ),
+    MonthSummaryTheme(
+      cardBackground: Color(0xFF2D6957),
+      cardBorder: Color(0x26404945),
+      cardShadow: Color(0x40000000),
+      glowColor: Color(0x33A8E6CF),
+      label: Color(0xFFFFFFFF),
+      amount: Color(0xFFFFFFFF),
+      monthYear: Color(0xFFFFFFFF),
+      badgeBackground: Color(0x1AFFFFFF),
+      badgeBorder: Color(0x1AFFFFFF),
+      badgeLabel: Color(0xFFFFFFFF),
+      trendPositive: Color(0xFFA8E6CF),
+      trendNegative: Color(0xFFFFB4AB),
+    ),
+    CategoryBreakdownTheme(
+      heroCardBackground: Color(0xFFFFFFFF),
+      heroCardBorder: Color(0x4CBFC9C3),
+      heroIconBackground: Color(0x192D6957),
+      heroPercent: Color(0xFF404944),
+      heroTitle: Color(0xFF1A1C1B),
+      heroAmount: Color(0xFF2D6957),
+      itemCardBackground: Color(0xFFFFFFFF),
+      itemCardBorder: Color(0x4CBFC9C3),
+      itemIconBackgroundAccent: Color(0x33A8E6CF),
+      itemIconBackgroundNeutral: Color(0xFFDCE5E0),
+      itemLabel: Color(0xFF404944),
+      itemAmount: Color(0xFF1A1C1B),
+    ),
+    ContextualFabTheme(
+      background: Color(0xFF2D6957),
+      foreground: Color(0xFFFFFFFF),
+      shadow: Color(0x4CB1EFD8),
+    ),
+    TransactionListTheme(
+      sectionTitle: Color(0xFF1A1C1B),
+      itemCount: Color(0xFF404944),
+      dateLabelText: Color(0x99404944),
+      dateBorderToday: Color(0xFFA8E6CF),
+      dateBorderOther: Color(0xFFA8E6CF),
+      cardBorder: Color(0x19404945),
+      itemBackground: Color(0xFFFFFFFF),
+      iconBackground: Color(0xFFF0F5F2),
+      itemTitle: Color(0xFF1A1C1B),
+      itemSubtitle: Color(0xFF404944),
+      itemAmount: Color(0xFF1A1C1B),
+      itemAmountExpense: Color(0xFFA83836),
+      itemAmountIncome: Color(0xFF2D6957),
+      itemPaymentMethod: Color(0xFF404944),
+    ),
   ],
 );
 
@@ -272,6 +325,55 @@ final ThemeData appDarkTheme = ThemeData(
       primaryButtonEnd: Color(0xFF1F5D4B),
       primaryButtonText: Color(0xFFFFFFFF),
       sheetShadow: Color(0x1E2D3435),
+    ),
+    MonthSummaryTheme(
+      cardBackground: Color(0xFF292929),
+      cardBorder: Color(0x1A404945),
+      cardShadow: Color(0x40000000),
+      glowColor: Color(0x1AA8E6CF),
+      label: Color(0xFF96D3BD),
+      amount: Color(0xFFB0F0D4),
+      monthYear: Color(0xFFBFC9C3),
+      badgeBackground: Color(0x800D0D0D),
+      badgeBorder: Color(0x0D404945),
+      badgeLabel: Color(0xFFBFC9C3),
+      trendPositive: Color(0xFFA8E6CF),
+      trendNegative: Color(0xFFFFB4AB),
+    ),
+    CategoryBreakdownTheme(
+      heroCardBackground: Color(0xFF1C1B1B),
+      heroCardBorder: Color(0x00000000),
+      heroIconBackground: Color(0x33B1EFD8),
+      heroPercent: Color(0xFFBFC9C3),
+      heroTitle: Color(0xFFFEFFFC),
+      heroAmount: Color(0xFFE5E2E1),
+      itemCardBackground: Color(0xFF1C1B1B),
+      itemCardBorder: Color(0x00000000),
+      itemIconBackgroundAccent: Color(0x4C125342),
+      itemIconBackgroundNeutral: Color(0xFF353534),
+      itemLabel: Color(0xFFBFC9C3),
+      itemAmount: Color(0xFFFEFFFC),
+    ),
+    ContextualFabTheme(
+      background: Color(0xFFB1EFD8),
+      foreground: Color(0xFF00382B),
+      shadow: Color(0x4CB1EFD8),
+    ),
+    TransactionListTheme(
+      sectionTitle: Color(0xFFFEFFFC),
+      itemCount: Color(0xFFBFC9C3),
+      dateLabelText: Color(0xFFBFC9C3),
+      dateBorderToday: Color(0xFFB1EFD8),
+      dateBorderOther: Color(0xFF404945),
+      cardBorder: Color(0x19404945),
+      itemBackground: Color(0xFF1C1B1B),
+      iconBackground: Color(0xFF353534),
+      itemTitle: Color(0xFFFEFFFC),
+      itemSubtitle: Color(0xFFBFC9C3),
+      itemAmount: Color(0xFFFEFFFC),
+      itemAmountExpense: Color(0xFFFFB4AB),
+      itemAmountIncome: Color(0xFFB1EFD8),
+      itemPaymentMethod: Color(0xFFBFC9C3),
     ),
   ],
 );

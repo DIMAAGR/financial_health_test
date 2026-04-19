@@ -376,3 +376,31 @@ Registro objetivo de interações com IA que influenciaram decisões do projeto.
 - Validação humana aplicada: `dart analyze` sem issues, `dart test` 28 testes passando, `flutter test` 118 testes do app inalterados.
 - Trade-offs identificados: funções helper públicas (não-privadas) para testabilidade vs. encapsulamento estrito; leitura de docs a cada chamada vs. cache em memória (docs são pequenos, cache adiciona complexidade de invalidação).
 - Decisão final: MCP server como pacote Dart puro em `tools/mcp_server/`, independente do app Flutter, configurado como stdio server para VS Code.
+
+### 1. Criação das 3 telas de detalhe com widgets compartilhados (2026-04-17)
+
+**Prompt:** Criar telas de detalhe para Movimentações, Receitas e Despesas a partir de designs SwiftUI gerados no Google Stitch
+
+**Decisão:** Criados 5 widgets compartilhados (DetailAppBar, MonthSummaryCard, CategoryBreakdownSection, ContextualFab, TransactionListSection) com ThemeExtension individual para cada um. 3 views separadas em features distintas, roteadas via go_router.
+
+**Trade-offs:** Widgets separados por feature vs. widget genérico com type param — optou-se por views separadas para flexibilidade (ex: transactions não tem CategoryBreakdown nem FAB). ThemeExtension por componente adiciona verbosidade mas garante light/dark isolado e lerp correto.
+
+**Resultado:** 5 widgets, 5 theme extensions, 3 views, 3 SVG icons, rotas configuradas. dart analyze sem erros. Dados hardcoded como placeholder — state management pendente.
+### 2. Variante de TransactionList para Movimentações (valores coloridos) (2026-04-17)
+
+**Prompt:** Variante de lista para Movimentações: sem paymentMethod, valores coloridos por tipo (despesa=vermelho, receita=verde)
+
+**Decisão:** TransactionListSection adaptado com paymentMethod opcional e isExpense flag. 2 novos tokens (itemAmountExpense, itemAmountIncome) no TransactionListTheme. Na view de movimentações, despesas em vermelho e receitas em verde — sem paymentMethod. Nas views de receitas/despesas, cor neutra com paymentMethod visível.
+
+**Trade-offs:** Widget único com flags opcionais vs. dois widgets separados — optou-se por widget único com isExpense?/paymentMethod? opcionais para evitar duplicação. Risco de complexidade condicional aceito porque são apenas 2 variações simples.
+
+**Resultado:** Widget reutilizado sem duplicação. dart analyze limpo. Ambas variantes (movimentações e receitas/despesas) compartilham o mesmo componente.
+### 3. Business logic layer for detail screens (Movimentações, Receitas, Despesas) (2025-07-15)
+
+**Prompt:** Adicionar lógica de negócio às 3 telas de detalhe: entidades, use cases, cubits, DI init, popular dados reais do FakeHttpService. Seguir TDD conforme as rules.
+
+**Decisão:** Cada feature (transactions, incomes, expenses) reutiliza o DashboardRepository já registrado como singleton. Cada uma recebe: (1) entity própria no domain, (2) use case que depende de DashboardRepository e filtra/transforma os dados, (3) Cubit + State com padrão exclusivo de status (initial/loading/success/error), (4) FeatureDependencies para DI. Adicionado DateTime? date ao DashboardTransactionData para suportar agrupamento por data nas telas de detalhe. Nenhum novo datasource, model ou repository impl foi criado — máximo reuso da data layer existente.
+
+**Trade-offs:** Reusar DashboardRepository cria dependência cross-feature no nível de interface (domain), mas evita duplicação de datasource/model que chamariam os mesmos endpoints. Para o escopo do desafio, isso é pragmático e não viola o contrato de Clean Architecture (features dependem de abstrações, não de implementações). O campo date foi adicionado como optional (DateTime?) para não quebrar os 118 testes existentes.
+
+**Resultado:** 29 novos testes criados (13 domain + 16 cubit), todos passando. 147 testes totais, 0 issues no flutter analyze. Arquivos criados: 3 entities, 3 use cases, 3 cubits, 3 states, 3 inits, 1 shared entity (CategoryBreakdownData), 6 arquivos de teste. Views atualizadas de hardcoded para BlocBuilder com estados loading/error/success.
