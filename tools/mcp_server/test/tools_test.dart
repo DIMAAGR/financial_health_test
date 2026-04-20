@@ -28,6 +28,11 @@ void main() {
 
     File('$docsPath/ia/rules.md').writeAsStringSync('# Rules\n1. Always log.\n2. TDD for domain.');
 
+    File('$docsPath/ia/guardrails.toon').writeAsStringSync(
+      'principles[1]{id,rule}:\n'
+      '  boundary_first,"Keep feature boundaries explicit."\n',
+    );
+
     File('$docsPath/ia/learnings.md').writeAsStringSync(
       '# Learnings\n\n### 1. State flags | 2026-04-14\n\n'
       '**Causa raiz:** Ambiguity.\n\n**Prevenção:** Use enums.',
@@ -70,6 +75,16 @@ void main() {
     test('returns warning when file does not exist', () {
       final content = readDoc(docsPath, 'nonexistent.md');
       expect(content, contains('File not found'));
+    });
+  });
+
+  group('buildRulesContext', () {
+    test('combines markdown rules with TOON guardrails', () {
+      final content = buildRulesContext(docsPath);
+
+      expect(content, contains('Always log'));
+      expect(content, contains('```toon'));
+      expect(content, contains('boundary_first'));
     });
   });
 

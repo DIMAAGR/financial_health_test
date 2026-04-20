@@ -17,38 +17,41 @@ class DashboardFeatureDependencies extends FeatureDependencies {
 
   @override
   void data(GetIt i) {
-    i.registerLazySingleton<DashboardRemoteDataSource>(
-      () => DashboardRemoteDataSourceImpl(i<HttpService>(), i<NetworkInfo>()),
-    );
-    i.registerLazySingleton<DashboardRepository>(
-      () => DashboardRepositoryImpl(i<DashboardRemoteDataSource>(), i<Clock>()),
-    );
+    i
+      ..registerLazySingleton<DashboardRemoteDataSource>(
+        () => DashboardRemoteDataSourceImpl(i<HttpService>(), i<NetworkInfo>()),
+      )
+      ..registerLazySingleton<DashboardRepository>(
+        () => DashboardRepositoryImpl(i<DashboardRemoteDataSource>(), i<Clock>()),
+      );
   }
 
   @override
   void useCases(GetIt i) {
-    i.registerFactory<GetDashboardOverviewUseCase>(
-      () => GetDashboardOverviewUseCase(i<DashboardRepository>()),
-    );
-    i.registerFactory<AddDashboardIncomeUseCase>(
-      () => AddDashboardIncomeUseCase(i<DashboardRepository>()),
-    );
-    i.registerFactory<AddDashboardExpenseUseCase>(
-      () => AddDashboardExpenseUseCase(i<DashboardRepository>()),
-    );
+    i
+      ..registerFactory<GetDashboardOverviewUseCase>(
+        () => GetDashboardOverviewUseCase(i<DashboardRepository>()),
+      )
+      ..registerFactory<AddDashboardIncomeUseCase>(
+        () => AddDashboardIncomeUseCase(i<DashboardRepository>()),
+      )
+      ..registerFactory<AddDashboardExpenseUseCase>(
+        () => AddDashboardExpenseUseCase(i<DashboardRepository>()),
+      );
   }
 
   @override
   void presentation(GetIt i) {
-    i.registerFactory<DashboardCubit>(
-      () => DashboardCubit(
-        i<AddDashboardExpenseUseCase>(),
-        i<AddDashboardIncomeUseCase>(),
-        i<GetDashboardOverviewUseCase>(),
-      ),
-    );
-    i.registerFactoryParam<AddTransactionCubit, SheetType, void>(
-      (sheetType, _) => AddTransactionCubit(sheetType),
-    );
+    i
+      ..registerFactory<DashboardCubit>(
+        () => DashboardCubit(
+          i<AddDashboardExpenseUseCase>(),
+          i<AddDashboardIncomeUseCase>(),
+          i<GetDashboardOverviewUseCase>(),
+        ),
+      )
+      ..registerFactoryParam<AddTransactionCubit, SheetType, void>(
+        (sheetType, _) => AddTransactionCubit(sheetType),
+      );
   }
 }

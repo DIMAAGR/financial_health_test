@@ -6,7 +6,7 @@ import 'package:mcp_dart/mcp_dart.dart';
 ///
 /// Tools:
 ///   - `get_project_context`  → architecture + conventions
-///   - `get_rules`            → IA governance rules
+///   - `get_rules`            → IA governance rules + TOON guardrails
 ///   - `get_learnings`        → documented mistakes and prevention patterns
 ///   - `search_prompt_log`    → search past AI interaction entries
 void registerContextTools(McpServer server, {required String docsPath}) {
@@ -38,11 +38,11 @@ void registerContextTools(McpServer server, {required String docsPath}) {
     'get_rules',
     description: 'Returns the IA governance rules for this project. '
         'Includes mandatory logging rules, TDD rules, widget creation '
-        'rules, and the pre-implementation checklist.',
+        'rules, architectural guardrails, and the pre-implementation checklist.',
     annotations: ToolAnnotations(readOnlyHint: true),
     inputSchema: ToolInputSchema(properties: {}),
     callback: (args, extra) async {
-      final rules = readDoc(docsPath, 'ia/rules.md');
+      final rules = buildRulesContext(docsPath);
       return CallToolResult(content: [TextContent(text: rules)]);
     },
   );
@@ -110,6 +110,14 @@ String readDoc(String docsPath, String relativePath) {
   final file = File('$docsPath/$relativePath');
   if (!file.existsSync()) return '⚠ File not found: $relativePath';
   return file.readAsStringSync();
+}
+
+String buildRulesContext(String docsPath) {
+  final rules = readDoc(docsPath, 'ia/rules.md');
+  final guardrails = readDoc(docsPath, 'ia/guardrails.toon');
+
+  return '# IA Governance Rules\n\n$rules'
+      '\n\n---\n\n# AI Operational Guardrails (TOON)\n\n```toon\n$guardrails\n```';
 }
 
 /// Splits prompt_log.md into individual entries (each starts with `### `).

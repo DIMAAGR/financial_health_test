@@ -8,5 +8,5 @@ Future<void> main() async {
   await initializeDateFormatting('pt_BR');
   setupCoreInjection();
 
-  runApp(App());
+  runApp(const App());
 }

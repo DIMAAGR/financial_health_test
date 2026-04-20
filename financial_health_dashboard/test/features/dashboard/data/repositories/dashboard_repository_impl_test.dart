@@ -1,13 +1,14 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:financial_health_dashboard/src/core/failures/app_failure.dart';
 import 'package:financial_health_dashboard/src/core/services/clock/clock.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/data/datasources/dashboard_remote_data_source.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/data/models/dashboard_overview_model.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/data/repositories/dashboard_repository_impl.dart';
-import 'package:financial_health_dashboard/src/features/dashboard/domain/enum/expense_category.dart';
-import 'package:financial_health_dashboard/src/features/dashboard/domain/enum/income_category.dart';
-import 'package:financial_health_dashboard/src/features/dashboard/domain/failures/dashboard_failure.dart';
+import 'package:financial_health_dashboard/src/shared/domain/enum/expense_category.dart';
+import 'package:financial_health_dashboard/src/shared/domain/enum/income_category.dart';
+
 import 'package:flutter_test/flutter_test.dart';
 
 class _FixedClock implements Clock {
@@ -77,19 +78,28 @@ void main() {
   group('DashboardRepositoryImpl', () {
     test('getOverview converte model usando data do Clock', () async {
       final remote = _FakeDashboardRemoteDataSource(_modelWithGoalDay(20));
-      final repository = DashboardRepositoryImpl(remote, _FixedClock(DateTime(2026, 4, 1, 23, 59)));
+      final repository = DashboardRepositoryImpl(
+        remote,
+        _FixedClock(DateTime(2026, 4, 1, 23, 59)),
+      );
 
       final result = await repository.getOverview();
 
       expect(result.isRight(), isTrue);
       result.fold((_) => fail('esperava Right'), (overview) {
-        expect(overview.monthlyGoal.expectedPercentByDate, closeTo(66.67, 0.01));
+        expect(
+          overview.monthlyGoal.expectedPercentByDate,
+          closeTo(66.67, 0.01),
+        );
       });
     });
 
     test('addIncome serializa categoria por code e usa Clock', () async {
       final remote = _FakeDashboardRemoteDataSource(_modelWithGoalDay(20));
-      final repository = DashboardRepositoryImpl(remote, _FixedClock(DateTime(2026, 4, 1)));
+      final repository = DashboardRepositoryImpl(
+        remote,
+        _FixedClock(DateTime(2026, 4, 1)),
+      );
 
       final result = await repository.addIncome(
         amount: 100,
@@ -99,13 +109,19 @@ void main() {
 
       expect(remote.lastIncomeCategory, 'investment');
       result.fold((_) => fail('esperava Right'), (overview) {
-        expect(overview.monthlyGoal.expectedPercentByDate, closeTo(66.67, 0.01));
+        expect(
+          overview.monthlyGoal.expectedPercentByDate,
+          closeTo(66.67, 0.01),
+        );
       });
     });
 
     test('addExpense serializa categoria por code e usa Clock', () async {
       final remote = _FakeDashboardRemoteDataSource(_modelWithGoalDay(20));
-      final repository = DashboardRepositoryImpl(remote, _FixedClock(DateTime(2026, 4, 1)));
+      final repository = DashboardRepositoryImpl(
+        remote,
+        _FixedClock(DateTime(2026, 4, 1)),
+      );
 
       final result = await repository.addExpense(
         amount: 100,
@@ -115,7 +131,10 @@ void main() {
 
       expect(remote.lastExpenseCategory, 'food');
       result.fold((_) => fail('esperava Right'), (overview) {
-        expect(overview.monthlyGoal.expectedPercentByDate, closeTo(66.67, 0.01));
+        expect(
+          overview.monthlyGoal.expectedPercentByDate,
+          closeTo(66.67, 0.01),
+        );
       });
     });
   });
@@ -130,34 +149,40 @@ void main() {
       final result = await repoThrowing(ArgumentError('campo x')).getOverview();
 
       result.fold(
-        (failure) => expect(failure, isA<DashboardValidationFailure>()),
+        (failure) => expect(failure, isA<ValidationFailure>()),
         (_) => fail('esperava Left'),
       );
     });
 
     test('TimeoutException → DashboardNetworkFailure', () async {
-      final result = await repoThrowing(TimeoutException('timeout')).getOverview();
+      final result = await repoThrowing(
+        TimeoutException('timeout'),
+      ).getOverview();
 
       result.fold(
-        (failure) => expect(failure, isA<DashboardNetworkFailure>()),
+        (failure) => expect(failure, isA<NetworkFailure>()),
         (_) => fail('esperava Left'),
       );
     });
 
     test('SocketException → DashboardNetworkFailure', () async {
-      final result = await repoThrowing(const SocketException('sem rede')).getOverview();
+      final result = await repoThrowing(
+        const SocketException('sem rede'),
+      ).getOverview();
 
       result.fold(
-        (failure) => expect(failure, isA<DashboardNetworkFailure>()),
+        (failure) => expect(failure, isA<NetworkFailure>()),
         (_) => fail('esperava Left'),
       );
     });
 
     test('FormatException → DashboardParsingFailure', () async {
-      final result = await repoThrowing(const FormatException('json')).getOverview();
+      final result = await repoThrowing(
+        const FormatException('json'),
+      ).getOverview();
 
       result.fold(
-        (failure) => expect(failure, isA<DashboardParsingFailure>()),
+        (failure) => expect(failure, isA<ParsingFailure>()),
         (_) => fail('esperava Left'),
       );
     });
@@ -166,16 +191,18 @@ void main() {
       final result = await repoThrowing(TypeError()).getOverview();
 
       result.fold(
-        (failure) => expect(failure, isA<DashboardParsingFailure>()),
+        (failure) => expect(failure, isA<ParsingFailure>()),
         (_) => fail('esperava Left'),
       );
     });
 
     test('FileSystemException → DashboardStorageFailure', () async {
-      final result = await repoThrowing(const FileSystemException('disco')).getOverview();
+      final result = await repoThrowing(
+        const FileSystemException('disco'),
+      ).getOverview();
 
       result.fold(
-        (failure) => expect(failure, isA<DashboardStorageFailure>()),
+        (failure) => expect(failure, isA<StorageFailure>()),
         (_) => fail('esperava Left'),
       );
     });
@@ -184,7 +211,7 @@ void main() {
       final result = await repoThrowing(StateError('bad state')).getOverview();
 
       result.fold(
-        (failure) => expect(failure, isA<DashboardStorageFailure>()),
+        (failure) => expect(failure, isA<StorageFailure>()),
         (_) => fail('esperava Left'),
       );
     });
@@ -193,7 +220,7 @@ void main() {
       final result = await repoThrowing(UnsupportedError('op')).getOverview();
 
       result.fold(
-        (failure) => expect(failure, isA<DashboardServerFailure>()),
+        (failure) => expect(failure, isA<ServerFailure>()),
         (_) => fail('esperava Left'),
       );
     });
@@ -202,7 +229,7 @@ void main() {
       final result = await repoThrowing(Exception('qualquer')).getOverview();
 
       result.fold(
-        (failure) => expect(failure, isA<DashboardUnknownFailure>()),
+        (failure) => expect(failure, isA<UnknownFailure>()),
         (_) => fail('esperava Left'),
       );
     });
@@ -228,6 +255,5 @@ DashboardOverviewModel _modelWithGoalDay(int day) {
     goalDay: day,
     goalDaysInMonth: 30,
     flowPoints: const [],
-    transactions: const [],
   );
 }

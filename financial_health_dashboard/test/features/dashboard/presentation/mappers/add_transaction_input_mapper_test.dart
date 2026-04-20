@@ -1,8 +1,8 @@
-import 'package:financial_health_dashboard/src/features/dashboard/domain/enum/expense_category.dart';
-import 'package:financial_health_dashboard/src/features/dashboard/domain/enum/income_category.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/presentation/mappers/add_transaction_input_mapper.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/presentation/models/add_transaction_sheet_result.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/presentation/models/transaction_category.dart';
+import 'package:financial_health_dashboard/src/shared/domain/enum/expense_category.dart';
+import 'package:financial_health_dashboard/src/shared/domain/enum/income_category.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -42,10 +42,7 @@ void main() {
         category: TransactionCategory.food,
       );
 
-      expect(
-        () => AddTransactionInputMapper.toIncomeInput(result),
-        throwsA(isA<ArgumentError>()),
-      );
+      expect(() => AddTransactionInputMapper.toIncomeInput(result), throwsA(isA<ArgumentError>()));
     });
 
     test('falha ao tentar mapear categoria de receita como despesa', () {
@@ -55,10 +52,7 @@ void main() {
         category: TransactionCategory.salary,
       );
 
-      expect(
-        () => AddTransactionInputMapper.toExpenseInput(result),
-        throwsA(isA<ArgumentError>()),
-      );
+      expect(() => AddTransactionInputMapper.toExpenseInput(result), throwsA(isA<ArgumentError>()));
     });
   });
 }

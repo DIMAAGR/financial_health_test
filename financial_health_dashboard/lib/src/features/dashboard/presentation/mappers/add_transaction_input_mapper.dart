@@ -1,9 +1,9 @@
 import 'package:financial_health_dashboard/src/features/dashboard/domain/entities/add_dashboard_expense_input.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/domain/entities/add_dashboard_income_input.dart';
-import 'package:financial_health_dashboard/src/features/dashboard/domain/enum/expense_category.dart';
-import 'package:financial_health_dashboard/src/features/dashboard/domain/enum/income_category.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/presentation/models/add_transaction_sheet_result.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/presentation/models/transaction_category.dart';
+import 'package:financial_health_dashboard/src/shared/domain/enum/expense_category.dart';
+import 'package:financial_health_dashboard/src/shared/domain/enum/income_category.dart';
 
 final class AddTransactionInputMapper {
   const AddTransactionInputMapper._();
@@ -35,11 +35,7 @@ final class AddTransactionInputMapper {
       case TransactionCategory.food:
       case TransactionCategory.transport:
       case TransactionCategory.shopping:
-        throw ArgumentError.value(
-          category,
-          'category',
-          'Categoria não é válida para receita.',
-        );
+        throw ArgumentError.value(category, 'category', 'Categoria não é válida para receita.');
     }
   }
 
@@ -54,11 +50,7 @@ final class AddTransactionInputMapper {
       case TransactionCategory.salary:
       case TransactionCategory.gift:
       case TransactionCategory.investment:
-        throw ArgumentError.value(
-          category,
-          'category',
-          'Categoria não é válida para despesa.',
-        );
+        throw ArgumentError.value(category, 'category', 'Categoria não é válida para despesa.');
     }
   }
 }

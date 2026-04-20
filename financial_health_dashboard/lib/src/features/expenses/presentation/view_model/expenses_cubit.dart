@@ -1,7 +1,7 @@
-import 'package:financial_health_dashboard/src/features/dashboard/domain/entities/add_dashboard_expense_input.dart';
-import 'package:financial_health_dashboard/src/features/dashboard/domain/failures/dashboard_failure.dart';
-import 'package:financial_health_dashboard/src/features/dashboard/domain/use_cases/add_dashboard_expense_use_case.dart';
+import 'package:financial_health_dashboard/src/core/failures/app_failure.dart';
+import 'package:financial_health_dashboard/src/features/expenses/domain/entities/add_expense_input.dart';
 import 'package:financial_health_dashboard/src/features/expenses/domain/entities/expenses_overview_data.dart';
+import 'package:financial_health_dashboard/src/features/expenses/domain/use_cases/add_expense_use_case.dart';
 import 'package:financial_health_dashboard/src/features/expenses/domain/use_cases/get_expenses_overview_use_case.dart';
 import 'package:financial_health_dashboard/src/features/expenses/presentation/view_model/expenses_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,7 +10,7 @@ class ExpensesCubit extends Cubit<ExpensesState> {
   ExpensesCubit(this._getOverviewUseCase, this._addExpenseUseCase) : super(ExpensesState.initial());
 
   final GetExpensesOverviewUseCase _getOverviewUseCase;
-  final AddDashboardExpenseUseCase _addExpenseUseCase;
+  final AddExpenseUseCase _addExpenseUseCase;
 
   Future<void> loadOverview() async {
     emit(state.copyWith(status: ExpensesViewStatus.loading, clearError: true, clearEffect: true));
@@ -30,7 +30,7 @@ class ExpensesCubit extends Cubit<ExpensesState> {
 
   void clearEffect() => emit(state.copyWith(clearEffect: true));
 
-  Future<bool> addExpense(AddDashboardExpenseInput input) async {
+  Future<bool> addExpense(AddExpenseInput input) async {
     final result = await _addExpenseUseCase(input);
     return result.fold(
       (failure) {
@@ -49,12 +49,12 @@ class ExpensesCubit extends Cubit<ExpensesState> {
     result.fold(_setError, _updateContent);
   }
 
-  void _setError(DashboardFailure failure) {
+  void _setError(AppFailure failure) {
     emit(
       state.copyWith(
         status: ExpensesViewStatus.error,
         errorMessage: failure.message,
-        canRetry: failure is DashboardNetworkFailure || failure is DashboardServerFailure,
+        canRetry: failure is NetworkFailure || failure is ServerFailure,
         clearEffect: true,
       ),
     );

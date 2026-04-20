@@ -1,12 +1,11 @@
-import 'package:financial_health_dashboard/src/features/dashboard/domain/entities/dashboard_transaction_data.dart';
-import 'package:financial_health_dashboard/src/features/dashboard/presentation/mappers/add_transaction_input_mapper.dart';
-import 'package:financial_health_dashboard/src/features/dashboard/presentation/models/add_transaction_sheet_result.dart';
-import 'package:financial_health_dashboard/src/features/dashboard/presentation/models/transaction_sheet_type.dart';
-import 'package:financial_health_dashboard/src/features/dashboard/presentation/widgets/add_transaction_bottom_sheet.dart';
+import 'package:financial_health_dashboard/src/features/expenses/presentation/mappers/add_expense_input_mapper.dart';
 import 'package:financial_health_dashboard/src/features/expenses/presentation/view_model/expenses_cubit.dart';
 import 'package:financial_health_dashboard/src/features/expenses/presentation/view_model/expenses_state.dart';
 import 'package:financial_health_dashboard/src/features/expenses/presentation/widgets/expenses_skeleton.dart';
 import 'package:financial_health_dashboard/src/shared/domain/entities/category_breakdown_data.dart';
+import 'package:financial_health_dashboard/src/shared/presentation/add_transaction/models/add_transaction_sheet_result.dart';
+import 'package:financial_health_dashboard/src/shared/presentation/add_transaction/models/transaction_sheet_type.dart';
+import 'package:financial_health_dashboard/src/shared/presentation/add_transaction/widgets/add_transaction_bottom_sheet.dart';
 import 'package:financial_health_dashboard/src/shared/presentation/design/components/category_breakdown_section.dart';
 import 'package:financial_health_dashboard/src/shared/presentation/design/components/contextual_fab.dart';
 import 'package:financial_health_dashboard/src/shared/presentation/design/components/detail_app_bar.dart';
@@ -16,9 +15,9 @@ import 'package:financial_health_dashboard/src/shared/presentation/design/extens
 import 'package:financial_health_dashboard/src/shared/presentation/design/helpers/category_helpers.dart';
 import 'package:financial_health_dashboard/src/shared/presentation/design/theme/app_theme_ext.dart';
 import 'package:financial_health_dashboard/src/shared/presentation/design/tokens/app_spacing.dart';
+import 'package:financial_health_dashboard/src/shared/presentation/mappers/transaction_group_mapper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
 
 class ExpensesView extends StatelessWidget {
   const ExpensesView({super.key});
@@ -42,7 +41,7 @@ class ExpensesView extends StatelessWidget {
           sheetType: SheetType.expense,
           onSubmit: (result) async {
             if (result is! AddExpenseSheetResult) return false;
-            return cubit.addExpense(AddTransactionInputMapper.toExpenseInput(result));
+            return cubit.addExpense(AddExpenseInputMapper.fromSheetResult(result));
           },
         );
         cubit.clearEffect();
@@ -98,7 +97,7 @@ class _ExpensesContent extends StatelessWidget {
                     );
                   }
 
-                  final groups = _buildTransactionGroups(state.transactions);
+                  final groups = TransactionGroupMapper.toExpenseGroups(state.transactions);
                   final categories = _buildCategoryItems(state.categoryBreakdown);
 
                   return SingleChildScrollView(
@@ -147,56 +146,6 @@ class _ExpensesContent extends StatelessWidget {
         amount: b.amount.toBRL(),
         icon: categoryIcon(b.category),
         percentage: b.percentage,
-      );
-    }).toList();
-  }
-
-  List<TransactionGroup> _buildTransactionGroups(List<DashboardTransactionData> transactions) {
-    final grouped = <String, List<DashboardTransactionData>>{};
-    final dateLabels = <String, DateTime>{};
-    final dateFormat = DateFormat('dd MMM', 'pt_BR');
-
-    for (final t in transactions) {
-      final date = t.date ?? DateTime.now();
-      final key = '${date.year}-${date.month}-${date.day}';
-      grouped.putIfAbsent(key, () => []).add(t);
-      dateLabels.putIfAbsent(key, () => date);
-    }
-
-    final sortedKeys = grouped.keys.toList()
-      ..sort((a, b) => dateLabels[b]!.compareTo(dateLabels[a]!));
-
-    final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
-
-    return sortedKeys.map((key) {
-      final date = dateLabels[key]!;
-      final normalizedDate = DateTime(date.year, date.month, date.day);
-      final isToday = normalizedDate == today;
-      final isYesterday = normalizedDate == today.subtract(const Duration(days: 1));
-      final prefix = isToday
-          ? 'HOJE'
-          : isYesterday
-          ? 'ONTEM'
-          : '';
-      final formattedDate = dateFormat.format(date).toUpperCase();
-      final label = prefix.isEmpty ? formattedDate : '$prefix, $formattedDate';
-
-      final sortedItems = grouped[key]!
-        ..sort((a, b) => (b.date ?? DateTime(0)).compareTo(a.date ?? DateTime(0)));
-
-      return TransactionGroup(
-        dateLabel: label,
-        isToday: isToday,
-        items: sortedItems.map((t) {
-          return TransactionListItem(
-            name: t.title,
-            subtitle: categoryLabel(t.category),
-            amount: t.value.toBRL(),
-            paymentMethod: 'CARTÃO',
-            icon: categoryIcon(t.category),
-          );
-        }).toList(),
       );
     }).toList();
   }

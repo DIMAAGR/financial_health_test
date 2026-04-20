@@ -2,7 +2,6 @@ import 'package:financial_health_dashboard/src/features/dashboard/domain/entitie
 import 'package:financial_health_dashboard/src/features/dashboard/domain/entities/financial_health_score_data.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/domain/entities/flow_analysis_data.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/domain/entities/monthly_goal_data.dart';
-import 'package:financial_health_dashboard/src/features/dashboard/domain/entities/dashboard_transaction_data.dart';
 
 class DashboardOverviewModel {
   const DashboardOverviewModel({
@@ -23,7 +22,6 @@ class DashboardOverviewModel {
     required this.goalDay,
     required this.goalDaysInMonth,
     required this.flowPoints,
-    required this.transactions,
   });
 
   factory DashboardOverviewModel.fromJson(Map<String, dynamic> json) {
@@ -31,7 +29,7 @@ class DashboardOverviewModel {
     final commitment = _asMap(json['commitment']);
     final monthlyGoal = _asMap(json['monthlyGoal']);
     final flow = (json['flow'] as List<dynamic>? ?? const [])
-        .map((item) => _asMap(item))
+        .map(_asMap)
         .map(
           (item) => FlowAnalysisPoint(
             income: _toDouble(item['income']),
@@ -39,23 +37,6 @@ class DashboardOverviewModel {
           ),
         )
         .toList(growable: false);
-    final transactions = (json['transactions'] as List<dynamic>? ?? const [])
-        .map((item) => _asMap(item))
-        .map(
-          (item) => DashboardTransactionData(
-            id: (item['id'] as String? ?? '').trim(),
-            title: (item['title'] as String? ?? '').trim(),
-            category: (item['category'] as String? ?? '').trim(),
-            value: _toDouble(item['value']),
-            type: (item['type'] as String? ?? '').toLowerCase() == 'expense'
-                ? DashboardTransactionType.expense
-                : DashboardTransactionType.income,
-            date: DateTime.tryParse(item['date'] as String? ?? ''),
-          ),
-        )
-        .where((item) => item.id.isNotEmpty)
-        .toList(growable: false);
-
     return DashboardOverviewModel(
       userName: (json['userName'] as String? ?? 'Usuário').trim(),
       balance: _toDouble(json['balance']),
@@ -74,7 +55,6 @@ class DashboardOverviewModel {
       goalDay: _toInt(monthlyGoal['day'], fallback: 1),
       goalDaysInMonth: _toInt(monthlyGoal['daysInMonth'], fallback: 30),
       flowPoints: flow,
-      transactions: transactions,
     );
   }
 
@@ -100,13 +80,16 @@ class DashboardOverviewModel {
   final int goalDaysInMonth;
 
   final List<FlowAnalysisPoint> flowPoints;
-  final List<DashboardTransactionData> transactions;
 
   DashboardOverviewData toEntity({required DateTime referenceDate}) {
     final safeTarget = goalTargetAmount <= 0 ? 1.0 : goalTargetAmount;
     final achievedPercent = (goalAchievedAmount / safeTarget) * 100;
 
-    final normalizedReferenceDate = DateTime(referenceDate.year, referenceDate.month, goalDay);
+    final normalizedReferenceDate = DateTime(
+      referenceDate.year,
+      referenceDate.month,
+      goalDay,
+    );
 
     return DashboardOverviewData(
       userName: userName,
@@ -135,7 +118,6 @@ class DashboardOverviewModel {
       ),
       monthlyGoalTargetAmount: goalTargetAmount,
       monthlyGoalAchievedAmount: goalAchievedAmount,
-      transactions: transactions,
     );
   }
 

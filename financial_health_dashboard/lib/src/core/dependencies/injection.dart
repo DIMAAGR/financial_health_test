@@ -48,15 +48,14 @@ void _registerRoute() {
 // ---------------- STORAGE ----------------
 
 void _registerStorage() {
-  getIt.registerLazySingleton<KeyValueWrapper>(() => InMemoryKeyValueWrapper());
+  getIt.registerLazySingleton<KeyValueWrapper>(InMemoryKeyValueWrapper.new);
 }
 
 // ---------------- NETWORK / DIO ----------------
 
 void _registerNetwork() {
-  getIt.registerLazySingleton<Connectivity>(() => Connectivity());
-  getIt.registerLazySingleton<NetworkInfo>(() => NetworkInfoImpl(getIt<Connectivity>()));
-  getIt.registerLazySingleton<HttpService>(
-    () => FakeHttpService(storage: getIt<KeyValueWrapper>()),
-  );
+  getIt
+    ..registerLazySingleton<Connectivity>(Connectivity.new)
+    ..registerLazySingleton<NetworkInfo>(() => NetworkInfoImpl(getIt<Connectivity>()))
+    ..registerLazySingleton<HttpService>(() => FakeHttpService(storage: getIt<KeyValueWrapper>()));
 }

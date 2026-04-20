@@ -1,39 +1,27 @@
 import 'package:dartz/dartz.dart';
-import 'package:financial_health_dashboard/src/features/dashboard/domain/entities/dashboard_overview_data.dart';
-import 'package:financial_health_dashboard/src/features/dashboard/domain/entities/dashboard_transaction_data.dart';
-import 'package:financial_health_dashboard/src/features/dashboard/domain/entities/financial_health_score_data.dart';
-import 'package:financial_health_dashboard/src/features/dashboard/domain/entities/flow_analysis_data.dart';
-import 'package:financial_health_dashboard/src/features/dashboard/domain/entities/monthly_goal_data.dart';
-import 'package:financial_health_dashboard/src/features/dashboard/domain/enum/expense_category.dart';
-import 'package:financial_health_dashboard/src/features/dashboard/domain/enum/income_category.dart';
-import 'package:financial_health_dashboard/src/features/dashboard/domain/failures/dashboard_failure.dart';
-import 'package:financial_health_dashboard/src/features/dashboard/domain/repositories/dashboard_repository.dart';
+import 'package:financial_health_dashboard/src/core/failures/app_failure.dart';
+import 'package:financial_health_dashboard/src/features/incomes/domain/entities/incomes_overview_data.dart';
+import 'package:financial_health_dashboard/src/features/incomes/domain/repositories/incomes_repository.dart';
 import 'package:financial_health_dashboard/src/features/incomes/domain/use_cases/get_incomes_overview_use_case.dart';
+import 'package:financial_health_dashboard/src/shared/domain/entities/category_breakdown_data.dart';
+import 'package:financial_health_dashboard/src/shared/domain/entities/transaction_data.dart';
+import 'package:financial_health_dashboard/src/shared/domain/enum/income_category.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-class _FakeDashboardRepository implements DashboardRepository {
-  _FakeDashboardRepository(this._result);
+class _FakeIncomesRepository implements IncomesRepository {
+  _FakeIncomesRepository(this._result);
 
-  final Either<DashboardFailure, DashboardOverviewData> _result;
+  final Either<AppFailure, IncomesOverviewData> _result;
   int getOverviewCalls = 0;
 
   @override
-  Future<Either<DashboardFailure, DashboardOverviewData>> getOverview() async {
+  Future<Either<AppFailure, IncomesOverviewData>> getOverview() async {
     getOverviewCalls++;
     return _result;
   }
 
   @override
-  Future<Either<DashboardFailure, DashboardOverviewData>> addExpense({
-    required double amount,
-    required String title,
-    required ExpenseCategory category,
-  }) {
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<Either<DashboardFailure, DashboardOverviewData>> addIncome({
+  Future<Either<AppFailure, void>> addIncome({
     required double amount,
     required String title,
     required IncomeCategory category,
@@ -44,77 +32,77 @@ class _FakeDashboardRepository implements DashboardRepository {
 
 void main() {
   group('GetIncomesOverviewUseCase', () {
-    test('filters only income transactions from overview', () async {
-      final overview = _overview();
-      final repo = _FakeDashboardRepository(Right(overview));
+    test('delegates to repository and returns income data', () async {
+      final data = _incomesOverview();
+      final repo = _FakeIncomesRepository(Right(data));
       final useCase = GetIncomesOverviewUseCase(repo);
 
       final result = await useCase();
 
       expect(repo.getOverviewCalls, 1);
-      result.fold((_) => fail('expected Right'), (data) {
-        expect(data.totalIncome, 8000);
-        expect(data.monthLabel, 'Abril');
-        expect(data.transactions, hasLength(2));
-        expect(data.transactions.every((t) => t.type == DashboardTransactionType.income), isTrue);
+      result.fold((_) => fail('expected Right'), (overview) {
+        expect(overview.totalIncome, 8000);
+        expect(overview.monthLabel, 'Abril');
+        expect(overview.transactions, hasLength(2));
+        expect(overview.transactions.every((t) => t.type == TransactionType.income), isTrue);
       });
     });
 
-    test('computes category breakdown sorted by amount descending', () async {
-      final overview = _overview();
-      final repo = _FakeDashboardRepository(Right(overview));
+    test('returns category breakdown from repository', () async {
+      final data = _incomesOverview();
+      final repo = _FakeIncomesRepository(Right(data));
       final useCase = GetIncomesOverviewUseCase(repo);
 
       final result = await useCase();
 
-      result.fold((_) => fail('expected Right'), (data) {
-        expect(data.categoryBreakdown, hasLength(2));
+      result.fold((_) => fail('expected Right'), (overview) {
+        expect(overview.categoryBreakdown, hasLength(2));
         // salary: 5000, services: 2000
-        expect(data.categoryBreakdown[0].category, 'salary');
-        expect(data.categoryBreakdown[0].amount, 5000);
-        expect(data.categoryBreakdown[1].category, 'services');
-        expect(data.categoryBreakdown[1].amount, 2000);
+        expect(overview.categoryBreakdown[0].category, 'salary');
+        expect(overview.categoryBreakdown[0].amount, 5000);
+        expect(overview.categoryBreakdown[1].category, 'services');
+        expect(overview.categoryBreakdown[1].amount, 2000);
       });
     });
 
-    test('computes category percentage relative to total income', () async {
-      final overview = _overview();
-      final repo = _FakeDashboardRepository(Right(overview));
+    test('category percentages are relative to total income', () async {
+      final data = _incomesOverview();
+      final repo = _FakeIncomesRepository(Right(data));
       final useCase = GetIncomesOverviewUseCase(repo);
 
       final result = await useCase();
 
-      result.fold((_) => fail('expected Right'), (data) {
+      result.fold((_) => fail('expected Right'), (overview) {
         // Salário: 5000 / 8000 = 62.5%
-        expect(data.categoryBreakdown[0].percentage, closeTo(62.5, 0.1));
+        expect(overview.categoryBreakdown[0].percentage, closeTo(62.5, 0.1));
         // Serviços: 2000 / 8000 = 25%
-        expect(data.categoryBreakdown[1].percentage, closeTo(25.0, 0.1));
+        expect(overview.categoryBreakdown[1].percentage, closeTo(25.0, 0.1));
       });
     });
 
     test('propagates repository failure', () async {
-      final repo = _FakeDashboardRepository(Left(const DashboardNetworkFailure()));
+      final repo = _FakeIncomesRepository(const Left(NetworkFailure()));
       final useCase = GetIncomesOverviewUseCase(repo);
 
       final result = await useCase();
 
       expect(result.isLeft(), isTrue);
       result.fold(
-        (failure) => expect(failure, isA<DashboardNetworkFailure>()),
+        (failure) => expect(failure, isA<NetworkFailure>()),
         (_) => fail('expected Left'),
       );
     });
 
     test('handles zero total income without division error', () async {
-      final overview = _overview(income: 0);
-      final repo = _FakeDashboardRepository(Right(overview));
+      final data = _incomesOverview(totalIncome: 0);
+      final repo = _FakeIncomesRepository(Right(data));
       final useCase = GetIncomesOverviewUseCase(repo);
 
       final result = await useCase();
 
-      result.fold((_) => fail('expected Right'), (data) {
-        expect(data.totalIncome, 0);
-        for (final breakdown in data.categoryBreakdown) {
+      result.fold((_) => fail('expected Right'), (overview) {
+        expect(overview.totalIncome, 0);
+        for (final breakdown in overview.categoryBreakdown) {
           expect(breakdown.percentage.isFinite, isTrue);
         }
       });
@@ -122,74 +110,40 @@ void main() {
   });
 }
 
-DashboardOverviewData _overview({
-  double income = 8000,
-  double expense = 3000,
-  double balance = 10000,
-}) {
-  return DashboardOverviewData(
-    userName: 'Júlio',
-    balance: balance,
-    income: income,
-    expense: expense,
+IncomesOverviewData _incomesOverview({double totalIncome = 8000}) {
+  final safeDivisor = totalIncome <= 0 ? 1.0 : totalIncome;
+  return IncomesOverviewData(
+    totalIncome: totalIncome,
+    monthLabel: 'Abril',
     incomeChangePercent: 12.5,
-    expenseChangePercent: -5.0,
-    balanceChangePercent: 8.0,
-    previousLiquidityIndex: 1.2,
-    currentLiquidityIndex: 1.3,
-    commitmentPercent: 37.5,
-    commitmentBenchmarkPercent: 65,
-    financialHealthScore: FinancialHealthScoreData.fromMetrics(
-      income: income,
-      expense: expense,
-      currentLiquidityIndex: 1.3,
-      previousLiquidityIndex: 1.2,
-    ),
-    flowAnalysis: FlowAnalysisData(
-      points: [
-        FlowAnalysisPoint(income: 1000, expense: 800),
-        FlowAnalysisPoint(income: 1200, expense: 900),
-      ],
-    ),
-    monthlyGoal: MonthlyGoalData(
-      monthLabel: 'Abril',
-      achievedPercent: 60,
-      referenceDate: DateTime(2026, 4, 10),
-    ),
-    monthlyGoalTargetAmount: 15000,
-    monthlyGoalAchievedAmount: 9000,
     transactions: [
-      DashboardTransactionData(
+      TransactionData(
         id: '1',
         title: 'Salário',
         category: 'salary',
         value: 5000,
-        type: DashboardTransactionType.income,
+        type: TransactionType.income,
         date: DateTime(2026, 4, 10),
       ),
-      DashboardTransactionData(
-        id: '2',
-        title: 'Mercado',
-        category: 'food',
-        value: 300,
-        type: DashboardTransactionType.expense,
-        date: DateTime(2026, 4, 10),
-      ),
-      DashboardTransactionData(
+      TransactionData(
         id: '3',
         title: 'Freelance',
         category: 'services',
         value: 2000,
-        type: DashboardTransactionType.income,
+        type: TransactionType.income,
         date: DateTime(2026, 4, 9),
       ),
-      DashboardTransactionData(
-        id: '4',
-        title: 'Transporte',
-        category: 'transport',
-        value: 150,
-        type: DashboardTransactionType.expense,
-        date: DateTime(2026, 4, 9),
+    ],
+    categoryBreakdown: [
+      CategoryBreakdownData(
+        category: 'salary',
+        amount: 5000,
+        percentage: (5000 / safeDivisor) * 100,
+      ),
+      CategoryBreakdownData(
+        category: 'services',
+        amount: 2000,
+        percentage: (2000 / safeDivisor) * 100,
       ),
     ],
   );

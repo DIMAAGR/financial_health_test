@@ -1,25 +1,22 @@
 import 'package:dartz/dartz.dart';
-import 'package:financial_health_dashboard/src/features/dashboard/domain/entities/add_dashboard_income_input.dart';
-import 'package:financial_health_dashboard/src/features/dashboard/domain/entities/dashboard_overview_data.dart';
-import 'package:financial_health_dashboard/src/features/dashboard/domain/entities/dashboard_transaction_data.dart';
-import 'package:financial_health_dashboard/src/features/dashboard/domain/entities/financial_health_score_data.dart';
-import 'package:financial_health_dashboard/src/features/dashboard/domain/entities/flow_analysis_data.dart';
-import 'package:financial_health_dashboard/src/features/dashboard/domain/entities/monthly_goal_data.dart';
-import 'package:financial_health_dashboard/src/features/dashboard/domain/enum/expense_category.dart';
-import 'package:financial_health_dashboard/src/features/dashboard/domain/enum/income_category.dart';
-import 'package:financial_health_dashboard/src/features/dashboard/domain/failures/dashboard_failure.dart';
-import 'package:financial_health_dashboard/src/features/dashboard/domain/repositories/dashboard_repository.dart';
-import 'package:financial_health_dashboard/src/features/dashboard/domain/use_cases/add_dashboard_income_use_case.dart';
+import 'package:financial_health_dashboard/src/core/failures/app_failure.dart';
+import 'package:financial_health_dashboard/src/features/incomes/domain/entities/add_income_input.dart';
+import 'package:financial_health_dashboard/src/features/incomes/domain/entities/incomes_overview_data.dart';
+import 'package:financial_health_dashboard/src/features/incomes/domain/repositories/incomes_repository.dart';
+import 'package:financial_health_dashboard/src/features/incomes/domain/use_cases/add_income_use_case.dart';
 import 'package:financial_health_dashboard/src/features/incomes/domain/use_cases/get_incomes_overview_use_case.dart';
 import 'package:financial_health_dashboard/src/features/incomes/presentation/view_model/incomes_cubit.dart';
 import 'package:financial_health_dashboard/src/features/incomes/presentation/view_model/incomes_state.dart';
+import 'package:financial_health_dashboard/src/shared/domain/entities/category_breakdown_data.dart';
+import 'package:financial_health_dashboard/src/shared/domain/entities/transaction_data.dart';
+import 'package:financial_health_dashboard/src/shared/domain/enum/income_category.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-class _FakeDashboardRepository implements DashboardRepository {
-  _FakeDashboardRepository({required this.overviewResult, required this.addIncomeResult});
+class _FakeIncomesRepository implements IncomesRepository {
+  _FakeIncomesRepository({required this.overviewResult, required this.addIncomeResult});
 
-  Either<DashboardFailure, DashboardOverviewData> overviewResult;
-  Either<DashboardFailure, DashboardOverviewData> addIncomeResult;
+  Either<AppFailure, IncomesOverviewData> overviewResult;
+  Either<AppFailure, void> addIncomeResult;
   int overviewCalls = 0;
   int addIncomeCalls = 0;
   double? lastIncomeAmount;
@@ -27,13 +24,13 @@ class _FakeDashboardRepository implements DashboardRepository {
   IncomeCategory? lastIncomeCategory;
 
   @override
-  Future<Either<DashboardFailure, DashboardOverviewData>> getOverview() async {
+  Future<Either<AppFailure, IncomesOverviewData>> getOverview() async {
     overviewCalls++;
     return overviewResult;
   }
 
   @override
-  Future<Either<DashboardFailure, DashboardOverviewData>> addIncome({
+  Future<Either<AppFailure, void>> addIncome({
     required double amount,
     required String title,
     required IncomeCategory category,
@@ -44,44 +41,34 @@ class _FakeDashboardRepository implements DashboardRepository {
     lastIncomeCategory = category;
     return addIncomeResult;
   }
-
-  @override
-  Future<Either<DashboardFailure, DashboardOverviewData>> addExpense({
-    required double amount,
-    required String title,
-    required ExpenseCategory category,
-  }) {
-    throw UnimplementedError();
-  }
 }
 
 void main() {
   group('IncomesCubit', () {
     test('loadOverview com sucesso popula state com dados de receita', () async {
-      final overview = _overview();
-      final repo = _FakeDashboardRepository(
-        overviewResult: Right(overview),
-        addIncomeResult: Right(overview),
+      final data = _incomesOverview();
+      final repo = _FakeIncomesRepository(
+        overviewResult: Right(data),
+        addIncomeResult: const Right(null),
       );
-      final cubit = IncomesCubit(GetIncomesOverviewUseCase(repo), AddDashboardIncomeUseCase(repo));
+      final cubit = IncomesCubit(GetIncomesOverviewUseCase(repo), AddIncomeUseCase(repo));
 
       await cubit.loadOverview();
 
       expect(cubit.state.status, IncomesViewStatus.success);
       expect(cubit.state.totalIncome, 8000);
       expect(cubit.state.monthLabel, 'Abril');
-      // Should only contain income transactions (2 of 4)
       expect(cubit.state.transactions, hasLength(2));
       expect(cubit.state.categoryBreakdown, isNotEmpty);
       await cubit.close();
     });
 
     test('loadOverview com falha emite estado de erro', () async {
-      final repo = _FakeDashboardRepository(
-        overviewResult: Left(const DashboardNetworkFailure()),
-        addIncomeResult: Left(const DashboardNetworkFailure()),
+      final repo = _FakeIncomesRepository(
+        overviewResult: const Left(NetworkFailure()),
+        addIncomeResult: const Left(NetworkFailure()),
       );
-      final cubit = IncomesCubit(GetIncomesOverviewUseCase(repo), AddDashboardIncomeUseCase(repo));
+      final cubit = IncomesCubit(GetIncomesOverviewUseCase(repo), AddIncomeUseCase(repo));
 
       await cubit.loadOverview();
 
@@ -91,12 +78,12 @@ void main() {
     });
 
     test('emite efeito para abrir bottom sheet de receita', () async {
-      final overview = _overview();
-      final repo = _FakeDashboardRepository(
-        overviewResult: Right(overview),
-        addIncomeResult: Right(overview),
+      final data = _incomesOverview();
+      final repo = _FakeIncomesRepository(
+        overviewResult: Right(data),
+        addIncomeResult: const Right(null),
       );
-      final cubit = IncomesCubit(GetIncomesOverviewUseCase(repo), AddDashboardIncomeUseCase(repo));
+      final cubit = IncomesCubit(GetIncomesOverviewUseCase(repo), AddIncomeUseCase(repo));
 
       final beforeVersion = cubit.state.effectVersion;
       cubit.onAddIncomePressed();
@@ -107,34 +94,29 @@ void main() {
     });
 
     test('clearEffect remove efeito ativo', () async {
-      final overview = _overview();
-      final repo = _FakeDashboardRepository(
-        overviewResult: Right(overview),
-        addIncomeResult: Right(overview),
+      final data = _incomesOverview();
+      final repo = _FakeIncomesRepository(
+        overviewResult: Right(data),
+        addIncomeResult: const Right(null),
       );
-      final cubit = IncomesCubit(GetIncomesOverviewUseCase(repo), AddDashboardIncomeUseCase(repo));
-      cubit.onAddIncomePressed();
-
-      cubit.clearEffect();
+      final cubit = IncomesCubit(GetIncomesOverviewUseCase(repo), AddIncomeUseCase(repo))
+        ..onAddIncomePressed()
+        ..clearEffect();
 
       expect(cubit.state.effect, isNull);
       await cubit.close();
     });
 
     test('addIncome usa use case e recarrega overview no sucesso', () async {
-      final updated = _overview(income: 9000);
-      final repo = _FakeDashboardRepository(
+      final updated = _incomesOverview(totalIncome: 9000);
+      final repo = _FakeIncomesRepository(
         overviewResult: Right(updated),
-        addIncomeResult: Right(updated),
+        addIncomeResult: const Right(null),
       );
-      final cubit = IncomesCubit(GetIncomesOverviewUseCase(repo), AddDashboardIncomeUseCase(repo));
+      final cubit = IncomesCubit(GetIncomesOverviewUseCase(repo), AddIncomeUseCase(repo));
 
       final success = await cubit.addIncome(
-        AddDashboardIncomeInput(
-          amount: 1000,
-          title: 'Freelance',
-          category: IncomeCategory.investment,
-        ),
+        const AddIncomeInput(amount: 1000, title: 'Freelance', category: IncomeCategory.investment),
       );
 
       expect(success, isTrue);
@@ -146,15 +128,15 @@ void main() {
     });
 
     test('addIncome retorna false e emite erro na falha', () async {
-      final overview = _overview();
-      final repo = _FakeDashboardRepository(
-        overviewResult: Right(overview),
-        addIncomeResult: Left(const DashboardValidationFailure('Descrição é obrigatória.')),
+      final data = _incomesOverview();
+      final repo = _FakeIncomesRepository(
+        overviewResult: Right(data),
+        addIncomeResult: const Left(ValidationFailure('Descrição é obrigatória.')),
       );
-      final cubit = IncomesCubit(GetIncomesOverviewUseCase(repo), AddDashboardIncomeUseCase(repo));
+      final cubit = IncomesCubit(GetIncomesOverviewUseCase(repo), AddIncomeUseCase(repo));
 
       final success = await cubit.addIncome(
-        AddDashboardIncomeInput(amount: 500, title: '', category: IncomeCategory.salary),
+        const AddIncomeInput(amount: 500, title: '', category: IncomeCategory.salary),
       );
 
       expect(success, isFalse);
@@ -163,74 +145,40 @@ void main() {
   });
 }
 
-DashboardOverviewData _overview({
-  double income = 8000,
-  double expense = 3000,
-  double balance = 10000,
-}) {
-  return DashboardOverviewData(
-    userName: 'Júlio',
-    balance: balance,
-    income: income,
-    expense: expense,
+IncomesOverviewData _incomesOverview({double totalIncome = 8000}) {
+  final safeDivisor = totalIncome <= 0 ? 1.0 : totalIncome;
+  return IncomesOverviewData(
+    totalIncome: totalIncome,
+    monthLabel: 'Abril',
     incomeChangePercent: 12.5,
-    expenseChangePercent: -5.0,
-    balanceChangePercent: 8.0,
-    previousLiquidityIndex: 1.2,
-    currentLiquidityIndex: 1.3,
-    commitmentPercent: 37.5,
-    commitmentBenchmarkPercent: 65,
-    financialHealthScore: FinancialHealthScoreData.fromMetrics(
-      income: income,
-      expense: expense,
-      currentLiquidityIndex: 1.3,
-      previousLiquidityIndex: 1.2,
-    ),
-    flowAnalysis: FlowAnalysisData(
-      points: [
-        FlowAnalysisPoint(income: 1000, expense: 800),
-        FlowAnalysisPoint(income: 1200, expense: 900),
-      ],
-    ),
-    monthlyGoal: MonthlyGoalData(
-      monthLabel: 'Abril',
-      achievedPercent: 60,
-      referenceDate: DateTime(2026, 4, 10),
-    ),
-    monthlyGoalTargetAmount: 15000,
-    monthlyGoalAchievedAmount: 9000,
     transactions: [
-      DashboardTransactionData(
+      TransactionData(
         id: '1',
         title: 'Salário',
         category: 'salary',
         value: 5000,
-        type: DashboardTransactionType.income,
+        type: TransactionType.income,
         date: DateTime(2026, 4, 10),
       ),
-      DashboardTransactionData(
-        id: '2',
-        title: 'Mercado',
-        category: 'food',
-        value: 300,
-        type: DashboardTransactionType.expense,
-        date: DateTime(2026, 4, 10),
-      ),
-      DashboardTransactionData(
+      TransactionData(
         id: '3',
         title: 'Freelance',
         category: 'services',
         value: 2000,
-        type: DashboardTransactionType.income,
+        type: TransactionType.income,
         date: DateTime(2026, 4, 9),
       ),
-      DashboardTransactionData(
-        id: '4',
-        title: 'Transporte',
-        category: 'transport',
-        value: 150,
-        type: DashboardTransactionType.expense,
-        date: DateTime(2026, 4, 9),
+    ],
+    categoryBreakdown: [
+      CategoryBreakdownData(
+        category: 'salary',
+        amount: 5000,
+        percentage: (5000 / safeDivisor) * 100,
+      ),
+      CategoryBreakdownData(
+        category: 'services',
+        amount: 2000,
+        percentage: (2000 / safeDivisor) * 100,
       ),
     ],
   );

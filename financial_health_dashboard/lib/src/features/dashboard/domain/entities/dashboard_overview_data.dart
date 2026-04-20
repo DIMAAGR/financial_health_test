@@ -1,7 +1,6 @@
 import 'package:financial_health_dashboard/src/features/dashboard/domain/entities/financial_health_score_data.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/domain/entities/flow_analysis_data.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/domain/entities/monthly_goal_data.dart';
-import 'package:financial_health_dashboard/src/features/dashboard/domain/entities/dashboard_transaction_data.dart';
 
 /// Agregado principal da feature Dashboard.
 ///
@@ -25,7 +24,6 @@ class DashboardOverviewData {
     required this.monthlyGoal,
     required this.monthlyGoalTargetAmount,
     required this.monthlyGoalAchievedAmount,
-    required this.transactions,
   });
 
   final String userName;
@@ -49,5 +47,4 @@ class DashboardOverviewData {
 
   final double monthlyGoalTargetAmount;
   final double monthlyGoalAchievedAmount;
-  final List<DashboardTransactionData> transactions;
 }

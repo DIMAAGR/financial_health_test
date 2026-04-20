@@ -1,5 +1,5 @@
-import 'package:financial_health_dashboard/src/features/dashboard/presentation/models/transaction_category.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/presentation/models/add_transaction_sheet_result.dart';
+import 'package:financial_health_dashboard/src/features/dashboard/presentation/models/transaction_category.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/presentation/models/transaction_sheet_type.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/presentation/view_model/add_transaction/add_transaction_cubit.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -27,19 +27,16 @@ void main() {
     });
 
     test('onAmountChanged parseia texto monetário com máscara', () {
-      final cubit = AddTransactionCubit(SheetType.income);
-
-      cubit.onAmountChanged('R\$ 1.234,56');
+      final cubit = AddTransactionCubit(SheetType.income)..onAmountChanged('R\$ 1.234,56');
 
       expect(cubit.state.amountCents, 123456);
       cubit.close();
     });
 
     test('onDescriptionChanged com espaços mantém submit inválido', () {
-      final cubit = AddTransactionCubit(SheetType.income);
-
-      cubit.onAmountChanged('10,00');
-      cubit.onDescriptionChanged('   ');
+      final cubit = AddTransactionCubit(SheetType.income)
+        ..onAmountChanged('10,00')
+        ..onDescriptionChanged('   ');
 
       expect(cubit.state.amountCents, 1000);
       expect(cubit.state.canSubmit, isFalse);
@@ -47,9 +44,8 @@ void main() {
     });
 
     test('onCategorySelected atualiza categoria atual sem booleano', () {
-      final cubit = AddTransactionCubit(SheetType.expense);
-
-      cubit.onCategorySelected(TransactionCategory.shopping);
+      final cubit = AddTransactionCubit(SheetType.expense)
+        ..onCategorySelected(TransactionCategory.shopping);
 
       expect(cubit.state.category, TransactionCategory.shopping);
       cubit.close();
@@ -62,14 +58,14 @@ void main() {
 
       expect(result, isNull);
       expect(cubit.state.isSubmitting, isFalse);
-      cubit.close();
+      await cubit.close();
     });
 
     test('submit de income retorna AddIncomeSheetResult', () async {
-      final cubit = AddTransactionCubit(SheetType.income);
-      cubit.onAmountChanged('10,00');
-      cubit.onDescriptionChanged('Salário mensal');
-      cubit.onCategorySelected(TransactionCategory.investment);
+      final cubit = AddTransactionCubit(SheetType.income)
+        ..onAmountChanged('10,00')
+        ..onDescriptionChanged('Salário mensal')
+        ..onCategorySelected(TransactionCategory.investment);
 
       final result = await cubit.submit();
 
@@ -78,14 +74,14 @@ void main() {
       expect(result?.description, 'Salário mensal');
       expect(result?.category, TransactionCategory.investment);
       expect(cubit.state.isSubmitting, isTrue);
-      cubit.close();
+      await cubit.close();
     });
 
     test('submit de expense retorna AddExpenseSheetResult', () async {
-      final cubit = AddTransactionCubit(SheetType.expense);
-      cubit.onAmountChanged('25,00');
-      cubit.onDescriptionChanged('Mercado');
-      cubit.onCategorySelected(TransactionCategory.shopping);
+      final cubit = AddTransactionCubit(SheetType.expense)
+        ..onAmountChanged('25,00')
+        ..onDescriptionChanged('Mercado')
+        ..onCategorySelected(TransactionCategory.shopping);
 
       final result = await cubit.submit();
 
@@ -94,20 +90,20 @@ void main() {
       expect(result?.description, 'Mercado');
       expect(result?.category, TransactionCategory.shopping);
       expect(cubit.state.isSubmitting, isTrue);
-      cubit.close();
+      await cubit.close();
     });
 
     test('resetSubmitting libera botão após falha', () async {
-      final cubit = AddTransactionCubit(SheetType.income);
-      cubit.onAmountChanged('10,00');
-      cubit.onDescriptionChanged('Salário mensal');
+      final cubit = AddTransactionCubit(SheetType.income)
+        ..onAmountChanged('10,00')
+        ..onDescriptionChanged('Salário mensal');
 
       await cubit.submit();
       expect(cubit.state.isSubmitting, isTrue);
 
       cubit.resetSubmitting();
       expect(cubit.state.isSubmitting, isFalse);
-      cubit.close();
+      await cubit.close();
     });
   });
 }

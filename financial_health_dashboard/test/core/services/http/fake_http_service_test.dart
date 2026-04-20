@@ -24,57 +24,86 @@ void main() {
         expect(response.data['commitment'], isA<Map<String, dynamic>>());
         expect(response.data['monthlyGoal'], isA<Map<String, dynamic>>());
         expect(response.data['flow'], isA<List<dynamic>>());
-        expect(response.data['transactions'], isA<List<dynamic>>());
-        final transactions = response.data['transactions'] as List<dynamic>;
-        expect(transactions, hasLength(10));
+        expect(response.data.containsKey('transactions'), isFalse);
       },
     );
 
-    test('overview inicial vem com 5 receitas e 5 despesas', () async {
-      final response = await service.get('/dashboard/overview');
+    test(
+      'transactions overview inicial vem com 5 receitas e 5 despesas',
+      () async {
+        final response = await service.get('/transactions/overview');
+        final transactions = response.data['transactions'] as List<dynamic>;
+
+        final incomes = transactions
+            .where((item) => (item as Map<String, dynamic>)['type'] == 'income')
+            .length;
+        final expenses = transactions
+            .where(
+              (item) => (item as Map<String, dynamic>)['type'] == 'expense',
+            )
+            .length;
+
+        expect(incomes, 5);
+        expect(expenses, 5);
+      },
+    );
+
+    test('GET /incomes/overview retorna apenas receitas', () async {
+      final response = await service.get('/incomes/overview');
       final transactions = response.data['transactions'] as List<dynamic>;
 
-      final incomes = transactions
-          .where((item) => (item as Map<String, dynamic>)['type'] == 'income')
-          .length;
-      final expenses = transactions
-          .where((item) => (item as Map<String, dynamic>)['type'] == 'expense')
-          .length;
+      expect(response.data['income'], greaterThan(0));
+      expect(transactions, isNotEmpty);
+      expect(
+        transactions.every(
+          (item) => (item as Map<String, dynamic>)['type'] == 'income',
+        ),
+        isTrue,
+      );
+    });
 
-      expect(incomes, 5);
-      expect(expenses, 5);
+    test('GET /expenses/overview retorna apenas despesas', () async {
+      final response = await service.get('/expenses/overview');
+      final transactions = response.data['transactions'] as List<dynamic>;
+
+      expect(response.data['expense'], greaterThan(0));
+      expect(transactions, isNotEmpty);
+      expect(
+        transactions.every(
+          (item) => (item as Map<String, dynamic>)['type'] == 'expense',
+        ),
+        isTrue,
+      );
     });
 
     test('inicializa overview e transactions em chaves separadas', () async {
       await service.get('/dashboard/overview');
 
-      expect(storage.getString(StorageSchema.dashboardOverviewKey), isNotNull);
+      expect(storage.getString(StorageSchema.financialOverviewKey), isNotNull);
       expect(
-        storage.getString(StorageSchema.dashboardTransactionsKey),
+        storage.getString(StorageSchema.financialTransactionsKey),
         isNotNull,
       );
     });
 
-    test(
-      'GET /dashboard/transactions retorna lista persistida para detalhe',
-      () async {
-        final overview = await service.get('/dashboard/overview');
-        final overviewTransactions =
-            overview.data['transactions'] as List<dynamic>;
+    test('GET /transactions retorna lista persistida para detalhe', () async {
+      final overview = await service.get('/transactions/overview');
+      final overviewTransactions =
+          overview.data['transactions'] as List<dynamic>;
 
-        final response = await service.get('/dashboard/transactions');
-        final transactions = response.data['transactions'] as List<dynamic>;
+      final response = await service.get('/transactions');
+      final transactions = response.data['transactions'] as List<dynamic>;
 
-        expect(response.statusCode, 200);
-        expect(transactions, hasLength(overviewTransactions.length));
-        expect(transactions.first, isA<Map<String, dynamic>>());
-      },
-    );
+      expect(response.statusCode, 200);
+      expect(transactions, hasLength(overviewTransactions.length));
+      expect(transactions.first, isA<Map<String, dynamic>>());
+    });
 
     test(
       'POST /dashboard/income atualiza income, balance, goal e flow atual',
       () async {
         final before = await service.get('/dashboard/overview');
+        final beforeDetail = await service.get('/transactions');
         final beforeFlow = before.data['flow'] as List<dynamic>;
         final beforeLastFlow = beforeFlow.last as Map<String, dynamic>;
 
@@ -110,27 +139,42 @@ void main() {
         );
         expect(afterLastFlow['expense'], beforeLastFlow['expense']);
 
-        final beforeTransactions = before.data['transactions'] as List<dynamic>;
-        final afterTransactions = after.data['transactions'] as List<dynamic>;
-        expect(afterTransactions.length, beforeTransactions.length + 1);
-        final lastTx = afterTransactions.last as Map<String, dynamic>;
-        expect(lastTx['type'], 'income');
-
-        final detail = await service.get('/dashboard/transactions');
+        final beforeTransactions =
+            beforeDetail.data['transactions'] as List<dynamic>;
+        final detail = await service.get('/transactions');
         final detailTransactions = detail.data['transactions'] as List<dynamic>;
-        expect(detailTransactions.length, afterTransactions.length);
-        expect(detailTransactions.last, lastTx);
+        expect(detailTransactions.length, beforeTransactions.length + 1);
+        final lastTx = detailTransactions.last as Map<String, dynamic>;
+        expect(lastTx['type'], 'income');
         expect(
-          storage.getString(StorageSchema.dashboardTransactionsKey),
+          storage.getString(StorageSchema.financialTransactionsKey),
           isNotNull,
         );
       },
     );
 
+    test('POST /incomes retorna overview de receitas atualizado', () async {
+      final before = await service.get('/incomes/overview');
+
+      final after = await service.post(
+        '/incomes',
+        data: {'amount': 500, 'title': 'Freelance', 'category': 'services'},
+      );
+
+      expect(
+        after.data['income'] as num,
+        closeTo((before.data['income'] as num) + 500, 0.001),
+      );
+      final transactions = after.data['transactions'] as List<dynamic>;
+      expect((transactions.last as Map<String, dynamic>)['type'], 'income');
+      expect(after.data.containsKey('expense'), isFalse);
+    });
+
     test(
       'POST /dashboard/expense atualiza expense, balance e flow atual',
       () async {
         final before = await service.get('/dashboard/overview');
+        final beforeDetail = await service.get('/transactions');
         final beforeFlow = before.data['flow'] as List<dynamic>;
         final beforeLastFlow = beforeFlow.last as Map<String, dynamic>;
 
@@ -166,22 +210,36 @@ void main() {
           closeTo((beforeLastFlow['expense'] as num) + 250, 0.001),
         );
 
-        final beforeTransactions = before.data['transactions'] as List<dynamic>;
-        final afterTransactions = after.data['transactions'] as List<dynamic>;
-        expect(afterTransactions.length, beforeTransactions.length + 1);
-        final lastTx = afterTransactions.last as Map<String, dynamic>;
-        expect(lastTx['type'], 'expense');
-
-        final detail = await service.get('/dashboard/transactions');
+        final beforeTransactions =
+            beforeDetail.data['transactions'] as List<dynamic>;
+        final detail = await service.get('/transactions');
         final detailTransactions = detail.data['transactions'] as List<dynamic>;
-        expect(detailTransactions.length, afterTransactions.length);
-        expect(detailTransactions.last, lastTx);
+        expect(detailTransactions.length, beforeTransactions.length + 1);
+        final lastTx = detailTransactions.last as Map<String, dynamic>;
+        expect(lastTx['type'], 'expense');
         expect(
-          storage.getString(StorageSchema.dashboardTransactionsKey),
+          storage.getString(StorageSchema.financialTransactionsKey),
           isNotNull,
         );
       },
     );
+
+    test('POST /expenses retorna overview de despesas atualizado', () async {
+      final before = await service.get('/expenses/overview');
+
+      final after = await service.post(
+        '/expenses',
+        data: {'amount': 250, 'title': 'Mercado', 'category': 'food'},
+      );
+
+      expect(
+        after.data['expense'] as num,
+        closeTo((before.data['expense'] as num) + 250, 0.001),
+      );
+      final transactions = after.data['transactions'] as List<dynamic>;
+      expect((transactions.last as Map<String, dynamic>)['type'], 'expense');
+      expect(after.data.containsKey('income'), isFalse);
+    });
 
     test(
       'atualiza liquidez após mutações mantendo previous=current anterior',
