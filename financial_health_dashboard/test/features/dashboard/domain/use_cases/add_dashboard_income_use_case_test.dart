@@ -1,28 +1,30 @@
 import 'package:dartz/dartz.dart';
+import 'package:financial_health_dashboard/src/core/failures/app_failure.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/domain/entities/add_dashboard_income_input.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/domain/entities/dashboard_overview_data.dart';
-import 'package:financial_health_dashboard/src/features/dashboard/domain/entities/dashboard_transaction_data.dart';
+
 import 'package:financial_health_dashboard/src/features/dashboard/domain/entities/financial_health_score_data.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/domain/entities/flow_analysis_data.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/domain/entities/monthly_goal_data.dart';
-import 'package:financial_health_dashboard/src/features/dashboard/domain/enum/expense_category.dart';
-import 'package:financial_health_dashboard/src/features/dashboard/domain/enum/income_category.dart';
-import 'package:financial_health_dashboard/src/features/dashboard/domain/failures/dashboard_failure.dart';
+
 import 'package:financial_health_dashboard/src/features/dashboard/domain/repositories/dashboard_repository.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/domain/use_cases/add_dashboard_income_use_case.dart';
+import 'package:financial_health_dashboard/src/shared/domain/entities/transaction_data.dart';
+import 'package:financial_health_dashboard/src/shared/domain/enum/expense_category.dart';
+import 'package:financial_health_dashboard/src/shared/domain/enum/income_category.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 class _FakeDashboardRepository implements DashboardRepository {
   _FakeDashboardRepository(this._result);
 
-  final Either<DashboardFailure, DashboardOverviewData> _result;
+  final Either<AppFailure, DashboardOverviewData> _result;
   int addIncomeCalls = 0;
   double? lastAmount;
   String? lastTitle;
   IncomeCategory? lastCategory;
 
   @override
-  Future<Either<DashboardFailure, DashboardOverviewData>> addIncome({
+  Future<Either<AppFailure, DashboardOverviewData>> addIncome({
     required double amount,
     required String title,
     required IncomeCategory category,
@@ -35,7 +37,7 @@ class _FakeDashboardRepository implements DashboardRepository {
   }
 
   @override
-  Future<Either<DashboardFailure, DashboardOverviewData>> addExpense({
+  Future<Either<AppFailure, DashboardOverviewData>> addExpense({
     required double amount,
     required String title,
     required ExpenseCategory category,
@@ -44,7 +46,7 @@ class _FakeDashboardRepository implements DashboardRepository {
   }
 
   @override
-  Future<Either<DashboardFailure, DashboardOverviewData>> getOverview() {
+  Future<Either<AppFailure, DashboardOverviewData>> getOverview() {
     throw UnimplementedError();
   }
 }
@@ -56,7 +58,7 @@ void main() {
     final useCase = AddDashboardIncomeUseCase(repo);
 
     final result = await useCase(
-      AddDashboardIncomeInput(
+      const AddDashboardIncomeInput(
         amount: 500,
         title: '  Freelance  ',
         category: IncomeCategory.investment,
@@ -76,17 +78,21 @@ void main() {
     final useCase = AddDashboardIncomeUseCase(repo);
 
     final zeroResult = await useCase(
-      AddDashboardIncomeInput(amount: 0, title: 'Freelance', category: IncomeCategory.salary),
+      const AddDashboardIncomeInput(amount: 0, title: 'Freelance', category: IncomeCategory.salary),
     );
     final negativeResult = await useCase(
-      AddDashboardIncomeInput(amount: -1, title: 'Freelance', category: IncomeCategory.salary),
+      const AddDashboardIncomeInput(
+        amount: -1,
+        title: 'Freelance',
+        category: IncomeCategory.salary,
+      ),
     );
 
     expect(repo.addIncomeCalls, 0);
     expect(zeroResult.isLeft(), isTrue);
     expect(negativeResult.isLeft(), isTrue);
     zeroResult.fold(
-      (failure) => expect(failure, isA<DashboardAmountValueFailure>()),
+      (failure) => expect(failure, isA<AmountValueFailure>()),
       (_) => fail('esperava Left'),
     );
   });
@@ -97,23 +103,27 @@ void main() {
     final useCase = AddDashboardIncomeUseCase(repo);
 
     final result = await useCase(
-      AddDashboardIncomeInput(amount: 500, title: '   ', category: IncomeCategory.salary),
+      const AddDashboardIncomeInput(amount: 500, title: '   ', category: IncomeCategory.salary),
     );
 
     expect(repo.addIncomeCalls, 0);
     expect(result.isLeft(), isTrue);
     result.fold(
-      (failure) => expect(failure, isA<DashboardValidationFailure>()),
+      (failure) => expect(failure, isA<ValidationFailure>()),
       (_) => fail('esperava Left'),
     );
   });
 
   test('retorna Left quando repository falha', () async {
-    final repo = _FakeDashboardRepository(Left(const DashboardFailure('erro de rede')));
+    final repo = _FakeDashboardRepository(const Left(AppFailure('erro de rede')));
     final useCase = AddDashboardIncomeUseCase(repo);
 
     final result = await useCase(
-      AddDashboardIncomeInput(amount: 500, title: 'Freelance', category: IncomeCategory.investment),
+      const AddDashboardIncomeInput(
+        amount: 500,
+        title: 'Freelance',
+        category: IncomeCategory.investment,
+      ),
     );
 
     expect(result.isLeft(), isTrue);
@@ -154,12 +164,12 @@ DashboardOverviewData _overview() {
     monthlyGoalTargetAmount: 15000,
     monthlyGoalAchievedAmount: 9000,
     transactions: const [
-      DashboardTransactionData(
+      TransactionData(
         id: '1',
         title: 'Venda',
         category: 'services',
         value: 100,
-        type: DashboardTransactionType.income,
+        type: TransactionType.income,
       ),
     ],
   );

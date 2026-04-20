@@ -1,8 +1,8 @@
 import 'package:financial_health_dashboard/src/features/dashboard/domain/entities/dashboard_overview_data.dart';
-import 'package:financial_health_dashboard/src/features/dashboard/domain/entities/dashboard_transaction_data.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/domain/entities/financial_health_score_data.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/domain/entities/flow_analysis_data.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/domain/entities/monthly_goal_data.dart';
+import 'package:financial_health_dashboard/src/shared/domain/entities/transaction_data.dart';
 
 class DashboardState {
   const DashboardState({
@@ -72,7 +72,7 @@ class DashboardState {
   final FinancialHealthScoreData financialHealthScore;
   final FlowAnalysisData flowAnalysis;
   final MonthlyGoalData monthlyGoal;
-  final List<DashboardTransactionData> transactions;
+  final List<TransactionData> transactions;
   final DashboardViewStatus status;
   final String? errorMessage;
   final bool canRetry;
@@ -87,7 +87,7 @@ class DashboardState {
     FinancialHealthScoreData? financialHealthScore,
     FlowAnalysisData? flowAnalysis,
     MonthlyGoalData? monthlyGoal,
-    List<DashboardTransactionData>? transactions,
+    List<TransactionData>? transactions,
     DashboardViewStatus? status,
     String? errorMessage,
     bool? canRetry,

@@ -1,13 +1,14 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:financial_health_dashboard/src/core/failures/app_failure.dart';
 import 'package:financial_health_dashboard/src/core/services/clock/clock.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/data/datasources/dashboard_remote_data_source.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/data/models/dashboard_overview_model.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/data/repositories/dashboard_repository_impl.dart';
-import 'package:financial_health_dashboard/src/features/dashboard/domain/enum/expense_category.dart';
-import 'package:financial_health_dashboard/src/features/dashboard/domain/enum/income_category.dart';
-import 'package:financial_health_dashboard/src/features/dashboard/domain/failures/dashboard_failure.dart';
+import 'package:financial_health_dashboard/src/shared/domain/enum/expense_category.dart';
+import 'package:financial_health_dashboard/src/shared/domain/enum/income_category.dart';
+
 import 'package:flutter_test/flutter_test.dart';
 
 class _FixedClock implements Clock {
@@ -130,7 +131,7 @@ void main() {
       final result = await repoThrowing(ArgumentError('campo x')).getOverview();
 
       result.fold(
-        (failure) => expect(failure, isA<DashboardValidationFailure>()),
+        (failure) => expect(failure, isA<ValidationFailure>()),
         (_) => fail('esperava Left'),
       );
     });
@@ -139,7 +140,7 @@ void main() {
       final result = await repoThrowing(TimeoutException('timeout')).getOverview();
 
       result.fold(
-        (failure) => expect(failure, isA<DashboardNetworkFailure>()),
+        (failure) => expect(failure, isA<NetworkFailure>()),
         (_) => fail('esperava Left'),
       );
     });
@@ -148,7 +149,7 @@ void main() {
       final result = await repoThrowing(const SocketException('sem rede')).getOverview();
 
       result.fold(
-        (failure) => expect(failure, isA<DashboardNetworkFailure>()),
+        (failure) => expect(failure, isA<NetworkFailure>()),
         (_) => fail('esperava Left'),
       );
     });
@@ -157,7 +158,7 @@ void main() {
       final result = await repoThrowing(const FormatException('json')).getOverview();
 
       result.fold(
-        (failure) => expect(failure, isA<DashboardParsingFailure>()),
+        (failure) => expect(failure, isA<ParsingFailure>()),
         (_) => fail('esperava Left'),
       );
     });
@@ -166,7 +167,7 @@ void main() {
       final result = await repoThrowing(TypeError()).getOverview();
 
       result.fold(
-        (failure) => expect(failure, isA<DashboardParsingFailure>()),
+        (failure) => expect(failure, isA<ParsingFailure>()),
         (_) => fail('esperava Left'),
       );
     });
@@ -175,7 +176,7 @@ void main() {
       final result = await repoThrowing(const FileSystemException('disco')).getOverview();
 
       result.fold(
-        (failure) => expect(failure, isA<DashboardStorageFailure>()),
+        (failure) => expect(failure, isA<StorageFailure>()),
         (_) => fail('esperava Left'),
       );
     });
@@ -184,7 +185,7 @@ void main() {
       final result = await repoThrowing(StateError('bad state')).getOverview();
 
       result.fold(
-        (failure) => expect(failure, isA<DashboardStorageFailure>()),
+        (failure) => expect(failure, isA<StorageFailure>()),
         (_) => fail('esperava Left'),
       );
     });
@@ -192,17 +193,14 @@ void main() {
     test('UnsupportedError → DashboardServerFailure', () async {
       final result = await repoThrowing(UnsupportedError('op')).getOverview();
 
-      result.fold(
-        (failure) => expect(failure, isA<DashboardServerFailure>()),
-        (_) => fail('esperava Left'),
-      );
+      result.fold((failure) => expect(failure, isA<ServerFailure>()), (_) => fail('esperava Left'));
     });
 
     test('Exception genérica → DashboardUnknownFailure', () async {
       final result = await repoThrowing(Exception('qualquer')).getOverview();
 
       result.fold(
-        (failure) => expect(failure, isA<DashboardUnknownFailure>()),
+        (failure) => expect(failure, isA<UnknownFailure>()),
         (_) => fail('esperava Left'),
       );
     });

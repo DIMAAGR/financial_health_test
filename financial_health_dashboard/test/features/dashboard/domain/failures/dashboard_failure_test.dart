@@ -1,16 +1,16 @@
-import 'package:financial_health_dashboard/src/features/dashboard/domain/failures/dashboard_failure.dart';
+import 'package:financial_health_dashboard/src/core/failures/app_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('DashboardFailure', () {
     test('representa falhas esperadas da feature', () {
-      const failures = <DashboardFailure>[
-        DashboardNetworkFailure(),
-        DashboardServerFailure(),
-        DashboardValidationFailure('Valor inválido.'),
-        DashboardStorageFailure(),
-        DashboardParsingFailure(),
-        DashboardUnknownFailure(),
+      const failures = <AppFailure>[
+        NetworkFailure(),
+        ServerFailure(),
+        ValidationFailure('Valor inválido.'),
+        StorageFailure(),
+        ParsingFailure(),
+        UnknownFailure(),
       ];
 
       expect(failures, hasLength(6));

@@ -1,8 +1,8 @@
 import 'package:dartz/dartz.dart';
+import 'package:financial_health_dashboard/src/core/failures/app_failure.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/domain/entities/add_dashboard_expense_input.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/domain/entities/add_dashboard_income_input.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/domain/entities/dashboard_overview_data.dart';
-import 'package:financial_health_dashboard/src/features/dashboard/domain/failures/dashboard_failure.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/domain/use_cases/add_dashboard_expense_use_case.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/domain/use_cases/add_dashboard_income_use_case.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/domain/use_cases/get_dashboard_overview_use_case.dart';
@@ -22,12 +22,12 @@ class DashboardCubit extends Cubit<DashboardState> {
     emit(state.copyWith(status: DashboardViewStatus.loading, clearError: true, clearEffect: true));
   }
 
-  void _setError(DashboardFailure failure) {
+  void _setError(AppFailure failure) {
     emit(
       state.copyWith(
         status: DashboardViewStatus.error,
         errorMessage: failure.message,
-        canRetry: failure is DashboardNetworkFailure || failure is DashboardServerFailure,
+        canRetry: failure is NetworkFailure || failure is ServerFailure,
         clearEffect: true,
       ),
     );
@@ -52,7 +52,7 @@ class DashboardCubit extends Cubit<DashboardState> {
   void clearEffect() => emit(state.copyWith(clearEffect: true));
 
   Future<void> _handleOverviewResult(
-    Future<Either<DashboardFailure, DashboardOverviewData>> future,
+    Future<Either<AppFailure, DashboardOverviewData>> future,
   ) async {
     final result = await future;
     result.fold(_setError, _updateOverviewContent);

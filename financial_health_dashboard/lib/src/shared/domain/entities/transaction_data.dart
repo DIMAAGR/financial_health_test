@@ -1,7 +1,7 @@
-enum DashboardTransactionType { income, expense }
+enum TransactionType { income, expense }
 
-class DashboardTransactionData {
-  const DashboardTransactionData({
+class TransactionData {
+  const TransactionData({
     required this.id,
     required this.title,
     required this.category,
@@ -14,6 +14,6 @@ class DashboardTransactionData {
   final String title;
   final String category;
   final double value;
-  final DashboardTransactionType type;
+  final TransactionType type;
   final DateTime? date;
 }

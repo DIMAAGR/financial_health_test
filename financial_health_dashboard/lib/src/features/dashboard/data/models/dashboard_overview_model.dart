@@ -2,7 +2,7 @@ import 'package:financial_health_dashboard/src/features/dashboard/domain/entitie
 import 'package:financial_health_dashboard/src/features/dashboard/domain/entities/financial_health_score_data.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/domain/entities/flow_analysis_data.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/domain/entities/monthly_goal_data.dart';
-import 'package:financial_health_dashboard/src/features/dashboard/domain/entities/dashboard_transaction_data.dart';
+import 'package:financial_health_dashboard/src/shared/domain/entities/transaction_data.dart';
 
 class DashboardOverviewModel {
   const DashboardOverviewModel({
@@ -31,7 +31,7 @@ class DashboardOverviewModel {
     final commitment = _asMap(json['commitment']);
     final monthlyGoal = _asMap(json['monthlyGoal']);
     final flow = (json['flow'] as List<dynamic>? ?? const [])
-        .map((item) => _asMap(item))
+        .map(_asMap)
         .map(
           (item) => FlowAnalysisPoint(
             income: _toDouble(item['income']),
@@ -40,16 +40,16 @@ class DashboardOverviewModel {
         )
         .toList(growable: false);
     final transactions = (json['transactions'] as List<dynamic>? ?? const [])
-        .map((item) => _asMap(item))
+        .map(_asMap)
         .map(
-          (item) => DashboardTransactionData(
+          (item) => TransactionData(
             id: (item['id'] as String? ?? '').trim(),
             title: (item['title'] as String? ?? '').trim(),
             category: (item['category'] as String? ?? '').trim(),
             value: _toDouble(item['value']),
             type: (item['type'] as String? ?? '').toLowerCase() == 'expense'
-                ? DashboardTransactionType.expense
-                : DashboardTransactionType.income,
+                ? TransactionType.expense
+                : TransactionType.income,
             date: DateTime.tryParse(item['date'] as String? ?? ''),
           ),
         )
@@ -100,7 +100,7 @@ class DashboardOverviewModel {
   final int goalDaysInMonth;
 
   final List<FlowAnalysisPoint> flowPoints;
-  final List<DashboardTransactionData> transactions;
+  final List<TransactionData> transactions;
 
   DashboardOverviewData toEntity({required DateTime referenceDate}) {
     final safeTarget = goalTargetAmount <= 0 ? 1.0 : goalTargetAmount;

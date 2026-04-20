@@ -1,10 +1,2 @@
-enum SheetType {
-  income('Adicionar Receita', 'Salvar Receita', 'Ex: Salário Mensal'),
-  expense('Adicionar Despesa', 'Salvar Despesa', 'Ex: Mercado');
-
-  const SheetType(this.title, this.buttonTitle, this.descriptionHintText);
-
-  final String title;
-  final String buttonTitle;
-  final String descriptionHintText;
-}
+// Re-export from shared location.
+export 'package:financial_health_dashboard/src/shared/presentation/add_transaction/models/transaction_sheet_type.dart';

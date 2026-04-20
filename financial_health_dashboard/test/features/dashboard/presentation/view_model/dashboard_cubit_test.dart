@@ -1,20 +1,21 @@
 import 'package:dartz/dartz.dart';
+import 'package:financial_health_dashboard/src/core/failures/app_failure.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/domain/entities/add_dashboard_expense_input.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/domain/entities/add_dashboard_income_input.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/domain/entities/dashboard_overview_data.dart';
-import 'package:financial_health_dashboard/src/features/dashboard/domain/entities/dashboard_transaction_data.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/domain/entities/financial_health_score_data.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/domain/entities/flow_analysis_data.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/domain/entities/monthly_goal_data.dart';
-import 'package:financial_health_dashboard/src/features/dashboard/domain/enum/expense_category.dart';
-import 'package:financial_health_dashboard/src/features/dashboard/domain/enum/income_category.dart';
-import 'package:financial_health_dashboard/src/features/dashboard/domain/failures/dashboard_failure.dart';
+
 import 'package:financial_health_dashboard/src/features/dashboard/domain/repositories/dashboard_repository.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/domain/use_cases/add_dashboard_expense_use_case.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/domain/use_cases/add_dashboard_income_use_case.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/domain/use_cases/get_dashboard_overview_use_case.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/presentation/view_model/dashboard/dashboard_cubit.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/presentation/view_model/dashboard/dashboard_state.dart';
+import 'package:financial_health_dashboard/src/shared/domain/entities/transaction_data.dart';
+import 'package:financial_health_dashboard/src/shared/domain/enum/expense_category.dart';
+import 'package:financial_health_dashboard/src/shared/domain/enum/income_category.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 class _FakeDashboardRepository implements DashboardRepository {
@@ -24,9 +25,9 @@ class _FakeDashboardRepository implements DashboardRepository {
     required this.addExpenseResult,
   });
 
-  Either<DashboardFailure, DashboardOverviewData> overviewResult;
-  Either<DashboardFailure, DashboardOverviewData> addIncomeResult;
-  Either<DashboardFailure, DashboardOverviewData> addExpenseResult;
+  Either<AppFailure, DashboardOverviewData> overviewResult;
+  Either<AppFailure, DashboardOverviewData> addIncomeResult;
+  Either<AppFailure, DashboardOverviewData> addExpenseResult;
 
   int overviewCalls = 0;
   int addIncomeCalls = 0;
@@ -41,13 +42,13 @@ class _FakeDashboardRepository implements DashboardRepository {
   ExpenseCategory? lastExpenseCategory;
 
   @override
-  Future<Either<DashboardFailure, DashboardOverviewData>> getOverview() async {
+  Future<Either<AppFailure, DashboardOverviewData>> getOverview() async {
     overviewCalls++;
     return overviewResult;
   }
 
   @override
-  Future<Either<DashboardFailure, DashboardOverviewData>> addIncome({
+  Future<Either<AppFailure, DashboardOverviewData>> addIncome({
     required double amount,
     required String title,
     required IncomeCategory category,
@@ -60,7 +61,7 @@ class _FakeDashboardRepository implements DashboardRepository {
   }
 
   @override
-  Future<Either<DashboardFailure, DashboardOverviewData>> addExpense({
+  Future<Either<AppFailure, DashboardOverviewData>> addExpense({
     required double amount,
     required String title,
     required ExpenseCategory category,
@@ -100,9 +101,9 @@ void main() {
 
     test('carrega overview no bootstrap com falha', () async {
       final repo = _FakeDashboardRepository(
-        overviewResult: Left(const DashboardFailure('falha no load')),
-        addIncomeResult: Left(const DashboardFailure('falha income')),
-        addExpenseResult: Left(const DashboardFailure('falha expense')),
+        overviewResult: const Left(AppFailure('falha no load')),
+        addIncomeResult: const Left(AppFailure('falha income')),
+        addExpenseResult: const Left(AppFailure('falha expense')),
       );
 
       final cubit = DashboardCubit(
@@ -180,7 +181,7 @@ void main() {
       await Future<void>.delayed(Duration.zero);
 
       final success = await cubit.addIncome(
-        AddDashboardIncomeInput(
+        const AddDashboardIncomeInput(
           amount: 500,
           title: 'Freelance',
           category: IncomeCategory.investment,
@@ -215,7 +216,11 @@ void main() {
       await Future<void>.delayed(Duration.zero);
 
       final success = await cubit.addExpense(
-        AddDashboardExpenseInput(amount: 200, title: 'Mercado', category: ExpenseCategory.food),
+        const AddDashboardExpenseInput(
+          amount: 200,
+          title: 'Mercado',
+          category: ExpenseCategory.food,
+        ),
       );
 
       expect(success, isTrue);
@@ -245,10 +250,10 @@ void main() {
       await Future<void>.delayed(Duration.zero);
 
       await cubit.addIncome(
-        AddDashboardIncomeInput(amount: 0, title: 'X', category: IncomeCategory.gift),
+        const AddDashboardIncomeInput(amount: 0, title: 'X', category: IncomeCategory.gift),
       );
       await cubit.addExpense(
-        AddDashboardExpenseInput(amount: -1, title: 'X', category: ExpenseCategory.shopping),
+        const AddDashboardExpenseInput(amount: -1, title: 'X', category: ExpenseCategory.shopping),
       );
 
       expect(repo.addIncomeCalls, 0);
@@ -295,19 +300,19 @@ DashboardOverviewData _overview({
     monthlyGoalTargetAmount: 15000,
     monthlyGoalAchievedAmount: 9000,
     transactions: const [
-      DashboardTransactionData(
+      TransactionData(
         id: '1',
         title: 'Salário',
         category: 'salary',
         value: 5000,
-        type: DashboardTransactionType.income,
+        type: TransactionType.income,
       ),
-      DashboardTransactionData(
+      TransactionData(
         id: '2',
         title: 'Mercado',
         category: 'food',
         value: 300,
-        type: DashboardTransactionType.expense,
+        type: TransactionType.expense,
       ),
     ],
   );

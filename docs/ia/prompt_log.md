@@ -404,3 +404,12 @@ Registro objetivo de interações com IA que influenciaram decisões do projeto.
 **Trade-offs:** Reusar DashboardRepository cria dependência cross-feature no nível de interface (domain), mas evita duplicação de datasource/model que chamariam os mesmos endpoints. Para o escopo do desafio, isso é pragmático e não viola o contrato de Clean Architecture (features dependem de abstrações, não de implementações). O campo date foi adicionado como optional (DateTime?) para não quebrar os 118 testes existentes.
 
 **Resultado:** 29 novos testes criados (13 domain + 16 cubit), todos passando. 147 testes totais, 0 issues no flutter analyze. Arquivos criados: 3 entities, 3 use cases, 3 cubits, 3 states, 3 inits, 1 shared entity (CategoryBreakdownData), 6 arquivos de teste. Views atualizadas de hardcoded para BlocBuilder com estados loading/error/success.
+### 4. Refatoração do agrupamento de transações (2026-04-20)
+
+**Prompt:** Extrair a lógica duplicada de _buildTransactionGroups das views de transactions, incomes e expenses para uma estrutura alinhada com Clean Architecture usando o MCP do time.
+
+**Decisão:** A lógica de agrupamento e ordenação por data foi movida para um serviço compartilhado em shared/domain. A conversão para TransactionGroup e TransactionListItem foi centralizada em um mapper de presentation compartilhado, apoiado por extensões pequenas para normalização de data e geração do label visual de data.
+
+**Trade-offs:** Manter a transformação inteira dentro dos cubits deixaria a UI ainda mais passiva, mas aumentaria o escopo ao introduzir modelos visuais nos estados. A opção adotada removeu a lógica detalhada das views, eliminou duplicação e preservou o contrato atual das states com menor impacto estrutural.
+
+**Resultado:** As três views passaram a consumir TransactionGroupMapper, a regra de agrupamento ficou reaproveitável e testada, e foram adicionados testes unitários cobrindo ordenação, fallback de data, labels de hoje/ontem e diferenças visuais entre lista geral, receitas e despesas.

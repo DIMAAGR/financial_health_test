@@ -1,5 +1,5 @@
-import 'package:financial_health_dashboard/src/features/dashboard/domain/entities/dashboard_transaction_data.dart';
 import 'package:financial_health_dashboard/src/shared/domain/entities/category_breakdown_data.dart';
+import 'package:financial_health_dashboard/src/shared/domain/entities/transaction_data.dart';
 
 class ExpensesState {
   const ExpensesState({
@@ -30,7 +30,7 @@ class ExpensesState {
   final double totalExpense;
   final String monthLabel;
   final double expenseChangePercent;
-  final List<DashboardTransactionData> transactions;
+  final List<TransactionData> transactions;
   final List<CategoryBreakdownData> categoryBreakdown;
   final ExpensesViewStatus status;
   final String? errorMessage;
@@ -42,7 +42,7 @@ class ExpensesState {
     double? totalExpense,
     String? monthLabel,
     double? expenseChangePercent,
-    List<DashboardTransactionData>? transactions,
+    List<TransactionData>? transactions,
     List<CategoryBreakdownData>? categoryBreakdown,
     ExpensesViewStatus? status,
     String? errorMessage,

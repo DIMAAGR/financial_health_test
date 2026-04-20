@@ -1,30 +1,31 @@
 import 'package:dartz/dartz.dart';
+import 'package:financial_health_dashboard/src/core/failures/app_failure.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/domain/entities/dashboard_overview_data.dart';
-import 'package:financial_health_dashboard/src/features/dashboard/domain/entities/dashboard_transaction_data.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/domain/entities/financial_health_score_data.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/domain/entities/flow_analysis_data.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/domain/entities/monthly_goal_data.dart';
-import 'package:financial_health_dashboard/src/features/dashboard/domain/enum/expense_category.dart';
-import 'package:financial_health_dashboard/src/features/dashboard/domain/enum/income_category.dart';
-import 'package:financial_health_dashboard/src/features/dashboard/domain/failures/dashboard_failure.dart';
+
 import 'package:financial_health_dashboard/src/features/dashboard/domain/repositories/dashboard_repository.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/domain/use_cases/get_dashboard_overview_use_case.dart';
+import 'package:financial_health_dashboard/src/shared/domain/entities/transaction_data.dart';
+import 'package:financial_health_dashboard/src/shared/domain/enum/expense_category.dart';
+import 'package:financial_health_dashboard/src/shared/domain/enum/income_category.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 class _FakeDashboardRepository implements DashboardRepository {
   _FakeDashboardRepository(this._result);
 
-  final Either<DashboardFailure, DashboardOverviewData> _result;
+  final Either<AppFailure, DashboardOverviewData> _result;
   int getOverviewCalls = 0;
 
   @override
-  Future<Either<DashboardFailure, DashboardOverviewData>> getOverview() async {
+  Future<Either<AppFailure, DashboardOverviewData>> getOverview() async {
     getOverviewCalls++;
     return _result;
   }
 
   @override
-  Future<Either<DashboardFailure, DashboardOverviewData>> addExpense({
+  Future<Either<AppFailure, DashboardOverviewData>> addExpense({
     required double amount,
     required String title,
     required ExpenseCategory category,
@@ -33,7 +34,7 @@ class _FakeDashboardRepository implements DashboardRepository {
   }
 
   @override
-  Future<Either<DashboardFailure, DashboardOverviewData>> addIncome({
+  Future<Either<AppFailure, DashboardOverviewData>> addIncome({
     required double amount,
     required String title,
     required IncomeCategory category,
@@ -76,12 +77,12 @@ void main() {
       monthlyGoalTargetAmount: 15000,
       monthlyGoalAchievedAmount: 9000,
       transactions: const [
-        DashboardTransactionData(
+        TransactionData(
           id: '1',
           title: 'Venda',
           category: 'services',
           value: 300,
-          type: DashboardTransactionType.income,
+          type: TransactionType.income,
         ),
       ],
     );

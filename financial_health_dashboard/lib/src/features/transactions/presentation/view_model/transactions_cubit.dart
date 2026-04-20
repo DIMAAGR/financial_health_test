@@ -1,4 +1,4 @@
-import 'package:financial_health_dashboard/src/features/dashboard/domain/failures/dashboard_failure.dart';
+import 'package:financial_health_dashboard/src/core/failures/app_failure.dart';
 import 'package:financial_health_dashboard/src/features/transactions/domain/use_cases/get_transactions_overview_use_case.dart';
 import 'package:financial_health_dashboard/src/features/transactions/presentation/view_model/transactions_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -17,7 +17,7 @@ class TransactionsCubit extends Cubit<TransactionsState> {
         state.copyWith(
           status: TransactionsViewStatus.error,
           errorMessage: failure.message,
-          canRetry: failure is DashboardNetworkFailure || failure is DashboardServerFailure,
+          canRetry: failure is NetworkFailure || failure is ServerFailure,
         ),
       ),
       (data) => emit(
