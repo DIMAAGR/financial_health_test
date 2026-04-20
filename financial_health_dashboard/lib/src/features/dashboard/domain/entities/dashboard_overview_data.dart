@@ -12,18 +12,9 @@ class DashboardOverviewData {
     required this.balance,
     required this.income,
     required this.expense,
-    required this.incomeChangePercent,
-    required this.expenseChangePercent,
-    required this.balanceChangePercent,
-    required this.previousLiquidityIndex,
-    required this.currentLiquidityIndex,
-    required this.commitmentPercent,
-    required this.commitmentBenchmarkPercent,
     required this.financialHealthScore,
     required this.flowAnalysis,
     required this.monthlyGoal,
-    required this.monthlyGoalTargetAmount,
-    required this.monthlyGoalAchievedAmount,
   });
 
   final String userName;
@@ -31,20 +22,7 @@ class DashboardOverviewData {
   final double income;
   final double expense;
 
-  final double incomeChangePercent;
-  final double expenseChangePercent;
-  final double balanceChangePercent;
-
-  final double previousLiquidityIndex;
-  final double currentLiquidityIndex;
-
-  final double commitmentPercent;
-  final double commitmentBenchmarkPercent;
-
   final FinancialHealthScoreData financialHealthScore;
   final FlowAnalysisData flowAnalysis;
   final MonthlyGoalData monthlyGoal;
-
-  final double monthlyGoalTargetAmount;
-  final double monthlyGoalAchievedAmount;
 }

@@ -96,13 +96,6 @@ class DashboardOverviewModel {
       balance: balance,
       income: income,
       expense: expense,
-      incomeChangePercent: incomeChangePercent,
-      expenseChangePercent: expenseChangePercent,
-      balanceChangePercent: balanceChangePercent,
-      previousLiquidityIndex: previousLiquidityIndex,
-      currentLiquidityIndex: currentLiquidityIndex,
-      commitmentPercent: commitmentPercent,
-      commitmentBenchmarkPercent: commitmentBenchmarkPercent,
       financialHealthScore: FinancialHealthScoreData.fromMetrics(
         income: income,
         expense: expense,
@@ -116,8 +109,6 @@ class DashboardOverviewModel {
         daysInMonth: goalDaysInMonth,
         referenceDate: normalizedReferenceDate,
       ),
-      monthlyGoalTargetAmount: goalTargetAmount,
-      monthlyGoalAchievedAmount: goalAchievedAmount,
     );
   }
 

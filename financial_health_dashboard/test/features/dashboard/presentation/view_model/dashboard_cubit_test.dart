@@ -99,9 +99,9 @@ void main() {
 
     test('carrega overview no bootstrap com falha', () async {
       final repo = _FakeDashboardRepository(
-        overviewResult: const Left(AppFailure('falha no load')),
-        addIncomeResult: const Left(AppFailure('falha income')),
-        addExpenseResult: const Left(AppFailure('falha expense')),
+        overviewResult: const Left(UnknownFailure('falha no load')),
+        addIncomeResult: const Left(UnknownFailure('falha income')),
+        addExpenseResult: const Left(UnknownFailure('falha expense')),
       );
 
       final cubit = DashboardCubit(
@@ -279,13 +279,6 @@ DashboardOverviewData _overview({
     balance: balance,
     income: income,
     expense: expense,
-    incomeChangePercent: 12.5,
-    expenseChangePercent: -5.0,
-    balanceChangePercent: 8.0,
-    previousLiquidityIndex: 1.2,
-    currentLiquidityIndex: 1.3,
-    commitmentPercent: 37.5,
-    commitmentBenchmarkPercent: 65,
     financialHealthScore: FinancialHealthScoreData.fromMetrics(
       income: income,
       expense: expense,
@@ -303,7 +296,5 @@ DashboardOverviewData _overview({
       achievedPercent: 60,
       referenceDate: DateTime(2026, 4, 10),
     ),
-    monthlyGoalTargetAmount: 15000,
-    monthlyGoalAchievedAmount: 9000,
   );
 }

@@ -38,18 +38,9 @@ void main() {
         balance: 10000,
         income: 8000,
         expense: 3000,
-        incomeChangePercent: 12.5,
-        expenseChangePercent: -5.0,
-        balanceChangePercent: 8.0,
-        previousLiquidityIndex: 1.2,
-        currentLiquidityIndex: 1.3,
-        commitmentPercent: 37.5,
-        commitmentBenchmarkPercent: 65,
         financialHealthScore: score,
         flowAnalysis: flow,
         monthlyGoal: goal,
-        monthlyGoalTargetAmount: 15000,
-        monthlyGoalAchievedAmount: 9000,
       );
 
       final state = DashboardState.fromOverview(overview, effectVersion: 2);
