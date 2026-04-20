@@ -13,7 +13,6 @@ import 'package:financial_health_dashboard/src/features/dashboard/domain/use_cas
 import 'package:financial_health_dashboard/src/features/dashboard/domain/use_cases/get_dashboard_overview_use_case.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/presentation/view_model/dashboard/dashboard_cubit.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/presentation/view_model/dashboard/dashboard_state.dart';
-import 'package:financial_health_dashboard/src/shared/domain/entities/transaction_data.dart';
 import 'package:financial_health_dashboard/src/shared/domain/enum/expense_category.dart';
 import 'package:financial_health_dashboard/src/shared/domain/enum/income_category.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -95,7 +94,6 @@ void main() {
       expect(repo.overviewCalls, 1);
       expect(cubit.state.status, DashboardViewStatus.success);
       expect(cubit.state.userName, 'Júlio');
-      expect(cubit.state.transactions, hasLength(2));
       await cubit.close();
     });
 
@@ -250,10 +248,18 @@ void main() {
       await Future<void>.delayed(Duration.zero);
 
       await cubit.addIncome(
-        const AddDashboardIncomeInput(amount: 0, title: 'X', category: IncomeCategory.gift),
+        const AddDashboardIncomeInput(
+          amount: 0,
+          title: 'X',
+          category: IncomeCategory.gift,
+        ),
       );
       await cubit.addExpense(
-        const AddDashboardExpenseInput(amount: -1, title: 'X', category: ExpenseCategory.shopping),
+        const AddDashboardExpenseInput(
+          amount: -1,
+          title: 'X',
+          category: ExpenseCategory.shopping,
+        ),
       );
 
       expect(repo.addIncomeCalls, 0);
@@ -299,21 +305,5 @@ DashboardOverviewData _overview({
     ),
     monthlyGoalTargetAmount: 15000,
     monthlyGoalAchievedAmount: 9000,
-    transactions: const [
-      TransactionData(
-        id: '1',
-        title: 'Salário',
-        category: 'salary',
-        value: 5000,
-        type: TransactionType.income,
-      ),
-      TransactionData(
-        id: '2',
-        title: 'Mercado',
-        category: 'food',
-        value: 300,
-        type: TransactionType.expense,
-      ),
-    ],
   );
 }

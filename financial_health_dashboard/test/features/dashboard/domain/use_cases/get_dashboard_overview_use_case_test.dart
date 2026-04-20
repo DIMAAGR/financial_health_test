@@ -7,7 +7,6 @@ import 'package:financial_health_dashboard/src/features/dashboard/domain/entitie
 
 import 'package:financial_health_dashboard/src/features/dashboard/domain/repositories/dashboard_repository.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/domain/use_cases/get_dashboard_overview_use_case.dart';
-import 'package:financial_health_dashboard/src/shared/domain/entities/transaction_data.dart';
 import 'package:financial_health_dashboard/src/shared/domain/enum/expense_category.dart';
 import 'package:financial_health_dashboard/src/shared/domain/enum/income_category.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -76,15 +75,6 @@ void main() {
       ),
       monthlyGoalTargetAmount: 15000,
       monthlyGoalAchievedAmount: 9000,
-      transactions: const [
-        TransactionData(
-          id: '1',
-          title: 'Venda',
-          category: 'services',
-          value: 300,
-          type: TransactionType.income,
-        ),
-      ],
     );
 
     final repo = _FakeDashboardRepository(Right(overview));

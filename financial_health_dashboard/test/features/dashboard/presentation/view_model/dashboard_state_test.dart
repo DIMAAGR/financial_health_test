@@ -11,7 +11,6 @@ void main() {
       final state = DashboardState.initial();
 
       expect(state.userName, isEmpty);
-      expect(state.transactions, isEmpty);
       expect(state.status, DashboardViewStatus.initial);
       expect(state.effect, isNull);
       expect(state.effectVersion, 0);
@@ -26,7 +25,9 @@ void main() {
         previousLiquidityIndex: 1.2,
         currentLiquidityIndex: 1.3,
       );
-      final flow = FlowAnalysisData(points: [FlowAnalysisPoint(income: 1000, expense: 700)]);
+      final flow = FlowAnalysisData(
+        points: [FlowAnalysisPoint(income: 1000, expense: 700)],
+      );
       final goal = MonthlyGoalData(
         monthLabel: 'Abril',
         achievedPercent: 60,
@@ -49,7 +50,6 @@ void main() {
         monthlyGoal: goal,
         monthlyGoalTargetAmount: 15000,
         monthlyGoalAchievedAmount: 9000,
-        transactions: const [],
       );
 
       final state = DashboardState.fromOverview(overview, effectVersion: 2);

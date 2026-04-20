@@ -20,7 +20,10 @@ void main() {
 
     setUp(() {
       dataSource = DashboardRemoteDataSourceImpl(
-        FakeHttpService(storage: InMemoryKeyValueWrapper(), latency: Duration.zero),
+        FakeHttpService(
+          storage: InMemoryKeyValueWrapper(),
+          latency: Duration.zero,
+        ),
         const _AlwaysConnected(),
       );
     });
@@ -45,7 +48,10 @@ void main() {
 
       expect(after.income, closeTo(before.income + 500, 0.001));
       expect(after.balance, closeTo(before.balance + 500, 0.001));
-      expect(after.goalAchievedAmount, closeTo(before.goalAchievedAmount + 500, 0.001));
+      expect(
+        after.goalAchievedAmount,
+        closeTo(before.goalAchievedAmount + 500, 0.001),
+      );
     });
 
     test('adiciona despesa e retorna overview atualizado', () async {
@@ -59,7 +65,10 @@ void main() {
 
       expect(after.expense, closeTo(before.expense + 250, 0.001));
       expect(after.balance, closeTo(before.balance - 250, 0.001));
-      expect(after.goalAchievedAmount, closeTo(before.goalAchievedAmount, 0.001));
+      expect(
+        after.goalAchievedAmount,
+        closeTo(before.goalAchievedAmount, 0.001),
+      );
     });
 
     test('propaga erro quando amount de receita é inválido', () async {
@@ -89,10 +98,18 @@ void main() {
       final spy = _SpyHttpService();
       final ds = DashboardRemoteDataSourceImpl(spy, const _AlwaysConnected());
 
-      await ds.addIncome(amount: 321.5, title: 'Freelance', category: 'investment');
+      await ds.addIncome(
+        amount: 321.5,
+        title: 'Freelance',
+        category: 'investment',
+      );
 
       expect(spy.lastPostPath, '/dashboard/income');
-      expect(spy.lastPostData, {'amount': 321.5, 'title': 'Freelance', 'category': 'investment'});
+      expect(spy.lastPostData, {
+        'amount': 321.5,
+        'title': 'Freelance',
+        'category': 'investment',
+      });
     });
 
     test('usa endpoint e payload corretos para addExpense', () async {
@@ -102,7 +119,11 @@ void main() {
       await ds.addExpense(amount: 123.4, title: 'Mercado', category: 'food');
 
       expect(spy.lastPostPath, '/dashboard/expense');
-      expect(spy.lastPostData, {'amount': 123.4, 'title': 'Mercado', 'category': 'food'});
+      expect(spy.lastPostData, {
+        'amount': 123.4,
+        'title': 'Mercado',
+        'category': 'food',
+      });
     });
 
     test('faz parse resiliente quando payload vem incompleto', () async {
@@ -123,11 +144,13 @@ void main() {
       expect(model.flowPoints, hasLength(1));
       expect(model.flowPoints.first.income, 0);
       expect(model.flowPoints.first.expense, 0);
-      expect(model.transactions, hasLength(0));
     });
 
     test('lança SocketException quando sem conectividade', () async {
-      final ds = DashboardRemoteDataSourceImpl(_SpyHttpService(), const _NeverConnected());
+      final ds = DashboardRemoteDataSourceImpl(
+        _SpyHttpService(),
+        const _NeverConnected(),
+      );
 
       expect(ds.getOverview, throwsA(isA<SocketException>()));
     });
@@ -142,7 +165,8 @@ class _NeverConnected implements NetworkInfo {
 }
 
 class _SpyHttpService implements HttpService {
-  _SpyHttpService({Map<String, dynamic>? payload}) : _payload = payload ?? _defaultPayload;
+  _SpyHttpService({Map<String, dynamic>? payload})
+    : _payload = payload ?? _defaultPayload;
 
   static const Map<String, dynamic> _defaultPayload = {
     'userName': 'Júlio',
@@ -178,7 +202,10 @@ class _SpyHttpService implements HttpService {
   }
 
   @override
-  Future<HttpResponse<Map<String, dynamic>>> post(String path, {Map<String, dynamic>? data}) async {
+  Future<HttpResponse<Map<String, dynamic>>> post(
+    String path, {
+    Map<String, dynamic>? data,
+  }) async {
     lastPostPath = path;
     lastPostData = data;
     return HttpResponse(statusCode: 200, data: _payload);

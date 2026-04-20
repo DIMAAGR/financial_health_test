@@ -9,7 +9,6 @@ import 'package:financial_health_dashboard/src/features/dashboard/domain/entitie
 
 import 'package:financial_health_dashboard/src/features/dashboard/domain/repositories/dashboard_repository.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/domain/use_cases/add_dashboard_expense_use_case.dart';
-import 'package:financial_health_dashboard/src/shared/domain/entities/transaction_data.dart';
 import 'package:financial_health_dashboard/src/shared/domain/enum/expense_category.dart';
 import 'package:financial_health_dashboard/src/shared/domain/enum/income_category.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -78,10 +77,18 @@ void main() {
     final useCase = AddDashboardExpenseUseCase(repo);
 
     final zeroResult = await useCase(
-      const AddDashboardExpenseInput(amount: 0, title: 'Mercado', category: ExpenseCategory.food),
+      const AddDashboardExpenseInput(
+        amount: 0,
+        title: 'Mercado',
+        category: ExpenseCategory.food,
+      ),
     );
     final negativeResult = await useCase(
-      const AddDashboardExpenseInput(amount: -1, title: 'Mercado', category: ExpenseCategory.food),
+      const AddDashboardExpenseInput(
+        amount: -1,
+        title: 'Mercado',
+        category: ExpenseCategory.food,
+      ),
     );
 
     expect(repo.addExpenseCalls, 0);
@@ -99,7 +106,11 @@ void main() {
     final useCase = AddDashboardExpenseUseCase(repo);
 
     final result = await useCase(
-      const AddDashboardExpenseInput(amount: 250, title: '   ', category: ExpenseCategory.food),
+      const AddDashboardExpenseInput(
+        amount: 250,
+        title: '   ',
+        category: ExpenseCategory.food,
+      ),
     );
 
     expect(repo.addExpenseCalls, 0);
@@ -111,11 +122,17 @@ void main() {
   });
 
   test('retorna Left quando repository falha', () async {
-    final repo = _FakeDashboardRepository(const Left(AppFailure('erro inesperado')));
+    final repo = _FakeDashboardRepository(
+      const Left(AppFailure('erro inesperado')),
+    );
     final useCase = AddDashboardExpenseUseCase(repo);
 
     final result = await useCase(
-      const AddDashboardExpenseInput(amount: 250, title: 'Mercado', category: ExpenseCategory.food),
+      const AddDashboardExpenseInput(
+        amount: 250,
+        title: 'Mercado',
+        category: ExpenseCategory.food,
+      ),
     );
 
     expect(result.isLeft(), isTrue);
@@ -158,14 +175,5 @@ DashboardOverviewData _overview() {
     ),
     monthlyGoalTargetAmount: 15000,
     monthlyGoalAchievedAmount: 9000,
-    transactions: const [
-      TransactionData(
-        id: '1',
-        title: 'Mercado',
-        category: 'food',
-        value: 120,
-        type: TransactionType.expense,
-      ),
-    ],
   );
 }

@@ -9,7 +9,6 @@ import 'package:financial_health_dashboard/src/features/dashboard/domain/entitie
 
 import 'package:financial_health_dashboard/src/features/dashboard/domain/repositories/dashboard_repository.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/domain/use_cases/add_dashboard_income_use_case.dart';
-import 'package:financial_health_dashboard/src/shared/domain/entities/transaction_data.dart';
 import 'package:financial_health_dashboard/src/shared/domain/enum/expense_category.dart';
 import 'package:financial_health_dashboard/src/shared/domain/enum/income_category.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -78,7 +77,11 @@ void main() {
     final useCase = AddDashboardIncomeUseCase(repo);
 
     final zeroResult = await useCase(
-      const AddDashboardIncomeInput(amount: 0, title: 'Freelance', category: IncomeCategory.salary),
+      const AddDashboardIncomeInput(
+        amount: 0,
+        title: 'Freelance',
+        category: IncomeCategory.salary,
+      ),
     );
     final negativeResult = await useCase(
       const AddDashboardIncomeInput(
@@ -103,7 +106,11 @@ void main() {
     final useCase = AddDashboardIncomeUseCase(repo);
 
     final result = await useCase(
-      const AddDashboardIncomeInput(amount: 500, title: '   ', category: IncomeCategory.salary),
+      const AddDashboardIncomeInput(
+        amount: 500,
+        title: '   ',
+        category: IncomeCategory.salary,
+      ),
     );
 
     expect(repo.addIncomeCalls, 0);
@@ -115,7 +122,9 @@ void main() {
   });
 
   test('retorna Left quando repository falha', () async {
-    final repo = _FakeDashboardRepository(const Left(AppFailure('erro de rede')));
+    final repo = _FakeDashboardRepository(
+      const Left(AppFailure('erro de rede')),
+    );
     final useCase = AddDashboardIncomeUseCase(repo);
 
     final result = await useCase(
@@ -127,7 +136,10 @@ void main() {
     );
 
     expect(result.isLeft(), isTrue);
-    result.fold((failure) => expect(failure.message, 'erro de rede'), (_) => fail('esperava Left'));
+    result.fold(
+      (failure) => expect(failure.message, 'erro de rede'),
+      (_) => fail('esperava Left'),
+    );
   });
 }
 
@@ -163,14 +175,5 @@ DashboardOverviewData _overview() {
     ),
     monthlyGoalTargetAmount: 15000,
     monthlyGoalAchievedAmount: 9000,
-    transactions: const [
-      TransactionData(
-        id: '1',
-        title: 'Venda',
-        category: 'services',
-        value: 100,
-        type: TransactionType.income,
-      ),
-    ],
   );
 }

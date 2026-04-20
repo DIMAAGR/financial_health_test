@@ -7,7 +7,11 @@ import 'package:financial_health_dashboard/src/features/incomes/data/models/inco
 abstract class IncomesRemoteDataSource {
   Future<IncomesOverviewModel> getOverview();
 
-  Future<void> addIncome({required double amount, required String title, required String category});
+  Future<void> addIncome({
+    required double amount,
+    required String title,
+    required String category,
+  });
 }
 
 class IncomesRemoteDataSourceImpl implements IncomesRemoteDataSource {
@@ -25,7 +29,7 @@ class IncomesRemoteDataSourceImpl implements IncomesRemoteDataSource {
   @override
   Future<IncomesOverviewModel> getOverview() async {
     await _ensureConnected();
-    final response = await _http.get('/dashboard/overview');
+    final response = await _http.get('/incomes/overview');
     return IncomesOverviewModel.fromJson(response.data);
   }
 
@@ -37,7 +41,7 @@ class IncomesRemoteDataSourceImpl implements IncomesRemoteDataSource {
   }) async {
     await _ensureConnected();
     await _http.post(
-      '/dashboard/income',
+      '/incomes',
       data: {'amount': amount, 'title': title, 'category': category},
     );
   }

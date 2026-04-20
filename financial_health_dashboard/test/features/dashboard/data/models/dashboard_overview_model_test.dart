@@ -13,8 +13,6 @@ void main() {
       expect(model.flowPoints, hasLength(2));
       expect(model.flowPoints.first.income, 1000);
       expect(model.flowPoints.first.expense, 800);
-      expect(model.transactions, hasLength(2));
-      expect(model.transactions.first.type.name, 'income');
     });
 
     test('fromJson aplica fallback quando payload é incompleto/inválido', () {
@@ -29,7 +27,6 @@ void main() {
       expect(model.flowPoints, hasLength(1));
       expect(model.flowPoints.first.income, 0);
       expect(model.flowPoints.first.expense, 0);
-      expect(model.transactions, isEmpty);
     });
 
     test('toEntity protege target zero e calcula score/status', () {
@@ -93,7 +90,13 @@ Map<String, dynamic> _validJson() {
       {'income': 1200, 'expense': 900},
     ],
     'transactions': [
-      {'id': 'tx-1', 'title': 'Salário', 'category': 'salary', 'value': 2000, 'type': 'income'},
+      {
+        'id': 'tx-1',
+        'title': 'Salário',
+        'category': 'salary',
+        'value': 2000,
+        'type': 'income',
+      },
       {
         'id': 'tx-2',
         'title': 'Mercado',

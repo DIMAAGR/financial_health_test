@@ -2,7 +2,6 @@ import 'package:financial_health_dashboard/src/features/dashboard/domain/entitie
 import 'package:financial_health_dashboard/src/features/dashboard/domain/entities/financial_health_score_data.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/domain/entities/flow_analysis_data.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/domain/entities/monthly_goal_data.dart';
-import 'package:financial_health_dashboard/src/shared/domain/entities/transaction_data.dart';
 
 class DashboardState {
   const DashboardState({
@@ -13,7 +12,6 @@ class DashboardState {
     required this.financialHealthScore,
     required this.flowAnalysis,
     required this.monthlyGoal,
-    required this.transactions,
     required this.status,
     this.errorMessage,
     this.canRetry = false,
@@ -39,7 +37,6 @@ class DashboardState {
         achievedPercent: 0,
         referenceDate: DateTime(1970),
       ),
-      transactions: const [],
       status: DashboardViewStatus.initial,
       effectVersion: 0,
     );
@@ -58,7 +55,6 @@ class DashboardState {
       financialHealthScore: overview.financialHealthScore,
       flowAnalysis: overview.flowAnalysis,
       monthlyGoal: overview.monthlyGoal,
-      transactions: overview.transactions,
       status: DashboardViewStatus.success,
       effect: effect,
       effectVersion: effectVersion,
@@ -72,7 +68,6 @@ class DashboardState {
   final FinancialHealthScoreData financialHealthScore;
   final FlowAnalysisData flowAnalysis;
   final MonthlyGoalData monthlyGoal;
-  final List<TransactionData> transactions;
   final DashboardViewStatus status;
   final String? errorMessage;
   final bool canRetry;
@@ -87,7 +82,6 @@ class DashboardState {
     FinancialHealthScoreData? financialHealthScore,
     FlowAnalysisData? flowAnalysis,
     MonthlyGoalData? monthlyGoal,
-    List<TransactionData>? transactions,
     DashboardViewStatus? status,
     String? errorMessage,
     bool? canRetry,
@@ -104,7 +98,6 @@ class DashboardState {
       financialHealthScore: financialHealthScore ?? this.financialHealthScore,
       flowAnalysis: flowAnalysis ?? this.flowAnalysis,
       monthlyGoal: monthlyGoal ?? this.monthlyGoal,
-      transactions: transactions ?? this.transactions,
       status: status ?? this.status,
       errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
       canRetry: canRetry ?? this.canRetry,

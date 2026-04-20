@@ -29,7 +29,7 @@ class ExpensesRemoteDataSourceImpl implements ExpensesRemoteDataSource {
   @override
   Future<ExpensesOverviewModel> getOverview() async {
     await _ensureConnected();
-    final response = await _http.get('/dashboard/overview');
+    final response = await _http.get('/expenses/overview');
     return ExpensesOverviewModel.fromJson(response.data);
   }
 
@@ -41,7 +41,7 @@ class ExpensesRemoteDataSourceImpl implements ExpensesRemoteDataSource {
   }) async {
     await _ensureConnected();
     await _http.post(
-      '/dashboard/expense',
+      '/expenses',
       data: {'amount': amount, 'title': title, 'category': category},
     );
   }

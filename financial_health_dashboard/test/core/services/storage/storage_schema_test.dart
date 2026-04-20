@@ -8,10 +8,10 @@ void main() {
     });
 
     test('chaves usam sufixo de versão para evitar conflito de migração', () {
-      expect(StorageSchema.dashboardOverviewKey, 'dashboard_overview_v1');
+      expect(StorageSchema.financialOverviewKey, 'financial_overview_v1');
       expect(
-        StorageSchema.dashboardTransactionsKey,
-        'dashboard_transactions_v1',
+        StorageSchema.financialTransactionsKey,
+        'financial_transactions_v1',
       );
     });
   });

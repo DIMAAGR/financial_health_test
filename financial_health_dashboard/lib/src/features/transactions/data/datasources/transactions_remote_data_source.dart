@@ -19,7 +19,7 @@ class TransactionsRemoteDataSourceImpl implements TransactionsRemoteDataSource {
     if (!await _networkInfo.isConnected) {
       throw const SocketException('Sem conexão com a internet.');
     }
-    final response = await _http.get('/dashboard/overview');
+    final response = await _http.get('/transactions/overview');
     return TransactionsOverviewModel.fromJson(response.data);
   }
 }

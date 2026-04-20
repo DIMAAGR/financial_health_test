@@ -15,7 +15,7 @@ class FakeHttpService implements HttpService {
 
   final KeyValueWrapper _storage;
   final Duration _latency;
-  final _FakeDashboardState _state;
+  final _FakeFinancialState _state;
 
   @override
   Future<HttpResponse<Map<String, dynamic>>> get(
@@ -26,20 +26,45 @@ class FakeHttpService implements HttpService {
 
     switch (path) {
       case '/dashboard/overview':
-        return HttpResponse(statusCode: 200, data: _state.toOverviewJson());
-      case '/dashboard/transactions':
-        return HttpResponse(statusCode: 200, data: {'transactions': _state.transactionsJson()});
+        return HttpResponse(
+          statusCode: 200,
+          data: _state.toDashboardOverviewJson(),
+        );
+      case '/incomes/overview':
+        return HttpResponse(
+          statusCode: 200,
+          data: _state.toIncomesOverviewJson(),
+        );
+      case '/expenses/overview':
+        return HttpResponse(
+          statusCode: 200,
+          data: _state.toExpensesOverviewJson(),
+        );
+      case '/transactions/overview':
+        return HttpResponse(
+          statusCode: 200,
+          data: _state.toTransactionsOverviewJson(),
+        );
+      case '/transactions':
+        return HttpResponse(
+          statusCode: 200,
+          data: {'transactions': _state.transactionsJson()},
+        );
       default:
         throw UnsupportedError('GET $path não suportado no FakeHttpService.');
     }
   }
 
   @override
-  Future<HttpResponse<Map<String, dynamic>>> post(String path, {Map<String, dynamic>? data}) async {
+  Future<HttpResponse<Map<String, dynamic>>> post(
+    String path, {
+    Map<String, dynamic>? data,
+  }) async {
     await Future.delayed(_latency);
 
     switch (path) {
       case '/dashboard/income':
+      case '/incomes':
         final amount = _readPositiveAmount(data);
         _state.addIncome(
           amount,
@@ -47,8 +72,12 @@ class FakeHttpService implements HttpService {
           category: _readTextOrFallback(data, 'category', fallback: 'other'),
         );
         await _persistState();
-        return HttpResponse(statusCode: 200, data: _state.toOverviewJson());
+        return HttpResponse(
+          statusCode: 200,
+          data: _state.responseForPost(path),
+        );
       case '/dashboard/expense':
+      case '/expenses':
         final amount = _readPositiveAmount(data);
         _state.addExpense(
           amount,
@@ -56,7 +85,10 @@ class FakeHttpService implements HttpService {
           category: _readTextOrFallback(data, 'category', fallback: 'other'),
         );
         await _persistState();
-        return HttpResponse(statusCode: 200, data: _state.toOverviewJson());
+        return HttpResponse(
+          statusCode: 200,
+          data: _state.responseForPost(path),
+        );
       default:
         throw UnsupportedError('POST $path não suportado no FakeHttpService.');
     }
@@ -65,12 +97,20 @@ class FakeHttpService implements HttpService {
   double _readPositiveAmount(Map<String, dynamic>? data) {
     final rawAmount = data?['amount'];
     if (rawAmount is! num || rawAmount <= 0) {
-      throw ArgumentError.value(rawAmount, 'amount', 'amount deve ser numérico e maior que zero.');
+      throw ArgumentError.value(
+        rawAmount,
+        'amount',
+        'amount deve ser numérico e maior que zero.',
+      );
     }
     return rawAmount.toDouble();
   }
 
-  String _readTextOrFallback(Map<String, dynamic>? data, String key, {required String fallback}) {
+  String _readTextOrFallback(
+    Map<String, dynamic>? data,
+    String key, {
+    required String fallback,
+  }) {
     final raw = data?[key] as String?;
     final value = raw?.trim();
     return (value == null || value.isEmpty) ? fallback : value;
@@ -78,18 +118,21 @@ class FakeHttpService implements HttpService {
 
   Future<void> _persistState() async {
     await Future.wait([
-      _storage.setString(StorageSchema.dashboardOverviewKey, jsonEncode(_state.toOverviewJson())),
       _storage.setString(
-        StorageSchema.dashboardTransactionsKey,
+        StorageSchema.financialOverviewKey,
+        jsonEncode(_state.toFinancialOverviewJson()),
+      ),
+      _storage.setString(
+        StorageSchema.financialTransactionsKey,
         jsonEncode(_state.transactionsJson()),
       ),
     ]);
   }
 
-  static _FakeDashboardState _loadOrCreateState(KeyValueWrapper storage) {
-    final raw = storage.getString(StorageSchema.dashboardOverviewKey);
+  static _FakeFinancialState _loadOrCreateState(KeyValueWrapper storage) {
+    final raw = storage.getString(StorageSchema.financialOverviewKey);
     if (raw == null || raw.isEmpty) {
-      final randomState = _FakeDashboardState.random(Random(), DateTime.now());
+      final randomState = _FakeFinancialState.random(Random(), DateTime.now());
       _persistInitialState(storage, randomState);
       return randomState;
     }
@@ -100,33 +143,45 @@ class FakeHttpService implements HttpService {
         return _withPersistedTransactions(storage, decoded);
       }
       if (decoded is Map) {
-        return _withPersistedTransactions(storage, decoded.cast<String, dynamic>());
+        return _withPersistedTransactions(
+          storage,
+          decoded.cast<String, dynamic>(),
+        );
       }
     } catch (_) {
       // Fall back to random state when cached payload is corrupted.
     }
 
-    final fallback = _FakeDashboardState.random(Random(), DateTime.now());
+    final fallback = _FakeFinancialState.random(Random(), DateTime.now());
     _persistInitialState(storage, fallback);
     return fallback;
   }
 
-  static void _persistInitialState(KeyValueWrapper storage, _FakeDashboardState state) {
+  static void _persistInitialState(
+    KeyValueWrapper storage,
+    _FakeFinancialState state,
+  ) {
     storage
-      ..setString(StorageSchema.dashboardOverviewKey, jsonEncode(state.toOverviewJson()))
-      ..setString(StorageSchema.dashboardTransactionsKey, jsonEncode(state.transactionsJson()));
+      ..setString(
+        StorageSchema.financialOverviewKey,
+        jsonEncode(state.toFinancialOverviewJson()),
+      )
+      ..setString(
+        StorageSchema.financialTransactionsKey,
+        jsonEncode(state.transactionsJson()),
+      );
   }
 
-  static _FakeDashboardState _withPersistedTransactions(
+  static _FakeFinancialState _withPersistedTransactions(
     KeyValueWrapper storage,
     Map<String, dynamic> overviewJson,
   ) {
-    final state = _FakeDashboardState.fromOverviewJson(overviewJson);
+    final state = _FakeFinancialState.fromFinancialOverviewJson(overviewJson);
     final persistedTransactions = _readPersistedTransactions(storage);
 
     if (persistedTransactions == null) {
       storage.setString(
-        StorageSchema.dashboardTransactionsKey,
+        StorageSchema.financialTransactionsKey,
         jsonEncode(state.transactionsJson()),
       );
       return state;
@@ -138,8 +193,10 @@ class FakeHttpService implements HttpService {
     return state;
   }
 
-  static List<_Transaction>? _readPersistedTransactions(KeyValueWrapper storage) {
-    final raw = storage.getString(StorageSchema.dashboardTransactionsKey);
+  static List<_Transaction>? _readPersistedTransactions(
+    KeyValueWrapper storage,
+  ) {
+    final raw = storage.getString(StorageSchema.financialTransactionsKey);
     if (raw == null || raw.isEmpty) return null;
 
     try {
@@ -156,8 +213,8 @@ class FakeHttpService implements HttpService {
   }
 }
 
-class _FakeDashboardState {
-  _FakeDashboardState({
+class _FakeFinancialState {
+  _FakeFinancialState({
     required this.userName,
     required this.monthLabel,
     required this.balance,
@@ -173,22 +230,43 @@ class _FakeDashboardState {
     required this.transactions,
   });
 
-  factory _FakeDashboardState.random(Random random, DateTime now) {
+  factory _FakeFinancialState.random(Random random, DateTime now) {
     final income = _randomInRange(random, min: 8000, max: 26000);
     final expense = _randomInRange(random, min: 3500, max: income * 0.95);
-    final balance = _randomInRange(random, min: income * 0.6, max: income * 2.2);
+    final balance = _randomInRange(
+      random,
+      min: income * 0.6,
+      max: income * 2.2,
+    );
     final currentLiquidityIndex = (income / expense).clamp(0.5, 4.0);
     final previousLiquidityIndex =
-        (currentLiquidityIndex + _randomInRange(random, min: -0.2, max: 0.2)).clamp(0.3, 4.0);
+        (currentLiquidityIndex + _randomInRange(random, min: -0.2, max: 0.2))
+            .clamp(0.3, 4.0);
 
     final monthDays = DateTime(now.year, now.month + 1, 0).day;
     final monthLabel = _ptBrMonth(now.month);
-    final goalTargetAmount = _randomInRange(random, min: income * 1.1, max: income * 1.8);
-    final goalAchievedAmount = _randomInRange(random, min: income * 0.3, max: income * 1.1);
+    final goalTargetAmount = _randomInRange(
+      random,
+      min: income * 1.1,
+      max: income * 1.8,
+    );
+    final goalAchievedAmount = _randomInRange(
+      random,
+      min: income * 0.3,
+      max: income * 1.1,
+    );
 
     final flow = List<_FlowMonth>.generate(6, (_) {
-      final monthIncome = _randomInRange(random, min: income * 0.7, max: income * 1.15);
-      final monthExpense = _randomInRange(random, min: expense * 0.7, max: monthIncome * 0.95);
+      final monthIncome = _randomInRange(
+        random,
+        min: income * 0.7,
+        max: income * 1.15,
+      );
+      final monthExpense = _randomInRange(
+        random,
+        min: expense * 0.7,
+        max: monthIncome * 0.95,
+      );
       return _FlowMonth(income: monthIncome, expense: monthExpense);
     });
 
@@ -211,7 +289,8 @@ class _FakeDashboardState {
         (i) => _Transaction(
           id: _randomId(random, prefix: 'exp'),
           title: _expenseTitles[random.nextInt(_expenseTitles.length)],
-          category: _expenseCategories[random.nextInt(_expenseCategories.length)],
+          category:
+              _expenseCategories[random.nextInt(_expenseCategories.length)],
           value: _randomInRange(random, min: 80, max: expense * 0.14),
           type: _TransactionType.expense,
           date: now.subtract(Duration(days: random.nextInt(7))),
@@ -219,7 +298,7 @@ class _FakeDashboardState {
       ),
     ]..shuffle(random);
 
-    return _FakeDashboardState(
+    return _FakeFinancialState(
       userName: 'Júlio',
       monthLabel: monthLabel,
       balance: balance,
@@ -236,20 +315,25 @@ class _FakeDashboardState {
     );
   }
 
-  factory _FakeDashboardState.fromOverviewJson(Map<String, dynamic> json) {
+  factory _FakeFinancialState.fromFinancialOverviewJson(
+    Map<String, dynamic> json,
+  ) {
     final liquidity = _asMap(json['liquidity']);
     final monthlyGoal = _asMap(json['monthlyGoal']);
     final flowJson = (json['flow'] as List<dynamic>? ?? const [])
         .map(_asMap)
         .toList(growable: false);
-    final transactionsJson = (json['transactions'] as List<dynamic>? ?? const [])
-        .map(_asMap)
-        .toList(growable: false);
+    final transactionsJson =
+        (json['transactions'] as List<dynamic>? ?? const [])
+            .map(_asMap)
+            .toList(growable: false);
 
     final flow = flowJson
         .map(
-          (item) =>
-              _FlowMonth(income: _toDouble(item['income']), expense: _toDouble(item['expense'])),
+          (item) => _FlowMonth(
+            income: _toDouble(item['income']),
+            expense: _toDouble(item['expense']),
+          ),
         )
         .toList(growable: false);
 
@@ -263,16 +347,20 @@ class _FakeDashboardState {
             type: (item['type'] as String? ?? '').toLowerCase() == 'expense'
                 ? _TransactionType.expense
                 : _TransactionType.income,
-            date: DateTime.tryParse(item['date'] as String? ?? '') ?? DateTime.now(),
+            date:
+                DateTime.tryParse(item['date'] as String? ?? '') ??
+                DateTime.now(),
           ),
         )
         .where((item) => item.id.isNotEmpty)
         .toList(growable: true);
 
     final now = DateTime.now();
-    return _FakeDashboardState(
+    return _FakeFinancialState(
       userName: (json['userName'] as String? ?? 'Júlio').trim(),
-      monthLabel: (monthlyGoal['monthLabel'] as String? ?? _ptBrMonth(now.month)).trim(),
+      monthLabel:
+          (monthlyGoal['monthLabel'] as String? ?? _ptBrMonth(now.month))
+              .trim(),
       balance: _toDouble(json['balance']),
       income: _toDouble(json['income']),
       expense: _toDouble(json['expense']),
@@ -285,7 +373,9 @@ class _FakeDashboardState {
         monthlyGoal['daysInMonth'],
         fallback: DateTime(now.year, now.month + 1, 0).day,
       ),
-      flow: flow.isEmpty ? <_FlowMonth>[const _FlowMonth(income: 0, expense: 0)] : flow,
+      flow: flow.isEmpty
+          ? <_FlowMonth>[const _FlowMonth(income: 0, expense: 0)]
+          : flow,
       transactions: transactions,
     );
   }
@@ -310,9 +400,14 @@ class _FakeDashboardState {
     return (expense / income) * 100;
   }
 
-  double get commitmentDifferencePercent => commitmentBenchmarkPercent - commitmentPercent;
+  double get commitmentDifferencePercent =>
+      commitmentBenchmarkPercent - commitmentPercent;
 
-  void addIncome(double amount, {required String title, required String category}) {
+  void addIncome(
+    double amount, {
+    required String title,
+    required String category,
+  }) {
     income += amount;
     balance += amount;
     goalAchievedAmount += amount;
@@ -330,7 +425,11 @@ class _FakeDashboardState {
     _refreshLiquidity();
   }
 
-  void addExpense(double amount, {required String title, required String category}) {
+  void addExpense(
+    double amount, {
+    required String title,
+    required String category,
+  }) {
     expense += amount;
     balance -= amount;
     transactions.add(
@@ -347,7 +446,10 @@ class _FakeDashboardState {
     _refreshLiquidity();
   }
 
-  void _touchCurrentFlow({required double incomeDelta, required double expenseDelta}) {
+  void _touchCurrentFlow({
+    required double incomeDelta,
+    required double expenseDelta,
+  }) {
     final current = flow.last;
     flow[flow.length - 1] = _FlowMonth(
       income: current.income + incomeDelta,
@@ -366,13 +468,75 @@ class _FakeDashboardState {
     return ((current - previous) / previous) * 100;
   }
 
-  Map<String, dynamic> toOverviewJson() {
+  Map<String, dynamic> responseForPost(String path) {
+    switch (path) {
+      case '/incomes':
+        return toIncomesOverviewJson();
+      case '/expenses':
+        return toExpensesOverviewJson();
+      case '/dashboard/income':
+      case '/dashboard/expense':
+      default:
+        return toDashboardOverviewJson();
+    }
+  }
+
+  Map<String, dynamic> toFinancialOverviewJson() {
+    return {
+      ..._metricsJson(),
+      'userName': userName,
+      'liquidity': {
+        'previousIndex': previousLiquidityIndex,
+        'currentIndex': currentLiquidityIndex,
+      },
+      'commitment': {
+        'percent': commitmentPercent,
+        'benchmarkPercent': commitmentBenchmarkPercent,
+        'differencePercent': commitmentDifferencePercent,
+      },
+      'monthlyGoal': _monthlyGoalJson(),
+      'flow': flow
+          .map((item) => {'income': item.income, 'expense': item.expense})
+          .toList(),
+    };
+  }
+
+  Map<String, dynamic> toDashboardOverviewJson() {
+    return toFinancialOverviewJson();
+  }
+
+  Map<String, dynamic> toIncomesOverviewJson() {
+    return {
+      'income': income,
+      'incomeChangePercent': _metricsJson()['incomeChangePercent'],
+      'monthlyGoal': _monthlyGoalJson(),
+      'transactions': transactionsJson(type: _TransactionType.income),
+    };
+  }
+
+  Map<String, dynamic> toExpensesOverviewJson() {
+    return {
+      'expense': expense,
+      'expenseChangePercent': _metricsJson()['expenseChangePercent'],
+      'monthlyGoal': _monthlyGoalJson(),
+      'transactions': transactionsJson(type: _TransactionType.expense),
+    };
+  }
+
+  Map<String, dynamic> toTransactionsOverviewJson() {
+    return {
+      ..._metricsJson(),
+      'monthlyGoal': _monthlyGoalJson(),
+      'transactions': transactionsJson(),
+    };
+  }
+
+  Map<String, dynamic> _metricsJson() {
     final previousMonth = flow.length >= 2
         ? flow[flow.length - 2]
         : const _FlowMonth(income: 0, expense: 0);
 
     return {
-      'userName': userName,
       'income': income,
       'expense': expense,
       'balance': balance,
@@ -382,26 +546,24 @@ class _FakeDashboardState {
         income - expense,
         previousMonth.income - previousMonth.expense,
       ),
-      'liquidity': {'previousIndex': previousLiquidityIndex, 'currentIndex': currentLiquidityIndex},
-      'commitment': {
-        'percent': commitmentPercent,
-        'benchmarkPercent': commitmentBenchmarkPercent,
-        'differencePercent': commitmentDifferencePercent,
-      },
-      'monthlyGoal': {
-        'monthLabel': monthLabel,
-        'targetAmount': goalTargetAmount,
-        'achievedAmount': goalAchievedAmount,
-        'day': goalDay,
-        'daysInMonth': goalDaysInMonth,
-      },
-      'flow': flow.map((item) => {'income': item.income, 'expense': item.expense}).toList(),
-      'transactions': transactionsJson(),
     };
   }
 
-  List<Map<String, dynamic>> transactionsJson() {
-    return transactions.map((item) => item.toJson()).toList();
+  Map<String, dynamic> _monthlyGoalJson() {
+    return {
+      'monthLabel': monthLabel,
+      'targetAmount': goalTargetAmount,
+      'achievedAmount': goalAchievedAmount,
+      'day': goalDay,
+      'daysInMonth': goalDaysInMonth,
+    };
+  }
+
+  List<Map<String, dynamic>> transactionsJson({_TransactionType? type}) {
+    return transactions
+        .where((item) => type == null || item.type == type)
+        .map((item) => item.toJson())
+        .toList();
   }
 }
 
@@ -421,7 +583,11 @@ int _toInt(dynamic value, {required int fallback}) {
   return fallback;
 }
 
-double _randomInRange(Random random, {required double min, required double max}) {
+double _randomInRange(
+  Random random, {
+  required double min,
+  required double max,
+}) {
   if (max <= min) return min;
   return min + random.nextDouble() * (max - min);
 }
@@ -514,6 +680,18 @@ const _incomeTitles = <String>[
 
 const _incomeCategories = <String>['salary', 'services', 'investment', 'other'];
 
-const _expenseTitles = <String>['Mercado', 'Transporte', 'Internet', 'Assinatura', 'Compra do mês'];
+const _expenseTitles = <String>[
+  'Mercado',
+  'Transporte',
+  'Internet',
+  'Assinatura',
+  'Compra do mês',
+];
 
-const _expenseCategories = <String>['food', 'transport', 'shopping', 'housing', 'other'];
+const _expenseCategories = <String>[
+  'food',
+  'transport',
+  'shopping',
+  'housing',
+  'other',
+];
