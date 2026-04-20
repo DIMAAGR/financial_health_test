@@ -1,0 +1,63 @@
+# AI development guardrails for Financial Health Dashboard.
+# TOON is used here as compact, structured context for AI agents.
+
+meta:
+  version: 1
+  language: pt-BR
+  audience: ai_agent
+  purpose: "Preservar arquitetura, escopo e qualidade durante geração assistida por IA."
+  scope: "Flutter app, docs técnicos e MCP server deste repositório."
+
+principles[6]{id,rule,why}:
+  boundary_first,"Corrigir fronteiras entre contextos antes de refinamentos locais.","Evita atacar sintomas enquanto o acoplamento estrutural continua."
+  kiss_before_abstraction,"Preferir a menor solução clara antes de criar abstrações.","Reduz over-engineering e mantém o teste defensável."
+  dry_with_semantics,"Remover duplicação real apenas quando o compartilhado for semanticamente neutro.","Evita shared contaminado por vocabulário de uma feature."
+  clean_names,"Nomear arquivos, classes, endpoints e contratos pelo papel real que exercem.","Nomes errados escondem acoplamento e confundem avaliação."
+  test_the_boundary,"Toda refatoração arquitetural deve ganhar teste que proteja a intenção.","Garante que a regressão arquitetural não volte silenciosamente."
+  human_validated_ai,"Toda sugestão relevante de IA deve ser filtrada, corrigida e validada por humano.","Uso crítico de IA vale mais que geração acrítica."
+
+mandatory_checks[12]{id,applies_to,check,fail_example,pass_example}:
+  feature_imports,"before_code_change","Feature não deve importar outra feature sem justificativa explícita.","incomes importa features/dashboard","incomes depende de shared ou de contrato próprio"
+  endpoint_ownership,"data_layer","Datasource deve consumir endpoint do próprio contexto ou borda neutra.","ExpensesRemoteDataSource lê /dashboard/overview","ExpensesRemoteDataSource lê /expenses/overview"
+  shared_neutrality,"shared_layer","Código em shared/core não deve carregar nome ou vocabulário de feature específica.","DashboardTransactionData em shared","TransactionData em shared"
+  god_object_guard,"domain_entities","Agregado não deve carregar dados que a própria feature não usa.","DashboardOverviewData contém transactions para detail screen","TransactionsOverviewData contém transactions"
+  domain_no_ui_copy,"domain_layer","Domain não deve conter copy final, labels visuais ou texto de apresentação.","MonthlyGoalData tem description de UI","MonthlyGoalTextMapper monta copy na presentation"
+  typed_domain_categories,"domain_layer","Categorias de domínio devem impedir estados inválidos quando possível.","despesa aceita salary","ExpenseCategory e IncomeCategory separados"
+  datasource_scope,"data_layer","Datasource busca/parseia; repository mapeia erro/entidade; use case valida orquestração.","Cubit parseia payload HTTP","Cubit chama use case"
+  explicit_ui_state,"presentation_layer","Fluxo com dados deve modelar initial/loading/success/error explicitamente.","isLoading + error + data soltos","enum de status no state"
+  local_effects,"presentation_layer","Efeitos de UI devem ser explícitos e limpos após consumo.","showModal chamado por regra escondida","effect + effectVersion + clearEffect"
+  time_dependency,"domain_or_presentation","Regra temporal deve receber Clock ou referenceDate, não DateTime.now espalhado.","helper visual decide hoje com DateTime.now direto","Clock injetável ou referenceDate"
+  money_precision,"domain_layer","Novo valor monetário de domínio não deve nascer como double sem justificativa.","Money em double em nova entidade","centavos em int ou value object Money"
+  generated_artifacts,"repo_hygiene","Artefatos gerados/cacheados não devem ser versionados.",".dart_tool commitado","gitignore + git rm --cached"
+
+architecture_red_flags[10]{signal,risk,default_action}:
+  "features/* usa endpoint /dashboard/*","dashboard vira centro estrutural do app","criar endpoint próprio ou borda neutra"
+  "classe shared começa com nome de feature","vazamento de contexto para camada neutra","renomear ou devolver para feature"
+  "overview de uma tela alimenta outra tela","agregado vira God Object","criar contrato/model próprio da tela consumidora"
+  "mesmo parser de transação repetido em 3 models","duplicação frágil e parsing inconsistente","extrair model/parser compartilhado neutro"
+  "mesmo cálculo de category breakdown repetido","DRY violado em regra reaproveitável","extrair service de domínio compartilhado"
+  "fake backend concentra seed, storage, mutation e routing","mock vira classe grande e difícil de evoluir","separar store/state ou response mapper"
+  "catch Object genérico sem separação","erro de programação pode parecer erro de negócio","mapear falhas técnicas explicitamente"
+  "DateTime.now aparece em widget/helper","teste fica temporalmente instável","injetar Clock ou passar data de referência"
+  "copyWith grande muda frequentemente","boilerplate frágil","considerar Freezed após estabilizar shape"
+  "README promete arquitetura que código não cumpre","narrativa perde credibilidade","corrigir código primeiro, documentar depois"
+
+definition_of_done[10]{check,required}:
+  "Nenhum import indevido entre features",true
+  "Endpoints usados por cada datasource pertencem ao contexto correto ou são neutros",true
+  "Conceitos compartilhados têm nomes neutros",true
+  "Domain não recebeu copy de UI",true
+  "Nova regra de negócio tem teste unitário quando viável",true
+  "Refatoração de boundary tem teste de fronteira",true
+  "Sem artefato gerado versionado",true
+  "flutter analyze passa ou exceção é documentada",true
+  "flutter test passa ou exceção é documentada",true
+  "Decisão influenciada por IA foi registrada quando relevante",true
+
+mcp_tool_ideas[6]{name,purpose,checks}:
+  check_architecture_boundaries,"Detectar acoplamento indevido entre features.","imports features/*, endpoints de contexto errado"
+  check_generated_artifacts,"Detectar cache/build/devtools versionados.",".dart_tool, build, coverage, devtools"
+  check_domain_purity,"Detectar UI copy ou infra vazando para domain.","TextStyle, BuildContext, labels/copy em domain"
+  check_time_usage,"Detectar DateTime.now fora de locais permitidos.","presentation helpers, domain constructors"
+  check_money_types,"Detectar double monetário novo em domain.","amount, balance, income, expense como double"
+  summarize_ai_decision,"Gerar entrada curta e curada de decisão IA.","prompt, accepted, rejected, validation"
