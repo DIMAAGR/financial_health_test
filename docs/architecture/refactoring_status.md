@@ -62,9 +62,9 @@ que deve virar novas branches pequenas e revisaveis.
 | 24 | Parcial | Padronizar Clock/data de referencia | Existe `Clock`, mas nem todos os fluxos usam. | Injetar `Clock`/`referenceDate` nos pontos temporais. |
 | 25 | Pendente | Evitar `DateTime.now()` espalhado | Ainda aparece em presentation e fake backend. | Substituir por `Clock` ou argumento explicito. |
 | 26 | Pendente | Helpers de UI com regra demais | Ainda precisa revisao especifica dos helpers/mappers de presentation. | Mover regra de negocio para domain/application. |
-| 27 | Pendente | Melhorar README arquitetural | README ficou para a fase final. | Reescrever depois das correcoes principais. |
+| 27 | Parcial | Melhorar README arquitetural | Instrucoes de execucao e descricao visual foram reforcadas; narrativa final ainda pode ser lapidada. | Reescrever depois das correcoes principais. |
 | 28 | Pendente | Reduzir log detalhado de IA | Ainda precisa curadoria narrativa. | Manter exemplos fortes e remover ruido. |
-| 29 | Pendente | Documentar IA com foco em decisao/validacao | Sera tratado junto do README final. | Escrever relato curto: aceito, rejeitado, corrigido, validado. |
+| 29 | Parcial | Documentar IA com foco em decisao/validacao | README do app separa erros reais de decisoes evolutivas. | Enxugar exemplos no README final e manter apenas casos fortes. |
 | 30 | Feito | Nao crescer bonus antes do app | O bonus recebeu apenas guardrails MCP, sem desviar a arquitetura principal. | So evoluir MCP depois de estabilizar app e README. |
 | 31 | Pendente | Cobrir melhor UI principal | Ainda falta reforco de widget tests da tela principal. | Adicionar testes de loading/success/error e interacao principal. |
 | 32 | Parcial | Investigar testes frageis | Suite passou, mas nao houve auditoria completa de flakiness. | Rodar testes repetidos antes da entrega final. |

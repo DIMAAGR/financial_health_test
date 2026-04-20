@@ -25,13 +25,13 @@ O servidor implementa o [Model Context Protocol](https://modelcontextprotocol.io
 | Ferramenta | Tipo | Descrição |
 |---|---|---|
 | `get_project_context` | Leitura | Retorna arquitetura + convenções do projeto |
-| `get_rules` | Leitura | Retorna regras de governança IA (logging, TDD, widgets) |
+| `get_rules` | Leitura | Retorna regras de governança IA + guardrails TOON |
 | `get_learnings` | Leitura | Retorna erros documentados com causa raiz e prevenção |
 | `search_prompt_log` | Leitura | Busca no histórico de interações IA por termo |
 | `log_interaction` | Escrita | Registra nova interação no prompt_log.md |
 | `add_learning` | Escrita | Registra novo aprendizado no learnings.md |
 | `generate_feature_structure` | Geração | Cria hierarquia completa de pastas e arquivos para uma feature |
-| `generate_cubit_test` | Geração | Lê um Cubit e gera scaffold de teste com padrão AAA |
+| `generate_cubit_test` | Geração | Analisa o texto de um Cubit e gera scaffold de teste com padrão AAA |
 
 ### Fluxo de uso
 
@@ -51,7 +51,7 @@ Developer ↔ VS Code (Copilot/Claude) ↔ MCP Protocol ↔ financial-health-mcp
 
 ### Pré-requisitos
 
-- Dart SDK ≥ 3.0.0
+- Dart SDK `^3.10.0` (validado com Dart 3.10.0)
 - VS Code com extensão GitHub Copilot (ou qualquer MCP host)
 
 ### Instalação
@@ -63,23 +63,31 @@ dart pub get
 
 ### VS Code
 
-O arquivo `.vscode/mcp.json` já está configurado na raiz do projeto:
+O arquivo `.vscode/mcp.json` já está configurado na raiz do projeto. Ele usa `${workspaceFolder:financial_health_test}` para evitar ambiguidade em workspaces com mais de uma pasta aberta.
 
 ```json
 {
+  "inputs": [],
   "servers": {
     "financial-health-mcp": {
       "type": "stdio",
       "command": "dart",
-      "args": ["run", "bin/main.dart"],
-      "cwd": "${workspaceFolder}/tools/mcp_server",
+      "args": [
+        "run",
+        "bin/main.dart",
+        "--project-root",
+        "${workspaceFolder:financial_health_test}"
+      ],
+      "cwd": "${workspaceFolder:financial_health_test}/tools/mcp_server",
       "env": {
-        "PROJECT_ROOT": "${workspaceFolder}"
+        "PROJECT_ROOT": "${workspaceFolder:financial_health_test}"
       }
     }
   }
 }
 ```
+
+> Se o workspace no VS Code tiver outro nome para a raiz do repositório, ajuste `financial_health_test` no `.vscode/mcp.json` ou use caminhos absolutos. Abrir apenas `financial_health_dashboard/` como root não é suficiente para este MCP, porque ele também lê `docs/` e `tools/`.
 
 ### Outros MCP hosts (Claude Desktop, etc.)
 
@@ -104,7 +112,7 @@ cd tools/mcp_server
 dart test
 ```
 
-28 testes cobrindo:
+29 testes cobrindo:
 - Leitura e parsing de documentação (context, rules, learnings, search)
 - Operações de escrita com auto-indexação (log, learning)
 - Geração de feature structure com validação de naming
@@ -148,6 +156,8 @@ O servidor:
 2. Extrai: nome do Cubit, nome do State, dependências do construtor, métodos públicos
 3. Gera scaffold de teste com: imports, estrutura de grupo, Arrange/Act/Assert, happy path + error path para cada método
 
+Limitação conhecida: `generate_cubit_test` não usa AST/analyzer completo. Ele faz análise textual do source para gerar um template inicial. Funciona bem para Cubits simples e consistentes com o padrão do projeto, mas pode exigir ajuste manual em Cubits com múltiplas classes no mesmo arquivo, construtores complexos, generics, dependências opcionais ou métodos com assinaturas fora do padrão.
+
 ---
 
 ## Ganho de produtividade estimado (time de 5-10 devs)
@@ -190,6 +200,7 @@ tools/mcp_server/
 | Funções públicas testáveis | Tudo privado nos callbacks | Permite testes unitários diretos sem mock do protocolo MCP |
 | `readDoc()` por arquivo | Ler tudo em memória no startup | Mais simples, docs são pequenos, evita stale cache |
 | `dry_run` em generate_feature | Sempre criar | Segurança: permite preview antes de criar 14+ diretórios |
+| Análise textual em `generate_cubit_test` | AST com analyzer Dart | Menor escopo para o bônus; gera scaffold útil, mas a limitação é documentada e requer validação humana |
 
 ---
 
