@@ -17,10 +17,10 @@ class TransactionsSkeleton extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // MonthSummaryCard placeholder
-            SkeletonCard(key: const Key('transactions-skeleton-summary'), height: 254),
+            const SkeletonCard(key: Key('transactions-skeleton-summary'), height: 254),
             const SizedBox(height: AppSpacing.xl),
             // "Histórico Detalhado" title row
-            SkeletonBlock(width: 180, height: 28),
+            const SkeletonBlock(width: 180, height: 28),
             const SizedBox(height: AppSpacing.xl),
             // Transaction group 1
             ..._buildTransactionGroupPlaceholder(),
@@ -36,10 +36,10 @@ class TransactionsSkeleton extends StatelessWidget {
   List<Widget> _buildTransactionGroupPlaceholder() {
     return [
       // Date label
-      SkeletonBlock(width: 120, height: 16),
+      const SkeletonBlock(width: 120, height: 16),
       const SizedBox(height: AppSpacing.md),
       // Transaction group card (3 items)
-      SkeletonCard(height: 266),
+      const SkeletonCard(height: 266),
     ];
   }
 }

@@ -7,34 +7,34 @@ class DashboardSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ShimmerSkeleton(
+    return const ShimmerSkeleton(
       child: SingleChildScrollView(
-        key: const Key('dashboard-skeleton'),
+        key: Key('dashboard-skeleton'),
         child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.lg),
+          padding: EdgeInsets.all(AppSpacing.lg),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SkeletonBlock(width: 140, height: 16),
-              const SizedBox(height: AppSpacing.sm),
+              SizedBox(height: AppSpacing.sm),
               SkeletonBlock(width: 180, height: 28),
-              const SizedBox(height: AppSpacing.xxl),
-              SkeletonCard(key: const Key('dashboard-skeleton-score'), height: 208),
-              const SizedBox(height: AppSpacing.lg),
-              SkeletonCard(key: const Key('dashboard-skeleton-balance'), height: 120),
-              const SizedBox(height: AppSpacing.lg),
+              SizedBox(height: AppSpacing.xxl),
+              SkeletonCard(key: Key('dashboard-skeleton-score'), height: 208),
+              SizedBox(height: AppSpacing.lg),
+              SkeletonCard(key: Key('dashboard-skeleton-balance'), height: 120),
+              SizedBox(height: AppSpacing.lg),
               Row(
-                key: const Key('dashboard-skeleton-metrics'),
+                key: Key('dashboard-skeleton-metrics'),
                 children: [
                   Expanded(child: SkeletonCard(height: 120)),
-                  const SizedBox(width: AppSpacing.lg),
+                  SizedBox(width: AppSpacing.lg),
                   Expanded(child: SkeletonCard(height: 120)),
                 ],
               ),
-              const SizedBox(height: AppSpacing.xl),
-              SkeletonCard(key: const Key('dashboard-skeleton-flow'), height: 288),
-              const SizedBox(height: AppSpacing.xl),
-              SkeletonCard(key: const Key('dashboard-skeleton-goal'), height: 146),
+              SizedBox(height: AppSpacing.xl),
+              SkeletonCard(key: Key('dashboard-skeleton-flow'), height: 288),
+              SizedBox(height: AppSpacing.xl),
+              SkeletonCard(key: Key('dashboard-skeleton-goal'), height: 146),
             ],
           ),
         ),

@@ -3,11 +3,10 @@ import 'package:financial_health_dashboard/src/shared/presentation/design/theme/
 import 'package:financial_health_dashboard/src/shared/presentation/design/theme/financial_health_score_theme_ext.dart';
 import 'package:flutter/material.dart';
 
-class FinancialHealthCardStyleResolver {
-  static FinancialHealthCardColors resolve(
-    BuildContext context,
-    FinancialHealthStatus status,
-  ) {
+final class FinancialHealthCardStyleResolver {
+  FinancialHealthCardStyleResolver._();
+
+  static FinancialHealthCardColors resolve(BuildContext context, FinancialHealthStatus status) {
     final theme = context.financialHealthScoreTheme;
     switch (status) {
       case FinancialHealthStatus.healthy:

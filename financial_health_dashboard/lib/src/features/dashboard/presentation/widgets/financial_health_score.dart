@@ -1,6 +1,6 @@
 import 'package:financial_health_dashboard/src/features/dashboard/domain/entities/financial_health_score_data.dart';
-import 'package:financial_health_dashboard/src/features/dashboard/presentation/mappers/financial_health_score_text_mapper.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/presentation/mappers/financial_health_score_resolver.dart';
+import 'package:financial_health_dashboard/src/features/dashboard/presentation/mappers/financial_health_score_text_mapper.dart';
 import 'package:financial_health_dashboard/src/shared/presentation/design/assets/icons.dart';
 import 'package:financial_health_dashboard/src/shared/presentation/design/components/svg_icons.dart';
 import 'package:financial_health_dashboard/src/shared/presentation/design/theme/financial_health_score_theme_ext.dart';

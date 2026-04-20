@@ -6,18 +6,10 @@ import 'package:financial_health_dashboard/src/features/dashboard/domain/enum/fl
 class FlowAnalysisPoint {
   FlowAnalysisPoint({required this.income, required this.expense}) {
     if (income < 0) {
-      throw ArgumentError.value(
-        income,
-        'income',
-        'income não pode ser negativo.',
-      );
+      throw ArgumentError.value(income, 'income', 'income não pode ser negativo.');
     }
     if (expense < 0) {
-      throw ArgumentError.value(
-        expense,
-        'expense',
-        'expense não pode ser negativo.',
-      );
+      throw ArgumentError.value(expense, 'expense', 'expense não pode ser negativo.');
     }
   }
 
@@ -31,21 +23,14 @@ class FlowAnalysisPoint {
 /// (`status`) e cálculos (`delta`, `deltaPercentage`), enquanto a camada
 /// de apresentação apenas consome o resultado para renderização.
 class FlowAnalysisData {
-  FlowAnalysisData({required List<FlowAnalysisPoint> points})
-    : points = List.unmodifiable(points);
+  FlowAnalysisData({required List<FlowAnalysisPoint> points}) : points = List.unmodifiable(points);
 
   final List<FlowAnalysisPoint> points;
   static const double _positiveThreshold = 20;
   static const double _attentionThreshold = 12;
 
-  late final double totalIncome = points.fold(
-    0,
-    (sum, point) => sum + point.income,
-  );
-  late final double totalExpense = points.fold(
-    0,
-    (sum, point) => sum + point.expense,
-  );
+  late final double totalIncome = points.fold(0, (sum, point) => sum + point.income);
+  late final double totalExpense = points.fold(0, (sum, point) => sum + point.expense);
 
   late final double delta = totalIncome - totalExpense;
 
@@ -65,7 +50,7 @@ class FlowAnalysisData {
     if (totalExpense <= 0) {
       return FlowAnalysisStatus.critical;
     }
-    final deficitPercentage = (delta.abs().toDouble() / totalExpense) * 100;
+    final deficitPercentage = (delta.abs() / totalExpense) * 100;
     if (deficitPercentage <= _attentionThreshold) {
       return FlowAnalysisStatus.attention;
     }

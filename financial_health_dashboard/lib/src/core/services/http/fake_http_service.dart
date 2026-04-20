@@ -112,8 +112,9 @@ class FakeHttpService implements HttpService {
   }
 
   static void _persistInitialState(KeyValueWrapper storage, _FakeDashboardState state) {
-    storage.setString(StorageSchema.dashboardOverviewKey, jsonEncode(state.toOverviewJson()));
-    storage.setString(StorageSchema.dashboardTransactionsKey, jsonEncode(state.transactionsJson()));
+    storage
+      ..setString(StorageSchema.dashboardOverviewKey, jsonEncode(state.toOverviewJson()))
+      ..setString(StorageSchema.dashboardTransactionsKey, jsonEncode(state.transactionsJson()));
   }
 
   static _FakeDashboardState _withPersistedTransactions(
@@ -176,11 +177,9 @@ class _FakeDashboardState {
     final income = _randomInRange(random, min: 8000, max: 26000);
     final expense = _randomInRange(random, min: 3500, max: income * 0.95);
     final balance = _randomInRange(random, min: income * 0.6, max: income * 2.2);
-    final currentLiquidityIndex = (income / expense).clamp(0.5, 4.0).toDouble();
+    final currentLiquidityIndex = (income / expense).clamp(0.5, 4.0);
     final previousLiquidityIndex =
-        (currentLiquidityIndex + _randomInRange(random, min: -0.2, max: 0.2))
-            .clamp(0.3, 4.0)
-            .toDouble();
+        (currentLiquidityIndex + _randomInRange(random, min: -0.2, max: 0.2)).clamp(0.3, 4.0);
 
     final monthDays = DateTime(now.year, now.month + 1, 0).day;
     final monthLabel = _ptBrMonth(now.month);
@@ -218,8 +217,7 @@ class _FakeDashboardState {
           date: now.subtract(Duration(days: random.nextInt(7))),
         ),
       ),
-    ];
-    transactions.shuffle(random);
+    ]..shuffle(random);
 
     return _FakeDashboardState(
       userName: 'Júlio',

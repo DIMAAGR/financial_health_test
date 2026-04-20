@@ -1,6 +1,7 @@
 import 'package:financial_health_dashboard/src/shared/presentation/design/assets/icons.dart';
 import 'package:financial_health_dashboard/src/shared/presentation/design/components/svg_icons.dart';
 import 'package:financial_health_dashboard/src/shared/presentation/design/theme/app_theme_ext.dart';
+import 'package:financial_health_dashboard/src/shared/presentation/design/theme/month_summary_theme_ext.dart';
 import 'package:financial_health_dashboard/src/shared/presentation/design/tokens/app_radius.dart';
 import 'package:financial_health_dashboard/src/shared/presentation/design/tokens/app_spacing.dart';
 import 'package:flutter/material.dart';
@@ -117,7 +118,7 @@ class _HeaderSection extends StatelessWidget {
   final String label;
   final String amount;
   final String monthYear;
-  final dynamic theme;
+  final MonthSummaryTheme theme;
 
   @override
   Widget build(BuildContext context) {
@@ -170,7 +171,7 @@ class _ComparativeBadge extends StatelessWidget {
   final double changePercent;
   final TrendDirection trendDirection;
   final Color trendColor;
-  final dynamic theme;
+  final MonthSummaryTheme theme;
 
   @override
   Widget build(BuildContext context) {

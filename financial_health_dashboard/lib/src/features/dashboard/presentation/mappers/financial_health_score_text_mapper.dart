@@ -1,7 +1,9 @@
 import 'package:financial_health_dashboard/src/features/dashboard/domain/entities/financial_health_score_data.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/domain/enum/financial_health_status.dart';
 
-class FinancialHealthScoreTextMapper {
+final class FinancialHealthScoreTextMapper {
+  FinancialHealthScoreTextMapper._();
+
   static const String title = 'Score de Saúde Financeira';
 
   static String label(FinancialHealthStatus status) {

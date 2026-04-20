@@ -1,3 +1,4 @@
+import 'package:financial_health_dashboard/src/core/router/app_routes.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/presentation/mappers/add_transaction_input_mapper.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/presentation/models/add_transaction_sheet_result.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/presentation/models/transaction_sheet_type.dart';
@@ -10,7 +11,6 @@ import 'package:financial_health_dashboard/src/features/dashboard/presentation/w
 import 'package:financial_health_dashboard/src/features/dashboard/presentation/widgets/header_section.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/presentation/widgets/metrics_overview_section.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/presentation/widgets/monthly_goal_card.dart';
-import 'package:financial_health_dashboard/src/core/router/app_routes.dart';
 import 'package:financial_health_dashboard/src/shared/presentation/design/tokens/app_spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -128,19 +128,19 @@ class _DashboardContent extends StatelessWidget {
                       onBalanceTap: () async {
                         await context.pushNamed(AppRouteName.transactions);
                         if (context.mounted) {
-                          context.read<DashboardCubit>().loadOverview();
+                          await context.read<DashboardCubit>().loadOverview();
                         }
                       },
                       onIncomeTap: () async {
                         await context.pushNamed(AppRouteName.incomes);
                         if (context.mounted) {
-                          context.read<DashboardCubit>().loadOverview();
+                          await context.read<DashboardCubit>().loadOverview();
                         }
                       },
                       onExpensesTap: () async {
                         await context.pushNamed(AppRouteName.receipts);
                         if (context.mounted) {
-                          context.read<DashboardCubit>().loadOverview();
+                          await context.read<DashboardCubit>().loadOverview();
                         }
                       },
                     ),
