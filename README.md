@@ -22,6 +22,28 @@ financial_health_test/
 - Processo de IA (regras, log e learnings): [docs/ia/README.md](./docs/ia/README.md)
 - **MCP Server (automação IA)**: [tools/mcp_server/README.md](./tools/mcp_server/README.md)
 
+## Execução rápida
+
+Ambiente usado na validação:
+
+- Flutter 3.38.1 stable
+- Dart 3.10.0
+
+```bash
+cd financial_health_dashboard
+flutter pub get
+flutter run
+```
+
+Checks principais:
+
+```bash
+flutter analyze
+flutter test
+```
+
+O app usa mock local (`FakeHttpService`), então não há backend externo para configurar.
+
 ## Uso de IA
 
 A IA foi usada como ferramenta assistiva para acelerar exploração, boilerplate e revisão de escrita.

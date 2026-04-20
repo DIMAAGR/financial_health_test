@@ -23,12 +23,23 @@ lib/src/
     dashboard/
 ```
 
+## Descrição visual
+
+A tela principal mostra uma saudação, um card de score de saúde financeira, o saldo atual, cards de receitas/despesas, análise de fluxo e meta mensal. As telas de detalhe usam o mesmo padrão visual: resumo do mês, breakdown por categoria, lista de movimentações agrupadas por data e FAB contextual para adicionar receita ou despesa.
+
 ## Como executar
 
 Pré-requisitos:
 
-- Flutter SDK instalado
+- Flutter SDK 3.38.1 stable ou compatível com Dart `^3.10.0`
 - Device Android/iOS ou emulador/simulador ativo
+
+Ambiente usado na validação:
+
+```bash
+Flutter 3.38.1
+Dart 3.10.0
+```
 
 Comandos:
 
@@ -70,7 +81,13 @@ Este projeto trata "uso crítico de IA" como critério de peso alto. A avaliaç�
 4. O que faz sentido é adaptado ao contexto do projeto.
 5. A decisão final é documentada com trade-offs e evidências.
 
-### Caso 1: texto de UI no domínio (corrigido)
+Nem toda mudança registrada abaixo foi tratada como "erro da IA". Para manter a narrativa honesta:
+
+- **Erros reais corrigidos:** casos 1, 5 e 7.
+- **Decisões evolutivas validadas:** casos 2, 3, 4, 6, 8 e 9.
+- **Critério de aceite:** a classificação depende se havia violação concreta de arquitetura/testabilidade ou se era uma hipótese razoável substituída por outra melhor.
+
+### Caso 1: texto de UI no domínio (correção real)
 
 - Erro identificado: a IA sugeriu manter textos de exibição (`title`/`description`) dentro do domínio da meta mensal.
 - Risco arquitetural: mistura de responsabilidades entre `domain` e `presentation`, com impacto em i18n e manutenção.
@@ -78,14 +95,14 @@ Este projeto trata "uso crítico de IA" como critério de peso alto. A avaliaç�
 - Correção aplicada: textos foram removidos da entidade e extraídos para mapper de apresentação (`MonthlyGoalTextMapper`).
 - Prevenção criada: regra explícita no processo para evitar strings de UI no domínio, com preferência por mapper/presenter na camada de apresentação.
 
-### Caso 2: score financeiro com separação estrita
+### Caso 2: score financeiro com separação estrita (decisão evolutiva)
 
 - Hipótese da IA: manter dados calculados e textos no mesmo objeto para simplificar.
 - Checagem aplicada: para teste técnico, isso aumenta risco de acoplamento entre camadas.
 - Decisão: domínio ficou apenas com regra/cálculo/classificação (`FinancialHealthScorePolicy` e `FinancialHealthScoreData`), enquanto os textos foram para `FinancialHealthScoreTextMapper` na apresentação.
 - Resultado: maior aderência à separação de responsabilidades, melhor caminho para i18n e testes mais focados por camada.
 
-### Caso 3: formulário unificado de transações
+### Caso 3: formulário unificado de transações (decisão evolutiva)
 
 - Decisão: os fluxos de `Adicionar Receita` e `Adicionar Despesa` usam um único bottom sheet e um único `AddTransactionCubit`.
 - Por que: reduz duplicação visual e de estado sem criar dois formulários quase idênticos.
@@ -93,26 +110,26 @@ Este projeto trata "uso crítico de IA" como critério de peso alto. A avaliaç�
 - Trade-off: a sheet resolve um cubit via DI parametrizada (`registerFactoryParam`) para garantir consistência com o restante da arquitetura.
 - Resultado: evita vazamento de estado entre modais, evita `bool isIncome` em métodos públicos e mantém ownership claro do cubit.
 
-### Caso 4: mapper entre apresentação e domínio
+### Caso 4: mapper entre apresentação e domínio (decisão evolutiva)
 
 - Decisão: `AddTransactionSheetResult` não conhece mais os inputs de domínio.
 - Por que: o resultado do bottom sheet é um objeto de apresentação; a conversão para caso de uso fica em `AddTransactionInputMapper`.
 - Resultado: a UI continua simples, mas sem acoplar o modelo visual diretamente ao contrato de domínio.
 
-### Caso 5: loading local no submit (corrigido)
+### Caso 5: loading local no submit (correção real)
 
 - Erro identificado: a versão anterior mantinha um `Future.delayed(2s)` artificial dentro do `AddTransactionCubit.submit()`.
 - Risco: delay artificial no cubit mascara a latência real da camada de dados e torna os testes frágeis (dependentes de `pump(Duration)`).
 - Correção aplicada: o delay foi removido do cubit. A latência agora vem exclusivamente do `FakeHttpService._latency`, que simula tempo de rede na camada de dados — onde faz sentido.
 - Resultado: testes mais rápidos e determinísticos; a apresentação não simula IO.
 
-### Caso 6: Dashboard como snapshot consolidado
+### Caso 6: Dashboard como snapshot consolidado (decisão evolutiva)
 
 - Decisão: `DashboardState` armazena `financialHealthScore`, `flowAnalysis` e `monthlyGoal` vindos do `DashboardOverviewData`.
 - Por que: o overview representa um snapshot consolidado da tela. Recalcular score/flow no state criaria duas possíveis fontes de verdade.
 - Resultado: a apresentação lê dados prontos do snapshot e evita divergência entre payload do backend/mock e estado renderizado.
 
-### Caso 7: categorias fortes no domínio, categoria unificada só na UI
+### Caso 7: categorias fortes no domínio, categoria unificada só na UI (correção real)
 
 - Erro identificado: a primeira versão unificou `salary/gift/investment/food/transport/shopping` no domínio e enviou `label` em português para data/API.
 - Risco arquitetural: o domínio aceitava estados inválidos, como despesa com categoria `salary`, e o payload dependia de texto de apresentação.
@@ -121,7 +138,7 @@ Este projeto trata "uso crítico de IA" como critério de peso alto. A avaliaç�
 - Contrato de data: o repository recebe categorias fortes e serializa `category.code` para o datasource, mantendo `label` restrito à UI.
 - Resultado: a refatoração anterior da sheet continua válida, mas agora com domínio mais seguro e sem mistura de copy/payload.
 
-### Caso 8: tempo como dependência explícita
+### Caso 8: tempo como dependência explícita (decisão evolutiva)
 
 - Erro potencial: usar `DateTime.now()` dentro da entidade ou conversão para entidade deixaria a regra da meta mensal dependente de relógio implícito.
 - Risco arquitetural: a mesma regra poderia mudar de resultado sem mudança nos dados, especialmente em dashboards abertos durante virada de dia.
@@ -129,12 +146,12 @@ Este projeto trata "uso crítico de IA" como critério de peso alto. A avaliaç�
 - Fronteira criada: `DashboardRepositoryImpl` lê `clock.now()`, normaliza para ano/mês/dia e passa a data para `DashboardOverviewModel.toEntity(referenceDate:)`.
 - Resultado: domínio determinístico, testes mais confiáveis e infraestrutura de tempo isolada fora da entidade.
 
-### Caso 9: overview e transactions separados no fake backend
+### Caso 9: overview e transactions separados no fake backend (decisão evolutiva)
 
-- Decisão: o mock local passou a persistir transações em `dashboard_transactions_v1`, separado do snapshot `dashboard_overview_v1`.
-- Por que: a segunda tela de detalhe precisa de uma fonte de movimentações sem acoplar a lista ao card/resumo da dashboard.
-- Endpoint preparado: `GET /dashboard/transactions` retorna a lista persistida para a futura tela de detalhe.
-- Trade-off: a versão atual mantém `overview` como snapshot/cache para evitar reescrita grande do fake DB; uma evolução futura poderia separar `profile + transactions` e gerar overview apenas como projeção.
+- Decisão: o mock local passou a persistir transações em `financial_transactions_v1`, separado do snapshot `financial_overview_v1`.
+- Por que: as telas de detalhe precisam de fontes próprias sem depender do agregado da dashboard.
+- Endpoints preparados: `GET /transactions`, `GET /transactions/overview`, `GET /incomes/overview` e `GET /expenses/overview`.
+- Trade-off: a versão atual ainda mantém `overview` como snapshot/cache para evitar reescrita grande do fake DB; uma evolução futura poderia separar store, seed, mutação e projeções.
 - Resultado: a dashboard atual segue estável e a base de dados fake fica mais próxima de uma API real.
 
 Evidências:
