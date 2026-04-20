@@ -22,7 +22,8 @@ que deve virar novas branches pequenas e revisaveis.
   `/incomes/overview`, `/expenses/overview`, `/transactions/overview` e
   `/transactions`.
 - `DashboardOverviewData` deixou de carregar a lista de transacoes usada por
-  telas de detalhe.
+  telas de detalhe e, depois, tambem deixou de expor campos intermediarios
+  calculados que nao eram consumidos pela presentation.
 - Parsing de transacao foi movido para um model compartilhado neutro.
 - Calculo de breakdown por categoria foi centralizado em um servico
   compartilhado.
@@ -40,9 +41,9 @@ que deve virar novas branches pequenas e revisaveis.
 | 3 | Feito | Contratos proprios de repository | `IncomesRepository`, `ExpensesRepository` e `TransactionsRepository` existem separados. | Preservar contratos por feature. |
 | 4 | Feito | Datasource proprio ou borda neutra | Datasources de detalhe usam endpoints proprios no fake backend. | Se o fake crescer, separar store/rotas por contexto. |
 | 5 | Feito | `DashboardTransactionData` fora da dashboard | Conceito neutro de transacao esta em `shared/domain` e parser em `shared/data`. | Manter nomes compartilhados sem prefixo de feature. |
-| 6 | Parcial | Failure generica | Codigo usa `AppFailure`, mas ainda existe teste com nome antigo de dashboard. | Renomear teste e revisar mensagens de UI nas failures. |
+| 6 | Feito | Failure generica | Codigo usa `AppFailure` sealed em core e o teste antigo de dashboard foi movido para `test/core/failures`. | Continuar a revisao de mensagens no item 23. |
 | 7 | Feito | Categorias em shared/domain | `IncomeCategory` e `ExpenseCategory` estao em `shared/domain/enum`. | Manter labels/copy fora dos enums de dominio. |
-| 8 | Feito | Reduzir papel do aggregate do dashboard | `DashboardOverviewData` nao e mais fonte de transacoes das details. | Evitar recolocar dados de outras telas no overview. |
+| 8 | Feito | Reduzir papel do aggregate do dashboard | `DashboardOverviewData` nao e mais fonte de transacoes das details nem expoe inputs crus ja convertidos em objetos de tela. | Evitar recolocar dados de outras telas no overview. |
 | 9 | Pendente | Dinheiro sem erro de arredondamento | Valores monetarios ainda usam `double`. | Criar `Money` ou padronizar centavos em `int`. |
 | 10 | Pendente | Remover `double` de dinheiro no dominio | Entidades e repositorios ainda expõem valores monetarios como `double`. | Migrar dominio primeiro, depois data/presentation. |
 | 11 | Pendente | Revisar inputs de comando | Inputs de add ainda parecem entidade de dominio. | Separar command/input de regra central. |

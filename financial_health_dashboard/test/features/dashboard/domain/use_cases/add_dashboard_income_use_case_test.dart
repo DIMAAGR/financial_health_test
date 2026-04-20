@@ -123,7 +123,7 @@ void main() {
 
   test('retorna Left quando repository falha', () async {
     final repo = _FakeDashboardRepository(
-      const Left(AppFailure('erro de rede')),
+      const Left(UnknownFailure('erro de rede')),
     );
     final useCase = AddDashboardIncomeUseCase(repo);
 
@@ -149,13 +149,6 @@ DashboardOverviewData _overview() {
     balance: 10000,
     income: 8000,
     expense: 3000,
-    incomeChangePercent: 12.5,
-    expenseChangePercent: -5.0,
-    balanceChangePercent: 8.0,
-    previousLiquidityIndex: 1.2,
-    currentLiquidityIndex: 1.3,
-    commitmentPercent: 37.5,
-    commitmentBenchmarkPercent: 65,
     financialHealthScore: FinancialHealthScoreData.fromMetrics(
       income: 8000,
       expense: 3000,
@@ -173,7 +166,5 @@ DashboardOverviewData _overview() {
       achievedPercent: 60,
       referenceDate: DateTime(2026, 4, 10),
     ),
-    monthlyGoalTargetAmount: 15000,
-    monthlyGoalAchievedAmount: 9000,
   );
 }

@@ -49,13 +49,6 @@ void main() {
       balance: 10000,
       income: 8000,
       expense: 3000,
-      incomeChangePercent: 12.5,
-      expenseChangePercent: -5.0,
-      balanceChangePercent: 8.0,
-      previousLiquidityIndex: 1.2,
-      currentLiquidityIndex: 1.3,
-      commitmentPercent: 37.5,
-      commitmentBenchmarkPercent: 65,
       financialHealthScore: FinancialHealthScoreData.fromMetrics(
         income: 8000,
         expense: 3000,
@@ -73,8 +66,6 @@ void main() {
         achievedPercent: 60,
         referenceDate: DateTime(2026, 4, 10),
       ),
-      monthlyGoalTargetAmount: 15000,
-      monthlyGoalAchievedAmount: 9000,
     );
 
     final repo = _FakeDashboardRepository(Right(overview));
