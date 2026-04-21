@@ -7,13 +7,20 @@ import 'package:financial_health_dashboard/src/features/expenses/presentation/vi
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ExpensesCubit extends Cubit<ExpensesState> {
-  ExpensesCubit(this._getOverviewUseCase, this._addExpenseUseCase) : super(ExpensesState.initial());
+  ExpensesCubit(this._getOverviewUseCase, this._addExpenseUseCase)
+    : super(ExpensesState.initial());
 
   final GetExpensesOverviewUseCase _getOverviewUseCase;
   final AddExpenseUseCase _addExpenseUseCase;
 
   Future<void> loadOverview() async {
-    emit(state.copyWith(status: ExpensesViewStatus.loading, clearError: true, clearEffect: true));
+    emit(
+      state.copyWith(
+        status: ExpensesViewStatus.loading,
+        errorMessage: null,
+        effect: null,
+      ),
+    );
 
     final result = await _getOverviewUseCase();
     result.fold(_setError, _updateContent);
@@ -28,7 +35,7 @@ class ExpensesCubit extends Cubit<ExpensesState> {
     );
   }
 
-  void clearEffect() => emit(state.copyWith(clearEffect: true));
+  void clearEffect() => emit(state.copyWith(effect: null));
 
   Future<bool> addExpense(AddExpenseInput input) async {
     final result = await _addExpenseUseCase(input);
@@ -55,7 +62,7 @@ class ExpensesCubit extends Cubit<ExpensesState> {
         status: ExpensesViewStatus.error,
         errorMessage: failure.message,
         canRetry: failure is NetworkFailure || failure is ServerFailure,
-        clearEffect: true,
+        effect: null,
       ),
     );
   }

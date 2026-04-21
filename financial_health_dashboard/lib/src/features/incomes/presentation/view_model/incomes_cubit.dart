@@ -7,13 +7,20 @@ import 'package:financial_health_dashboard/src/features/incomes/presentation/vie
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class IncomesCubit extends Cubit<IncomesState> {
-  IncomesCubit(this._getOverviewUseCase, this._addIncomeUseCase) : super(IncomesState.initial());
+  IncomesCubit(this._getOverviewUseCase, this._addIncomeUseCase)
+    : super(IncomesState.initial());
 
   final GetIncomesOverviewUseCase _getOverviewUseCase;
   final AddIncomeUseCase _addIncomeUseCase;
 
   Future<void> loadOverview() async {
-    emit(state.copyWith(status: IncomesViewStatus.loading, clearError: true, clearEffect: true));
+    emit(
+      state.copyWith(
+        status: IncomesViewStatus.loading,
+        errorMessage: null,
+        effect: null,
+      ),
+    );
 
     final result = await _getOverviewUseCase();
     result.fold(_setError, _updateContent);
@@ -28,7 +35,7 @@ class IncomesCubit extends Cubit<IncomesState> {
     );
   }
 
-  void clearEffect() => emit(state.copyWith(clearEffect: true));
+  void clearEffect() => emit(state.copyWith(effect: null));
 
   Future<bool> addIncome(AddIncomeInput input) async {
     final result = await _addIncomeUseCase(input);
@@ -55,7 +62,7 @@ class IncomesCubit extends Cubit<IncomesState> {
         status: IncomesViewStatus.error,
         errorMessage: failure.message,
         canRetry: failure is NetworkFailure || failure is ServerFailure,
-        clearEffect: true,
+        effect: null,
       ),
     );
   }

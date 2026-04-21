@@ -36,7 +36,7 @@ que deve virar novas branches pequenas e revisaveis.
 
 | ID | Status | Tema | Situacao atual | Proxima acao |
 |---:|---|---|---|---|
-| 1 | Pendente | Freezed em states/objetos | Existem `copyWith` manuais e estados ainda escritos a mao. | Aplicar depois que os modelos estabilizarem, para evitar churn antes da avaliacao. |
+| 1 | Parcial | Freezed em states/objetos | States de presentation com maior risco de `copyWith` manual foram migrados para Freezed. | Avaliar entidades/value objects em outra branch, se houver ganho claro. |
 | 2 | Feito | Remover dependencia de detalhes com dashboard | Details usam endpoints/contratos proprios ou compartilhados neutros. | Manter teste de fronteira para evitar regressao. |
 | 3 | Feito | Contratos proprios de repository | `IncomesRepository`, `ExpensesRepository` e `TransactionsRepository` existem separados. | Preservar contratos por feature. |
 | 4 | Feito | Datasource proprio ou borda neutra | Datasources de detalhe usam endpoints proprios no fake backend. | Se o fake crescer, separar store/rotas por contexto. |

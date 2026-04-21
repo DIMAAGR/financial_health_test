@@ -11,15 +11,24 @@ import 'package:financial_health_dashboard/src/features/dashboard/presentation/v
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class DashboardCubit extends Cubit<DashboardState> {
-  DashboardCubit(this._addExpenseUseCase, this._addIncomeUseCase, this._getOverviewUseCase)
-    : super(DashboardState.initial());
+  DashboardCubit(
+    this._addExpenseUseCase,
+    this._addIncomeUseCase,
+    this._getOverviewUseCase,
+  ) : super(DashboardState.initial());
 
   final GetDashboardOverviewUseCase _getOverviewUseCase;
   final AddDashboardIncomeUseCase _addIncomeUseCase;
   final AddDashboardExpenseUseCase _addExpenseUseCase;
 
   void _setLoading() {
-    emit(state.copyWith(status: DashboardViewStatus.loading, clearError: true, clearEffect: true));
+    emit(
+      state.copyWith(
+        status: DashboardViewStatus.loading,
+        errorMessage: null,
+        effect: null,
+      ),
+    );
   }
 
   void _setError(AppFailure failure) {
@@ -28,13 +37,15 @@ class DashboardCubit extends Cubit<DashboardState> {
         status: DashboardViewStatus.error,
         errorMessage: failure.message,
         canRetry: failure is NetworkFailure || failure is ServerFailure,
-        clearEffect: true,
+        effect: null,
       ),
     );
   }
 
   void _updateOverviewContent(DashboardOverviewData overview) {
-    emit(DashboardState.fromOverview(overview, effectVersion: state.effectVersion));
+    emit(
+      DashboardState.fromOverview(overview, effectVersion: state.effectVersion),
+    );
   }
 
   Future<void> loadOverview() async {
@@ -43,13 +54,17 @@ class DashboardCubit extends Cubit<DashboardState> {
   }
 
   void _showBottomSheet(DashboardEffect effect) {
-    emit(state.copyWith(effect: effect, effectVersion: state.effectVersion + 1));
+    emit(
+      state.copyWith(effect: effect, effectVersion: state.effectVersion + 1),
+    );
   }
 
-  void onAddIncomePressed() => _showBottomSheet(DashboardEffect.showAddIncomeSheet);
-  void onAddExpensePressed() => _showBottomSheet(DashboardEffect.showAddExpenseSheet);
+  void onAddIncomePressed() =>
+      _showBottomSheet(DashboardEffect.showAddIncomeSheet);
+  void onAddExpensePressed() =>
+      _showBottomSheet(DashboardEffect.showAddExpenseSheet);
 
-  void clearEffect() => emit(state.copyWith(clearEffect: true));
+  void clearEffect() => emit(state.copyWith(effect: null));
 
   Future<void> _handleOverviewResult(
     Future<Either<AppFailure, DashboardOverviewData>> future,
