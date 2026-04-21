@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:mcp_dart/mcp_dart.dart';
+import 'package:mcp_server/src/doc_paths.dart';
 
 /// Registers tools that append structured entries to IA documentation files.
 ///
@@ -45,7 +46,7 @@ void registerLoggingTools(McpServer server, {required String docsPath}) {
       final tradeOffs = args['trade_offs'] as String;
       final result = args['result'] as String;
 
-      final logFile = File('$docsPath/ia/prompt_log.md');
+      final logFile = DocPaths.resolve(docsPath, DocPaths.promptLog);
       final nextIndex = nextEntryIndex(logFile, r'### \d+\.');
 
       final entry = '''
@@ -64,7 +65,8 @@ void registerLoggingTools(McpServer server, {required String docsPath}) {
 
       return CallToolResult(
         content: [
-          TextContent(text: 'Entry #$nextIndex added to prompt_log.md:\n$entry'),
+          TextContent(
+              text: 'Entry #$nextIndex added to prompt_log.md:\n$entry'),
         ],
       );
     },
@@ -73,7 +75,8 @@ void registerLoggingTools(McpServer server, {required String docsPath}) {
   // ── add_learning ─────────────────────────────────────────────────────
   server.registerTool(
     'add_learning',
-    description: 'Records a new mistake/learning in learnings.md. Call this whenever '
+    description:
+        'Records a new mistake/learning in learnings.md. Call this whenever '
         'an error pattern is identified. Each learning includes root cause '
         'and prevention steps so the same mistake is not repeated.',
     inputSchema: ToolInputSchema(
@@ -99,7 +102,7 @@ void registerLoggingTools(McpServer server, {required String docsPath}) {
       final rootCause = args['root_cause'] as String;
       final prevention = args['prevention'] as String;
 
-      final learningsFile = File('$docsPath/ia/learnings.md');
+      final learningsFile = DocPaths.resolve(docsPath, DocPaths.learnings);
       final nextIndex = nextEntryIndex(learningsFile, r'### \d+\.');
 
       final entry = '''
@@ -114,7 +117,8 @@ void registerLoggingTools(McpServer server, {required String docsPath}) {
 
       return CallToolResult(
         content: [
-          TextContent(text: 'Learning #$nextIndex added to learnings.md:\n$entry'),
+          TextContent(
+              text: 'Learning #$nextIndex added to learnings.md:\n$entry'),
         ],
       );
     },

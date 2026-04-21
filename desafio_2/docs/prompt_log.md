@@ -37,7 +37,7 @@
 - `listFromJson` estava no DTO — a responsabilidade de iterar sobre a lista da API pertence ao DataSource, não ao DTO. O DTO deve mapear um único objeto.
 - `TransactionDto` lançava `ParseException` customizada — alguns preferem que o DTO lance erros genéricos do Dart e o DataSource transforme em Failure. Com `FormatException` nativa o acoplamento é menor.
 
-**Correções aplicadas:** `listFromJson` movido para `MockTransactionRemoteDataSource`; `ParseException` substituída por `FormatException` nativa.
+**Correções aplicadas:** `listFromJson` movido para `DemoTransactionRemoteDataSource`; `ParseException` substituída por `FormatException` nativa.
 
 ---
 
@@ -57,7 +57,7 @@ No `UseCase`:
 
 - Valores monetários usavam `double` — causa erros de precisão decimal (`0.1 + 0.2 = 0.30000000000000004`).
 - Switch assumia que "qualquer coisa que não é `income` é subtração" — adicionando `unknown` o cálculo ficaria errado.
-- `call()` sem parâmetros — padrão `call(Params params)` é preferível para extensibilidade futura.
+- `call()` sem parâmetros — foi avaliado usar `NoParams`, mas a versão final evitou a cerimônia porque o caso de uso não recebe filtros.
 - Total calculado no `UseCase` — debate: se é regra de negócio fundamental, pode ir em uma entidade `TransactionReport`.
 
 **Correções aplicadas:**
@@ -67,7 +67,7 @@ No `UseCase`:
 - `_parseType` movido para `TransactionDto` (camada de dados)
 - `unknown` adicionado como fallback explícito
 - `amount: double → int` (centavos) em toda a cadeia
-- `NoParams` criado seguindo o padrão `call(Params)`
+- `NoParams` removido na revisão de code smell para manter o caso de uso simples enquanto não houver filtros reais
 - `TransactionReport` criado como entidade com getter `total` (switch exaustivo)
 
 ---

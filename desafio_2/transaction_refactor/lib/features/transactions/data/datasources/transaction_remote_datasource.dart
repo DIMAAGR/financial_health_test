@@ -14,35 +14,38 @@ abstract class TransactionRemoteDataSource {
   Future<List<TransactionEntity>> getTransactions();
 }
 
-/// Mock que simula a resposta da API sem dependência de HTTP real.
+/// Datasource de demonstração que simula a resposta da API sem HTTP real.
 ///
 /// Substitui a chamada `http.get(...)` que estava diretamente na UI (problema #7).
 /// O token é injetado via [AuthTokenProvider] — não lido de SharedPrefs aqui
 /// (problema #8).
 ///
 /// URL alvo (caso fosse real): `https://api.example.com/v1/transactions`
-class MockTransactionRemoteDataSource implements TransactionRemoteDataSource {
-  const MockTransactionRemoteDataSource(this._authTokenProvider);
+class DemoTransactionRemoteDataSource implements TransactionRemoteDataSource {
+  const DemoTransactionRemoteDataSource(this._authTokenProvider);
 
-  // Mantido para simular a injeção de token que ocorreria em HTTP real:
-  // Authorization: Bearer ${_authTokenProvider.getToken()}
-  // ignore: unused_field
   final AuthTokenProvider _authTokenProvider;
 
-  static const _mockDelay = Duration(milliseconds: 1200);
+  static const _demoLatency = Duration(milliseconds: 1200);
 
   @override
   Future<List<TransactionEntity>> getTransactions() async {
-    // Simula latência de rede.
-    // Em produção, este método faria: http.get(url, headers: {'Authorization': 'Bearer ${_authTokenProvider.getToken()}'})
-    await Future.delayed(_mockDelay);
+    final token = _authTokenProvider.getToken();
+    if (token == null || token.isEmpty) {
+      throw const AuthException('Sessão expirada.');
+    }
 
-    // Dados mock que representam a resposta JSON da API.
+    // Simula latência de rede.
+    // Em produção, este método faria:
+    // http.get(url, headers: {'Authorization': 'Bearer $token'})
+    await Future.delayed(_demoLatency);
+
+    // Dados demo que representam a resposta JSON da API.
     // Tipado como Object? para simular o retorno de json.decode() em um
     // client HTTP real — onde o tipo estático é desconhecido em compile time.
     // O DataSource é responsável por verificar o shape da coleção antes de
     // delegar o mapeamento de cada item ao DTO (problema #12).
-    final Object raw = _mockApiResponse();
+    final Object raw = _demoApiResponse();
 
     if (raw is! List) {
       throw const FormatException('Esperava-se uma lista de transações.');
@@ -51,7 +54,9 @@ class MockTransactionRemoteDataSource implements TransactionRemoteDataSource {
     return raw
         .map((item) {
           if (item is! Map<String, dynamic>) {
-            throw const FormatException('Item de transação com formato inválido.');
+            throw const FormatException(
+              'Item de transação com formato inválido.',
+            );
           }
           return TransactionDto.fromJson(item).toEntity();
         })
@@ -60,7 +65,7 @@ class MockTransactionRemoteDataSource implements TransactionRemoteDataSource {
 
   // Valores em centavos (int): R$5.000,00 = 500000, R$320,50 = 32050, etc.
   // Usar int elimina imprecisão de ponto flutuante em operações monetárias.
-  List<Map<String, dynamic>> _mockApiResponse() {
+  List<Map<String, dynamic>> _demoApiResponse() {
     return [
       {'id': '1', 'descricao': 'Salário', 'valor': 500000, 'tipo': 'receita'},
       {'id': '2', 'descricao': 'Aluguel', 'valor': 150000, 'tipo': 'despesa'},

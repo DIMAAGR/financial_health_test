@@ -7,10 +7,13 @@ abstract class AuthTokenProvider {
   String? getToken();
 }
 
-/// Implementação mock: retorna um token fixo para fins de teste.
-class MockAuthTokenProvider implements AuthTokenProvider {
-  const MockAuthTokenProvider();
+/// Implementação de demonstração: retorna um token fixo para o app assíncrono.
+///
+/// Não é um mock de teste; representa uma borda simples substituível por
+/// storage seguro ou sessão real sem alterar as camadas acima.
+class DemoAuthTokenProvider implements AuthTokenProvider {
+  const DemoAuthTokenProvider();
 
   @override
-  String? getToken() => 'mock-bearer-token-12345';
+  String? getToken() => 'demo-bearer-token-12345';
 }

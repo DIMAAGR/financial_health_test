@@ -19,9 +19,12 @@ class ExpensesOverviewModel {
         .toList(growable: false);
 
     return ExpensesOverviewModel(
-      totalExpense: _toDouble(json['expense']),
+      totalExpense: _requireDouble(json['expense'], field: 'expense'),
       monthLabel: (monthlyGoal['monthLabel'] as String? ?? 'Mês').trim(),
-      expenseChangePercent: _toDouble(json['expenseChangePercent']),
+      expenseChangePercent: _requireDouble(
+        json['expenseChangePercent'],
+        field: 'expenseChangePercent',
+      ),
       transactions: transactions,
     );
   }
@@ -31,9 +34,12 @@ class ExpensesOverviewModel {
   final double expenseChangePercent;
   final List<TransactionData> transactions;
 
-  static double _toDouble(Object? value) {
+  static double _requireDouble(Object? value, {required String field}) {
     if (value is num) return value.toDouble();
-    if (value is String) return double.tryParse(value) ?? 0;
-    return 0;
+    if (value is String) {
+      final parsed = double.tryParse(value);
+      if (parsed != null) return parsed;
+    }
+    throw FormatException('Invalid double for field: $field');
   }
 }

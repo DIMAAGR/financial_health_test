@@ -25,35 +25,65 @@ class DashboardOverviewModel {
   });
 
   factory DashboardOverviewModel.fromJson(Map<String, dynamic> json) {
-    final liquidity = _asMap(json['liquidity']);
-    final commitment = _asMap(json['commitment']);
-    final monthlyGoal = _asMap(json['monthlyGoal']);
+    final liquidity = _requireMap(json['liquidity'], field: 'liquidity');
+    final commitment = _requireMap(json['commitment'], field: 'commitment');
+    final monthlyGoal = _requireMap(json['monthlyGoal'], field: 'monthlyGoal');
     final flow = (json['flow'] as List<dynamic>? ?? const [])
-        .map(_asMap)
+        .map((item) => _requireMap(item, field: 'flow[]'))
         .map(
           (item) => FlowAnalysisPoint(
-            income: _toDouble(item['income']),
-            expense: _toDouble(item['expense']),
+            income: _requireDouble(item['income'], field: 'flow[].income'),
+            expense: _requireDouble(item['expense'], field: 'flow[].expense'),
           ),
         )
         .toList(growable: false);
     return DashboardOverviewModel(
       userName: (json['userName'] as String? ?? 'Usuário').trim(),
-      balance: _toDouble(json['balance']),
-      income: _toDouble(json['income']),
-      expense: _toDouble(json['expense']),
-      incomeChangePercent: _toDouble(json['incomeChangePercent']),
-      expenseChangePercent: _toDouble(json['expenseChangePercent']),
-      balanceChangePercent: _toDouble(json['balanceChangePercent']),
-      previousLiquidityIndex: _toDouble(liquidity['previousIndex']),
-      currentLiquidityIndex: _toDouble(liquidity['currentIndex']),
-      commitmentPercent: _toDouble(commitment['percent']),
-      commitmentBenchmarkPercent: _toDouble(commitment['benchmarkPercent']),
+      balance: _requireDouble(json['balance'], field: 'balance'),
+      income: _requireDouble(json['income'], field: 'income'),
+      expense: _requireDouble(json['expense'], field: 'expense'),
+      incomeChangePercent: _requireDouble(
+        json['incomeChangePercent'],
+        field: 'incomeChangePercent',
+      ),
+      expenseChangePercent: _requireDouble(
+        json['expenseChangePercent'],
+        field: 'expenseChangePercent',
+      ),
+      balanceChangePercent: _requireDouble(
+        json['balanceChangePercent'],
+        field: 'balanceChangePercent',
+      ),
+      previousLiquidityIndex: _requireDouble(
+        liquidity['previousIndex'],
+        field: 'liquidity.previousIndex',
+      ),
+      currentLiquidityIndex: _requireDouble(
+        liquidity['currentIndex'],
+        field: 'liquidity.currentIndex',
+      ),
+      commitmentPercent: _requireDouble(
+        commitment['percent'],
+        field: 'commitment.percent',
+      ),
+      commitmentBenchmarkPercent: _requireDouble(
+        commitment['benchmarkPercent'],
+        field: 'commitment.benchmarkPercent',
+      ),
       monthLabel: (monthlyGoal['monthLabel'] as String? ?? 'Mês').trim(),
-      goalTargetAmount: _toDouble(monthlyGoal['targetAmount']),
-      goalAchievedAmount: _toDouble(monthlyGoal['achievedAmount']),
-      goalDay: _toInt(monthlyGoal['day'], fallback: 1),
-      goalDaysInMonth: _toInt(monthlyGoal['daysInMonth'], fallback: 30),
+      goalTargetAmount: _requireDouble(
+        monthlyGoal['targetAmount'],
+        field: 'monthlyGoal.targetAmount',
+      ),
+      goalAchievedAmount: _requireDouble(
+        monthlyGoal['achievedAmount'],
+        field: 'monthlyGoal.achievedAmount',
+      ),
+      goalDay: _requireInt(monthlyGoal['day'], field: 'monthlyGoal.day'),
+      goalDaysInMonth: _requireInt(
+        monthlyGoal['daysInMonth'],
+        field: 'monthlyGoal.daysInMonth',
+      ),
       flowPoints: flow,
     );
   }
@@ -112,19 +142,37 @@ class DashboardOverviewModel {
     );
   }
 
-  static Map<String, dynamic> _asMap(dynamic value) {
+  static Map<String, dynamic> _requireMap(
+    Object? value, {
+    required String field,
+  }) {
     if (value is Map<String, dynamic>) return value;
-    if (value is Map) return value.cast<String, dynamic>();
-    return <String, dynamic>{};
+    if (value is Map) {
+      return value.map((key, value) {
+        if (key is! String) {
+          throw FormatException('Invalid key type for field: $field');
+        }
+        return MapEntry(key, value);
+      });
+    }
+    throw FormatException('Invalid map for field: $field');
   }
 
-  static double _toDouble(dynamic value) {
+  static double _requireDouble(Object? value, {required String field}) {
     if (value is num) return value.toDouble();
-    return 0;
+    if (value is String) {
+      final parsed = double.tryParse(value);
+      if (parsed != null) return parsed;
+    }
+    throw FormatException('Invalid double for field: $field');
   }
 
-  static int _toInt(dynamic value, {required int fallback}) {
+  static int _requireInt(Object? value, {required String field}) {
     if (value is num) return value.toInt();
-    return fallback;
+    if (value is String) {
+      final parsed = int.tryParse(value);
+      if (parsed != null) return parsed;
+    }
+    throw FormatException('Invalid int for field: $field');
   }
 }

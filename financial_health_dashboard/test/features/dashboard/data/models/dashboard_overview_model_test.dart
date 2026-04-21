@@ -15,19 +15,18 @@ void main() {
       expect(model.flowPoints.first.expense, 800);
     });
 
-    test('fromJson aplica fallback quando payload é incompleto/inválido', () {
-      final model = DashboardOverviewModel.fromJson({
-        'flow': ['not-a-map'],
-      });
-
-      expect(model.userName, 'Usuário');
-      expect(model.monthLabel, 'Mês');
-      expect(model.balance, 0);
-      expect(model.goalDaysInMonth, 30);
-      expect(model.flowPoints, hasLength(1));
-      expect(model.flowPoints.first.income, 0);
-      expect(model.flowPoints.first.expense, 0);
-    });
+    test(
+      'fromJson falha cedo quando campo financeiro obrigatório é inválido',
+      () {
+        expect(
+          () => DashboardOverviewModel.fromJson({
+            ..._validJson(),
+            'balance': 'not-a-number',
+          }),
+          throwsA(isA<FormatException>()),
+        );
+      },
+    );
 
     test('toEntity protege target zero e calcula score/status', () {
       final model = DashboardOverviewModel.fromJson({

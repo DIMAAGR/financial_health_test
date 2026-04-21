@@ -1,6 +1,5 @@
-import 'dart:io';
-
 import 'package:mcp_dart/mcp_dart.dart';
+import 'package:mcp_server/src/doc_paths.dart';
 
 /// Registers tools that provide read-only access to project documentation.
 ///
@@ -13,14 +12,15 @@ void registerContextTools(McpServer server, {required String docsPath}) {
   // ── get_project_context ──────────────────────────────────────────────
   server.registerTool(
     'get_project_context',
-    description: 'Returns the full project architecture documentation including '
+    description:
+        'Returns the full project architecture documentation including '
         'folder conventions, state management rules, DI setup, '
         'and design trade-offs. Use this before making any structural change.',
     annotations: ToolAnnotations(readOnlyHint: true),
     inputSchema: ToolInputSchema(properties: {}),
     callback: (args, extra) async {
-      final architecture = readDoc(docsPath, 'architecture/architecture.md');
-      final iaProcess = readDoc(docsPath, 'architecture/ia_in_process.md');
+      final architecture = readDoc(docsPath, DocPaths.architecture);
+      final iaProcess = readDoc(docsPath, DocPaths.iaInProcess);
 
       return CallToolResult(
         content: [
@@ -50,13 +50,14 @@ void registerContextTools(McpServer server, {required String docsPath}) {
   // ── get_learnings ────────────────────────────────────────────────────
   server.registerTool(
     'get_learnings',
-    description: 'Returns all documented mistakes and lessons learned from past '
+    description:
+        'Returns all documented mistakes and lessons learned from past '
         'AI interactions. Each entry has root cause and prevention steps. '
         'Check this BEFORE implementing to avoid known pitfalls.',
     annotations: ToolAnnotations(readOnlyHint: true),
     inputSchema: ToolInputSchema(properties: {}),
     callback: (args, extra) async {
-      final learnings = readDoc(docsPath, 'ia/learnings.md');
+      final learnings = readDoc(docsPath, DocPaths.learnings);
       return CallToolResult(content: [TextContent(text: learnings)]);
     },
   );
@@ -79,10 +80,11 @@ void registerContextTools(McpServer server, {required String docsPath}) {
     ),
     callback: (args, extra) async {
       final query = (args['query'] as String).toLowerCase();
-      final content = readDoc(docsPath, 'ia/prompt_log.md');
+      final content = readDoc(docsPath, DocPaths.promptLog);
 
       final entries = splitLogEntries(content);
-      final matches = entries.where((e) => e.toLowerCase().contains(query)).toList();
+      final matches =
+          entries.where((e) => e.toLowerCase().contains(query)).toList();
 
       if (matches.isEmpty) {
         return CallToolResult(
@@ -107,14 +109,14 @@ void registerContextTools(McpServer server, {required String docsPath}) {
 // ── helpers ──────────────────────────────────────────────────────────────
 
 String readDoc(String docsPath, String relativePath) {
-  final file = File('$docsPath/$relativePath');
+  final file = DocPaths.resolve(docsPath, relativePath);
   if (!file.existsSync()) return '⚠ File not found: $relativePath';
   return file.readAsStringSync();
 }
 
 String buildRulesContext(String docsPath) {
-  final rules = readDoc(docsPath, 'ia/rules.md');
-  final guardrails = readDoc(docsPath, 'ia/guardrails.toon');
+  final rules = readDoc(docsPath, DocPaths.rules);
+  final guardrails = readDoc(docsPath, DocPaths.guardrails);
 
   return '# IA Governance Rules\n\n$rules'
       '\n\n---\n\n# AI Operational Guardrails (TOON)\n\n```toon\n$guardrails\n```';

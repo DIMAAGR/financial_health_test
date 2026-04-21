@@ -17,11 +17,14 @@ class TransactionsOverviewModel {
     final transactions = TransactionModel.listFromJson(json['transactions']);
 
     return TransactionsOverviewModel(
-      balance: _toDouble(json['balance']),
-      income: _toDouble(json['income']),
-      expense: _toDouble(json['expense']),
+      balance: _requireDouble(json['balance'], field: 'balance'),
+      income: _requireDouble(json['income'], field: 'income'),
+      expense: _requireDouble(json['expense'], field: 'expense'),
       monthLabel: (monthlyGoal['monthLabel'] as String? ?? 'Mês').trim(),
-      balanceChangePercent: _toDouble(json['balanceChangePercent']),
+      balanceChangePercent: _requireDouble(
+        json['balanceChangePercent'],
+        field: 'balanceChangePercent',
+      ),
       transactions: transactions,
     );
   }
@@ -33,9 +36,12 @@ class TransactionsOverviewModel {
   final double balanceChangePercent;
   final List<TransactionData> transactions;
 
-  static double _toDouble(Object? value) {
+  static double _requireDouble(Object? value, {required String field}) {
     if (value is num) return value.toDouble();
-    if (value is String) return double.tryParse(value) ?? 0;
-    return 0;
+    if (value is String) {
+      final parsed = double.tryParse(value);
+      if (parsed != null) return parsed;
+    }
+    throw FormatException('Invalid double for field: $field');
   }
 }

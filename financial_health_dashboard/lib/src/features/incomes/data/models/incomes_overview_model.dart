@@ -19,9 +19,12 @@ class IncomesOverviewModel {
         .toList(growable: false);
 
     return IncomesOverviewModel(
-      totalIncome: _toDouble(json['income']),
+      totalIncome: _requireDouble(json['income'], field: 'income'),
       monthLabel: (monthlyGoal['monthLabel'] as String? ?? 'Mês').trim(),
-      incomeChangePercent: _toDouble(json['incomeChangePercent']),
+      incomeChangePercent: _requireDouble(
+        json['incomeChangePercent'],
+        field: 'incomeChangePercent',
+      ),
       transactions: transactions,
     );
   }
@@ -31,9 +34,12 @@ class IncomesOverviewModel {
   final double incomeChangePercent;
   final List<TransactionData> transactions;
 
-  static double _toDouble(Object? value) {
+  static double _requireDouble(Object? value, {required String field}) {
     if (value is num) return value.toDouble();
-    if (value is String) return double.tryParse(value) ?? 0;
-    return 0;
+    if (value is String) {
+      final parsed = double.tryParse(value);
+      if (parsed != null) return parsed;
+    }
+    throw FormatException('Invalid double for field: $field');
   }
 }

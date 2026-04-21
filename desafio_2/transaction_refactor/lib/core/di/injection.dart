@@ -15,11 +15,13 @@ final GetIt getIt = GetIt.instance;
 /// Factory para o ViewModel (novo por tela, facilita teste e dispose).
 void setupInjection() {
   // ── Auth ──────────────────────────────────────────────────────────────────
-  getIt.registerLazySingleton<AuthTokenProvider>(() => const MockAuthTokenProvider());
+  getIt.registerLazySingleton<AuthTokenProvider>(
+    () => const DemoAuthTokenProvider(),
+  );
 
   // ── Data ──────────────────────────────────────────────────────────────────
   getIt.registerLazySingleton<TransactionRemoteDataSource>(
-    () => MockTransactionRemoteDataSource(getIt<AuthTokenProvider>()),
+    () => DemoTransactionRemoteDataSource(getIt<AuthTokenProvider>()),
   );
 
   getIt.registerLazySingleton<TransactionRepository>(
