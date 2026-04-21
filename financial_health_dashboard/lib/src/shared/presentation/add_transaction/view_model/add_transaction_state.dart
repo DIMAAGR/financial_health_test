@@ -1,40 +1,30 @@
 import 'package:financial_health_dashboard/src/shared/presentation/add_transaction/models/transaction_category.dart';
 import 'package:financial_health_dashboard/src/shared/presentation/add_transaction/models/transaction_sheet_type.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-class AddTransactionState {
-  const AddTransactionState({
-    required this.amountCents,
-    required this.description,
-    required this.category,
-    this.isSubmitting = false,
-  });
+part 'add_transaction_state.freezed.dart';
+
+@freezed
+abstract class AddTransactionState with _$AddTransactionState {
+  const AddTransactionState._();
+
+  const factory AddTransactionState({
+    required int amountCents,
+    required String description,
+    required TransactionCategory category,
+    @Default(false) bool isSubmitting,
+  }) = _AddTransactionState;
 
   factory AddTransactionState.initial(SheetType type) {
     return AddTransactionState(
       amountCents: 0,
       description: '',
-      category: type == SheetType.income ? TransactionCategory.salary : TransactionCategory.food,
+      category: type == SheetType.income
+          ? TransactionCategory.salary
+          : TransactionCategory.food,
     );
   }
 
-  final int amountCents;
-  final String description;
-  final TransactionCategory category;
-  final bool isSubmitting;
-
-  bool get canSubmit => !isSubmitting && amountCents > 0 && description.trim().isNotEmpty;
-
-  AddTransactionState copyWith({
-    int? amountCents,
-    String? description,
-    TransactionCategory? category,
-    bool? isSubmitting,
-  }) {
-    return AddTransactionState(
-      amountCents: amountCents ?? this.amountCents,
-      description: description ?? this.description,
-      category: category ?? this.category,
-      isSubmitting: isSubmitting ?? this.isSubmitting,
-    );
-  }
+  bool get canSubmit =>
+      !isSubmitting && amountCents > 0 && description.trim().isNotEmpty;
 }

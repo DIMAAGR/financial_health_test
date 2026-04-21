@@ -2,22 +2,26 @@ import 'package:financial_health_dashboard/src/features/dashboard/domain/entitie
 import 'package:financial_health_dashboard/src/features/dashboard/domain/entities/financial_health_score_data.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/domain/entities/flow_analysis_data.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/domain/entities/monthly_goal_data.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-class DashboardState {
-  const DashboardState({
-    required this.userName,
-    required this.balance,
-    required this.income,
-    required this.expense,
-    required this.financialHealthScore,
-    required this.flowAnalysis,
-    required this.monthlyGoal,
-    required this.status,
-    this.errorMessage,
-    this.canRetry = false,
-    this.effect,
-    required this.effectVersion,
-  });
+part 'dashboard_state.freezed.dart';
+
+@freezed
+abstract class DashboardState with _$DashboardState {
+  const factory DashboardState({
+    required String userName,
+    required double balance,
+    required double income,
+    required double expense,
+    required FinancialHealthScoreData financialHealthScore,
+    required FlowAnalysisData flowAnalysis,
+    required MonthlyGoalData monthlyGoal,
+    required DashboardViewStatus status,
+    String? errorMessage,
+    @Default(false) bool canRetry,
+    DashboardEffect? effect,
+    required int effectVersion,
+  }) = _DashboardState;
 
   factory DashboardState.initial() {
     return DashboardState(
@@ -58,51 +62,6 @@ class DashboardState {
       status: DashboardViewStatus.success,
       effect: effect,
       effectVersion: effectVersion,
-    );
-  }
-
-  final String userName;
-  final double balance;
-  final double income;
-  final double expense;
-  final FinancialHealthScoreData financialHealthScore;
-  final FlowAnalysisData flowAnalysis;
-  final MonthlyGoalData monthlyGoal;
-  final DashboardViewStatus status;
-  final String? errorMessage;
-  final bool canRetry;
-  final DashboardEffect? effect;
-  final int effectVersion;
-
-  DashboardState copyWith({
-    String? userName,
-    double? balance,
-    double? income,
-    double? expense,
-    FinancialHealthScoreData? financialHealthScore,
-    FlowAnalysisData? flowAnalysis,
-    MonthlyGoalData? monthlyGoal,
-    DashboardViewStatus? status,
-    String? errorMessage,
-    bool? canRetry,
-    bool clearError = false,
-    DashboardEffect? effect,
-    bool clearEffect = false,
-    int? effectVersion,
-  }) {
-    return DashboardState(
-      userName: userName ?? this.userName,
-      balance: balance ?? this.balance,
-      income: income ?? this.income,
-      expense: expense ?? this.expense,
-      financialHealthScore: financialHealthScore ?? this.financialHealthScore,
-      flowAnalysis: flowAnalysis ?? this.flowAnalysis,
-      monthlyGoal: monthlyGoal ?? this.monthlyGoal,
-      status: status ?? this.status,
-      errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
-      canRetry: canRetry ?? this.canRetry,
-      effect: clearEffect ? null : (effect ?? this.effect),
-      effectVersion: effectVersion ?? this.effectVersion,
     );
   }
 }

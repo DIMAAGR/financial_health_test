@@ -10,6 +10,7 @@ O objetivo da feature é apresentar um resumo financeiro com foco em legibilidad
 
 - Flutter + Dart
 - `flutter_bloc` (Cubit)
+- `freezed` (states imutáveis, `copyWith` e igualdade por valor)
 - `get_it` (injeção de dependências)
 - `go_router` (navegação)
 

@@ -63,13 +63,13 @@ void main() {
       expect(updated.status, state.status);
     });
 
-    test('copyWith com clearEffect limpa efeito atual', () {
+    test('copyWith com effect null limpa efeito atual', () {
       final state = DashboardState.initial().copyWith(
         effect: DashboardEffect.showAddIncomeSheet,
         effectVersion: 1,
       );
 
-      final cleared = state.copyWith(clearEffect: true);
+      final cleared = state.copyWith(effect: null);
 
       expect(cleared.effect, isNull);
       expect(cleared.effectVersion, 1);

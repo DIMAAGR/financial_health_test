@@ -1,19 +1,23 @@
 import 'package:financial_health_dashboard/src/shared/domain/entities/category_breakdown_data.dart';
 import 'package:financial_health_dashboard/src/shared/domain/entities/transaction_data.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-class ExpensesState {
-  const ExpensesState({
-    required this.totalExpense,
-    required this.monthLabel,
-    required this.expenseChangePercent,
-    required this.transactions,
-    required this.categoryBreakdown,
-    required this.status,
-    this.errorMessage,
-    this.canRetry = false,
-    this.effect,
-    required this.effectVersion,
-  });
+part 'expenses_state.freezed.dart';
+
+@freezed
+abstract class ExpensesState with _$ExpensesState {
+  const factory ExpensesState({
+    required double totalExpense,
+    required String monthLabel,
+    required double expenseChangePercent,
+    required List<TransactionData> transactions,
+    required List<CategoryBreakdownData> categoryBreakdown,
+    required ExpensesViewStatus status,
+    String? errorMessage,
+    @Default(false) bool canRetry,
+    ExpensesEffect? effect,
+    required int effectVersion,
+  }) = _ExpensesState;
 
   factory ExpensesState.initial() {
     return const ExpensesState(
@@ -24,45 +28,6 @@ class ExpensesState {
       categoryBreakdown: [],
       status: ExpensesViewStatus.initial,
       effectVersion: 0,
-    );
-  }
-
-  final double totalExpense;
-  final String monthLabel;
-  final double expenseChangePercent;
-  final List<TransactionData> transactions;
-  final List<CategoryBreakdownData> categoryBreakdown;
-  final ExpensesViewStatus status;
-  final String? errorMessage;
-  final bool canRetry;
-  final ExpensesEffect? effect;
-  final int effectVersion;
-
-  ExpensesState copyWith({
-    double? totalExpense,
-    String? monthLabel,
-    double? expenseChangePercent,
-    List<TransactionData>? transactions,
-    List<CategoryBreakdownData>? categoryBreakdown,
-    ExpensesViewStatus? status,
-    String? errorMessage,
-    bool? canRetry,
-    bool clearError = false,
-    ExpensesEffect? effect,
-    bool clearEffect = false,
-    int? effectVersion,
-  }) {
-    return ExpensesState(
-      totalExpense: totalExpense ?? this.totalExpense,
-      monthLabel: monthLabel ?? this.monthLabel,
-      expenseChangePercent: expenseChangePercent ?? this.expenseChangePercent,
-      transactions: transactions ?? this.transactions,
-      categoryBreakdown: categoryBreakdown ?? this.categoryBreakdown,
-      status: status ?? this.status,
-      errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
-      canRetry: canRetry ?? this.canRetry,
-      effect: clearEffect ? null : (effect ?? this.effect),
-      effectVersion: effectVersion ?? this.effectVersion,
     );
   }
 }
