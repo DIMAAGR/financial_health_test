@@ -126,25 +126,20 @@ void main() {
       });
     });
 
-    test('faz parse resiliente quando payload vem incompleto', () async {
-      final spy = _SpyHttpService(
-        payload: {
-          'flow': ['invalid-item'],
-        },
-      );
-      final ds = DashboardRemoteDataSourceImpl(spy, const _AlwaysConnected());
+    test(
+      'falha cedo quando payload financeiro obrigatório vem inválido',
+      () async {
+        final spy = _SpyHttpService(
+          payload: {
+            ..._SpyHttpService._defaultPayload,
+            'income': 'not-a-number',
+          },
+        );
+        final ds = DashboardRemoteDataSourceImpl(spy, const _AlwaysConnected());
 
-      final model = await ds.getOverview();
-
-      expect(model.userName, 'Usuário');
-      expect(model.monthLabel, 'Mês');
-      expect(model.balance, 0);
-      expect(model.income, 0);
-      expect(model.expense, 0);
-      expect(model.flowPoints, hasLength(1));
-      expect(model.flowPoints.first.income, 0);
-      expect(model.flowPoints.first.expense, 0);
-    });
+        expect(ds.getOverview, throwsA(isA<FormatException>()));
+      },
+    );
 
     test('lança SocketException quando sem conectividade', () async {
       final ds = DashboardRemoteDataSourceImpl(
@@ -173,6 +168,9 @@ class _SpyHttpService implements HttpService {
     'income': 12000,
     'expense': 7200,
     'balance': 18000,
+    'incomeChangePercent': 15.5,
+    'expenseChangePercent': -3.2,
+    'balanceChangePercent': 10,
     'liquidity': {'previousIndex': 1.2, 'currentIndex': 1.3},
     'commitment': {'percent': 60, 'benchmarkPercent': 65},
     'monthlyGoal': {

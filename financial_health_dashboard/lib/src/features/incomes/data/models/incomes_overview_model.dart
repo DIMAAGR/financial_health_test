@@ -1,5 +1,4 @@
 import 'package:financial_health_dashboard/src/shared/data/models/transaction_model.dart';
-import 'package:financial_health_dashboard/src/shared/data/parsers/json_parsers.dart';
 import 'package:financial_health_dashboard/src/shared/domain/entities/transaction_data.dart';
 
 class IncomesOverviewModel {
@@ -20,9 +19,12 @@ class IncomesOverviewModel {
         .toList(growable: false);
 
     return IncomesOverviewModel(
-      totalIncome: parseJsonDouble(json['income']),
+      totalIncome: _requireDouble(json['income'], field: 'income'),
       monthLabel: (monthlyGoal['monthLabel'] as String? ?? 'Mês').trim(),
-      incomeChangePercent: parseJsonDouble(json['incomeChangePercent']),
+      incomeChangePercent: _requireDouble(
+        json['incomeChangePercent'],
+        field: 'incomeChangePercent',
+      ),
       transactions: transactions,
     );
   }
@@ -31,4 +33,13 @@ class IncomesOverviewModel {
   final String monthLabel;
   final double incomeChangePercent;
   final List<TransactionData> transactions;
+
+  static double _requireDouble(Object? value, {required String field}) {
+    if (value is num) return value.toDouble();
+    if (value is String) {
+      final parsed = double.tryParse(value);
+      if (parsed != null) return parsed;
+    }
+    throw FormatException('Invalid double for field: $field');
+  }
 }

@@ -4,7 +4,6 @@ import 'dart:math';
 import 'package:financial_health_dashboard/src/core/services/http/http_service.dart';
 import 'package:financial_health_dashboard/src/core/services/storage/key_value_wrapper.dart';
 import 'package:financial_health_dashboard/src/core/services/storage/storage_schema.dart';
-import 'package:financial_health_dashboard/src/shared/data/parsers/json_parsers.dart';
 
 class FakeHttpService implements HttpService {
   FakeHttpService({
@@ -204,7 +203,7 @@ class FakeHttpService implements HttpService {
       final decoded = jsonDecode(raw);
       if (decoded is! List) return null;
       return decoded
-          .map(parseJsonMap)
+          .map((item) => _requireMap(item, field: 'transactions[]'))
           .map(_Transaction.fromJson)
           .where((item) => item.id.isNotEmpty)
           .toList(growable: true);
@@ -319,21 +318,21 @@ class _FakeFinancialState {
   factory _FakeFinancialState.fromFinancialOverviewJson(
     Map<String, dynamic> json,
   ) {
-    final liquidity = parseJsonMap(json['liquidity']);
-    final monthlyGoal = parseJsonMap(json['monthlyGoal']);
+    final liquidity = _requireMap(json['liquidity'], field: 'liquidity');
+    final monthlyGoal = _requireMap(json['monthlyGoal'], field: 'monthlyGoal');
     final flowJson = (json['flow'] as List<dynamic>? ?? const [])
-        .map(parseJsonMap)
+        .map((item) => _requireMap(item, field: 'flow[]'))
         .toList(growable: false);
     final transactionsJson =
         (json['transactions'] as List<dynamic>? ?? const [])
-            .map(parseJsonMap)
+            .map((item) => _requireMap(item, field: 'transactions[]'))
             .toList(growable: false);
 
     final flow = flowJson
         .map(
           (item) => _FlowMonth(
-            income: parseJsonDouble(item['income']),
-            expense: parseJsonDouble(item['expense']),
+            income: _requireDouble(item['income'], field: 'flow[].income'),
+            expense: _requireDouble(item['expense'], field: 'flow[].expense'),
           ),
         )
         .toList(growable: false);
@@ -344,7 +343,7 @@ class _FakeFinancialState {
             id: (item['id'] as String? ?? '').trim(),
             title: (item['title'] as String? ?? '').trim(),
             category: (item['category'] as String? ?? '').trim(),
-            value: parseJsonDouble(item['value']),
+            value: _requireDouble(item['value'], field: 'transactions[].value'),
             type: (item['type'] as String? ?? '').toLowerCase() == 'expense'
                 ? _TransactionType.expense
                 : _TransactionType.income,
@@ -362,17 +361,29 @@ class _FakeFinancialState {
       monthLabel:
           (monthlyGoal['monthLabel'] as String? ?? _ptBrMonth(now.month))
               .trim(),
-      balance: parseJsonDouble(json['balance']),
-      income: parseJsonDouble(json['income']),
-      expense: parseJsonDouble(json['expense']),
-      previousLiquidityIndex: parseJsonDouble(liquidity['previousIndex']),
-      currentLiquidityIndex: parseJsonDouble(liquidity['currentIndex']),
-      goalTargetAmount: parseJsonDouble(monthlyGoal['targetAmount']),
-      goalAchievedAmount: parseJsonDouble(monthlyGoal['achievedAmount']),
-      goalDay: parseJsonInt(monthlyGoal['day'], fallback: now.day),
-      goalDaysInMonth: parseJsonInt(
+      balance: _requireDouble(json['balance'], field: 'balance'),
+      income: _requireDouble(json['income'], field: 'income'),
+      expense: _requireDouble(json['expense'], field: 'expense'),
+      previousLiquidityIndex: _requireDouble(
+        liquidity['previousIndex'],
+        field: 'liquidity.previousIndex',
+      ),
+      currentLiquidityIndex: _requireDouble(
+        liquidity['currentIndex'],
+        field: 'liquidity.currentIndex',
+      ),
+      goalTargetAmount: _requireDouble(
+        monthlyGoal['targetAmount'],
+        field: 'monthlyGoal.targetAmount',
+      ),
+      goalAchievedAmount: _requireDouble(
+        monthlyGoal['achievedAmount'],
+        field: 'monthlyGoal.achievedAmount',
+      ),
+      goalDay: _requireInt(monthlyGoal['day'], field: 'monthlyGoal.day'),
+      goalDaysInMonth: _requireInt(
         monthlyGoal['daysInMonth'],
-        fallback: DateTime(now.year, now.month + 1, 0).day,
+        field: 'monthlyGoal.daysInMonth',
       ),
       flow: flow.isEmpty
           ? <_FlowMonth>[const _FlowMonth(income: 0, expense: 0)]
@@ -577,6 +588,37 @@ double _randomInRange(
   return min + random.nextDouble() * (max - min);
 }
 
+Map<String, dynamic> _requireMap(Object? value, {required String field}) {
+  if (value is Map<String, dynamic>) return value;
+  if (value is Map) {
+    return value.map((key, value) {
+      if (key is! String) {
+        throw FormatException('Invalid key type for field: $field');
+      }
+      return MapEntry(key, value);
+    });
+  }
+  throw FormatException('Invalid map for field: $field');
+}
+
+double _requireDouble(Object? value, {required String field}) {
+  if (value is num) return value.toDouble();
+  if (value is String) {
+    final parsed = double.tryParse(value);
+    if (parsed != null) return parsed;
+  }
+  throw FormatException('Invalid double for field: $field');
+}
+
+int _requireInt(Object? value, {required String field}) {
+  if (value is num) return value.toInt();
+  if (value is String) {
+    final parsed = int.tryParse(value);
+    if (parsed != null) return parsed;
+  }
+  throw FormatException('Invalid int for field: $field');
+}
+
 String _ptBrMonth(int month) {
   const months = <String>[
     'Janeiro',
@@ -635,7 +677,7 @@ class _Transaction {
       id: (json['id'] as String? ?? '').trim(),
       title: (json['title'] as String? ?? '').trim(),
       category: (json['category'] as String? ?? '').trim(),
-      value: parseJsonDouble(json['value']),
+      value: _requireDouble(json['value'], field: 'transaction.value'),
       type: (json['type'] as String? ?? '').toLowerCase() == 'expense'
           ? _TransactionType.expense
           : _TransactionType.income,
