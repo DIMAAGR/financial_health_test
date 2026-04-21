@@ -1,4 +1,4 @@
-import 'package:financial_health_dashboard/src/shared/presentation/design/input_formatters/brl_currency_input_formatter.dart';
+import 'package:financial_health_design_system/financial_health_design_system.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

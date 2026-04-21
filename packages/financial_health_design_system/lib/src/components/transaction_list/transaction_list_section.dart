@@ -1,8 +1,8 @@
-import 'package:financial_health_dashboard/src/shared/presentation/design/components/svg_icons.dart';
-import 'package:financial_health_dashboard/src/shared/presentation/design/theme/app_theme_ext.dart';
-import 'package:financial_health_dashboard/src/shared/presentation/design/theme/transaction_list_theme_ext.dart';
-import 'package:financial_health_dashboard/src/shared/presentation/design/tokens/app_radius.dart';
-import 'package:financial_health_dashboard/src/shared/presentation/design/tokens/app_spacing.dart';
+import 'package:financial_health_design_system/src/components/svg_icon/app_svg_icon.dart';
+import 'package:financial_health_design_system/src/foundations/tokens/app_radius.dart';
+import 'package:financial_health_design_system/src/foundations/tokens/app_spacing.dart';
+import 'package:financial_health_design_system/src/theme/extensions/app_theme_ext.dart';
+import 'package:financial_health_design_system/src/theme/extensions/transaction_list_theme_ext.dart';
 import 'package:flutter/material.dart';
 
 class TransactionListItem {
@@ -24,7 +24,11 @@ class TransactionListItem {
 }
 
 class TransactionGroup {
-  const TransactionGroup({required this.dateLabel, required this.items, this.isToday = false});
+  const TransactionGroup({
+    required this.dateLabel,
+    required this.items,
+    this.isToday = false,
+  });
 
   final String dateLabel;
   final List<TransactionListItem> items;
@@ -91,7 +95,9 @@ class _DateGroup extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = context.transactionListTheme;
-    final borderColor = group.isToday ? theme.dateBorderToday : theme.dateBorderOther;
+    final borderColor = group.isToday
+        ? theme.dateBorderToday
+        : theme.dateBorderOther;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
@@ -168,9 +174,16 @@ class _TransactionTile extends StatelessWidget {
           Container(
             width: 48,
             height: 48,
-            decoration: BoxDecoration(color: theme.iconBackground, shape: BoxShape.circle),
+            decoration: BoxDecoration(
+              color: theme.iconBackground,
+              shape: BoxShape.circle,
+            ),
             child: Center(
-              child: AppSvgIcon(asset: item.icon, size: 24, color: theme.itemTitle),
+              child: AppSvgIcon(
+                asset: item.icon,
+                size: 24,
+                color: theme.itemTitle,
+              ),
             ),
           ),
           const SizedBox(width: 20),

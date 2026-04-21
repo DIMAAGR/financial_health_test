@@ -2,7 +2,7 @@ import 'package:financial_health_dashboard/src/shared/presentation/add_transacti
 import 'package:financial_health_dashboard/src/shared/presentation/add_transaction/models/transaction_category.dart';
 import 'package:financial_health_dashboard/src/shared/presentation/add_transaction/models/transaction_sheet_type.dart';
 import 'package:financial_health_dashboard/src/shared/presentation/add_transaction/view_model/add_transaction_state.dart';
-import 'package:financial_health_dashboard/src/shared/presentation/design/input_formatters/brl_currency_input_formatter.dart';
+import 'package:financial_health_design_system/financial_health_design_system.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AddTransactionCubit extends Cubit<AddTransactionState> {

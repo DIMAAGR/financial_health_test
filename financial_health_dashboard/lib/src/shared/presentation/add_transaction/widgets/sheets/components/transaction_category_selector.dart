@@ -1,7 +1,4 @@
-import 'package:financial_health_dashboard/src/shared/presentation/design/components/svg_icons.dart';
-import 'package:financial_health_dashboard/src/shared/presentation/design/theme/add_income_sheet_theme_ext.dart';
-import 'package:financial_health_dashboard/src/shared/presentation/design/tokens/app_radius.dart';
-import 'package:financial_health_dashboard/src/shared/presentation/design/tokens/app_text_styles.dart';
+import 'package:financial_health_design_system/financial_health_design_system.dart';
 import 'package:flutter/material.dart';
 
 class TransactionCategoryOption<T> {
@@ -48,7 +45,10 @@ class TransactionCategorySelector<T> extends StatelessWidget {
             ),
             const SizedBox(width: 12),
           ],
-          TransactionCategoryAddChip(onTap: onAddPressed ?? () {}, theme: theme),
+          TransactionCategoryAddChip(
+            onTap: onAddPressed ?? () {},
+            theme: theme,
+          ),
         ],
       ),
     );
@@ -76,8 +76,12 @@ class TransactionCategoryChip extends StatelessWidget {
     final background = selected
         ? theme.categorySelectedBackground
         : theme.categoryUnselectedBackground;
-    final textColor = selected ? theme.categorySelectedText : theme.categoryUnselectedText;
-    final iconColor = selected ? theme.categorySelectedIcon : theme.categoryUnselectedIcon;
+    final textColor = selected
+        ? theme.categorySelectedText
+        : theme.categoryUnselectedText;
+    final iconColor = selected
+        ? theme.categorySelectedIcon
+        : theme.categoryUnselectedIcon;
     final textStyle = selected
         ? AppTextStyles.sheetCategorySelected
         : AppTextStyles.sheetCategoryUnselected;
@@ -105,7 +109,11 @@ class TransactionCategoryChip extends StatelessWidget {
 }
 
 class TransactionCategoryAddChip extends StatelessWidget {
-  const TransactionCategoryAddChip({super.key, required this.onTap, required this.theme});
+  const TransactionCategoryAddChip({
+    super.key,
+    required this.onTap,
+    required this.theme,
+  });
 
   final VoidCallback onTap;
   final AddIncomeSheetTheme theme;

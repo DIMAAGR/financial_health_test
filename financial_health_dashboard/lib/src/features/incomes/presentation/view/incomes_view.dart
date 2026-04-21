@@ -6,16 +6,8 @@ import 'package:financial_health_dashboard/src/shared/domain/entities/category_b
 import 'package:financial_health_dashboard/src/shared/presentation/add_transaction/models/add_transaction_sheet_result.dart';
 import 'package:financial_health_dashboard/src/shared/presentation/add_transaction/models/transaction_sheet_type.dart';
 import 'package:financial_health_dashboard/src/shared/presentation/add_transaction/widgets/add_transaction_bottom_sheet.dart';
-import 'package:financial_health_dashboard/src/shared/presentation/design/components/category_breakdown_section.dart';
-import 'package:financial_health_dashboard/src/shared/presentation/design/components/contextual_fab.dart';
-import 'package:financial_health_dashboard/src/shared/presentation/design/components/detail_app_bar.dart';
-import 'package:financial_health_dashboard/src/shared/presentation/design/components/month_summary_card.dart';
-import 'package:financial_health_dashboard/src/shared/presentation/design/components/transaction_list_section.dart';
-import 'package:financial_health_dashboard/src/shared/presentation/design/extensions/currency_format_extension.dart';
-import 'package:financial_health_dashboard/src/shared/presentation/design/helpers/category_helpers.dart';
-import 'package:financial_health_dashboard/src/shared/presentation/design/theme/app_theme_ext.dart';
-import 'package:financial_health_dashboard/src/shared/presentation/design/tokens/app_spacing.dart';
 import 'package:financial_health_dashboard/src/shared/presentation/mappers/transaction_group_mapper.dart';
+import 'package:financial_health_design_system/financial_health_design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -25,13 +17,17 @@ class IncomesView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocListener<IncomesCubit, IncomesState>(
-      listenWhen: (previous, current) => previous.effectVersion != current.effectVersion,
+      listenWhen: (previous, current) =>
+          previous.effectVersion != current.effectVersion,
       listener: _onIncomesEffect,
       child: const _IncomesContent(),
     );
   }
 
-  Future<void> _onIncomesEffect(BuildContext context, IncomesState state) async {
+  Future<void> _onIncomesEffect(
+    BuildContext context,
+    IncomesState state,
+  ) async {
     final cubit = context.read<IncomesCubit>();
 
     switch (state.effect) {
@@ -41,7 +37,9 @@ class IncomesView extends StatelessWidget {
           sheetType: SheetType.income,
           onSubmit: (result) async {
             if (result is! AddIncomeSheetResult) return false;
-            return cubit.addIncome(AddIncomeInputMapper.fromSheetResult(result));
+            return cubit.addIncome(
+              AddIncomeInputMapper.fromSheetResult(result),
+            );
           },
         );
         cubit.clearEffect();
@@ -67,7 +65,11 @@ class _IncomesContent extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            DetailAppBar(title: 'Receitas', onCalendarPressed: () {}, onFilterPressed: () {}),
+            DetailAppBar(
+              title: 'Receitas',
+              onCalendarPressed: () {},
+              onFilterPressed: () {},
+            ),
             Expanded(
               child: BlocBuilder<IncomesCubit, IncomesState>(
                 builder: (context, state) {
@@ -83,11 +85,15 @@ class _IncomesContent extends StatelessWidget {
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Text(state.errorMessage ?? 'Não foi possível carregar os dados.'),
+                            Text(
+                              state.errorMessage ??
+                                  'Não foi possível carregar os dados.',
+                            ),
                             if (state.canRetry) ...[
                               const SizedBox(height: AppSpacing.md),
                               TextButton(
-                                onPressed: () => context.read<IncomesCubit>().loadOverview(),
+                                onPressed: () =>
+                                    context.read<IncomesCubit>().loadOverview(),
                                 child: const Text('Tentar novamente'),
                               ),
                             ],
@@ -97,17 +103,25 @@ class _IncomesContent extends StatelessWidget {
                     );
                   }
 
-                  final groups = TransactionGroupMapper.toIncomeGroups(state.transactions);
-                  final categories = _buildCategoryItems(state.categoryBreakdown);
+                  final groups = TransactionGroupMapper.toIncomeGroups(
+                    state.transactions,
+                  );
+                  final categories = _buildCategoryItems(
+                    state.categoryBreakdown,
+                  );
 
                   return SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.lg,
+                    ),
                     child: Column(
                       children: [
                         MonthSummaryCard(
                           type: MonthSummaryType.income,
-                          amount: 'R\$\n${state.totalIncome.toBRL(true).trim()}',
-                          monthYear: '${state.monthLabel} ${DateTime.now().year}',
+                          amount:
+                              'R\$\n${state.totalIncome.toBRL(true).trim()}',
+                          monthYear:
+                              '${state.monthLabel} ${DateTime.now().year}',
                           changePercent: state.incomeChangePercent,
                           trendDirection: state.incomeChangePercent > 0
                               ? TrendDirection.up
@@ -139,7 +153,9 @@ class _IncomesContent extends StatelessWidget {
     );
   }
 
-  List<CategoryItem> _buildCategoryItems(List<CategoryBreakdownData> breakdown) {
+  List<CategoryItem> _buildCategoryItems(
+    List<CategoryBreakdownData> breakdown,
+  ) {
     return breakdown.map((b) {
       return CategoryItem(
         name: categoryLabel(b.category),

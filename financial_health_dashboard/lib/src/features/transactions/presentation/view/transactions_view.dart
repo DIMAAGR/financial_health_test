@@ -1,13 +1,8 @@
 import 'package:financial_health_dashboard/src/features/transactions/presentation/view_model/transactions_cubit.dart';
 import 'package:financial_health_dashboard/src/features/transactions/presentation/view_model/transactions_state.dart';
 import 'package:financial_health_dashboard/src/features/transactions/presentation/widgets/transactions_skeleton.dart';
-import 'package:financial_health_dashboard/src/shared/presentation/design/components/detail_app_bar.dart';
-import 'package:financial_health_dashboard/src/shared/presentation/design/components/month_summary_card.dart';
-import 'package:financial_health_dashboard/src/shared/presentation/design/components/transaction_list_section.dart';
-import 'package:financial_health_dashboard/src/shared/presentation/design/extensions/currency_format_extension.dart';
-import 'package:financial_health_dashboard/src/shared/presentation/design/theme/app_theme_ext.dart';
-import 'package:financial_health_dashboard/src/shared/presentation/design/tokens/app_spacing.dart';
 import 'package:financial_health_dashboard/src/shared/presentation/mappers/transaction_group_mapper.dart';
+import 'package:financial_health_design_system/financial_health_design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -21,7 +16,11 @@ class TransactionsView extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            DetailAppBar(title: 'Movimentações', onCalendarPressed: () {}, onFilterPressed: () {}),
+            DetailAppBar(
+              title: 'Movimentações',
+              onCalendarPressed: () {},
+              onFilterPressed: () {},
+            ),
             Expanded(
               child: BlocBuilder<TransactionsCubit, TransactionsState>(
                 builder: (context, state) {
@@ -37,11 +36,16 @@ class TransactionsView extends StatelessWidget {
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Text(state.errorMessage ?? 'Não foi possível carregar os dados.'),
+                            Text(
+                              state.errorMessage ??
+                                  'Não foi possível carregar os dados.',
+                            ),
                             if (state.canRetry) ...[
                               const SizedBox(height: AppSpacing.md),
                               TextButton(
-                                onPressed: () => context.read<TransactionsCubit>().loadOverview(),
+                                onPressed: () => context
+                                    .read<TransactionsCubit>()
+                                    .loadOverview(),
                                 child: const Text('Tentar novamente'),
                               ),
                             ],
@@ -51,16 +55,21 @@ class TransactionsView extends StatelessWidget {
                     );
                   }
 
-                  final groups = TransactionGroupMapper.toTransactionsGroups(state.transactions);
+                  final groups = TransactionGroupMapper.toTransactionsGroups(
+                    state.transactions,
+                  );
 
                   return SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.lg,
+                    ),
                     child: Column(
                       children: [
                         MonthSummaryCard(
                           type: MonthSummaryType.balance,
                           amount: 'R\$\n${state.balance.toBRL(true).trim()}',
-                          monthYear: '${state.monthLabel} ${DateTime.now().year}',
+                          monthYear:
+                              '${state.monthLabel} ${DateTime.now().year}',
                           changePercent: state.balanceChangePercent,
                           trendDirection: state.balanceChangePercent > 0
                               ? TrendDirection.up

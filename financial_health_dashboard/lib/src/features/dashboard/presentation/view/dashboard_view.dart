@@ -11,7 +11,7 @@ import 'package:financial_health_dashboard/src/features/dashboard/presentation/w
 import 'package:financial_health_dashboard/src/features/dashboard/presentation/widgets/header_section.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/presentation/widgets/metrics_overview_section.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/presentation/widgets/monthly_goal_card.dart';
-import 'package:financial_health_dashboard/src/shared/presentation/design/tokens/app_spacing.dart';
+import 'package:financial_health_design_system/financial_health_design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -22,13 +22,17 @@ class DashboardView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocListener<DashboardCubit, DashboardState>(
-      listenWhen: (previous, current) => previous.effectVersion != current.effectVersion,
+      listenWhen: (previous, current) =>
+          previous.effectVersion != current.effectVersion,
       listener: _onDashboardEffect,
       child: const _DashboardContent(),
     );
   }
 
-  Future<void> _onDashboardEffect(BuildContext context, DashboardState state) async {
+  Future<void> _onDashboardEffect(
+    BuildContext context,
+    DashboardState state,
+  ) async {
     final dashCubit = context.read<DashboardCubit>();
 
     switch (state.effect) {
@@ -45,25 +49,35 @@ class DashboardView extends StatelessWidget {
     }
   }
 
-  Future<void> _handleIncomeSheet(BuildContext context, DashboardCubit dashCubit) async {
+  Future<void> _handleIncomeSheet(
+    BuildContext context,
+    DashboardCubit dashCubit,
+  ) async {
     await showTransactionBottomSheet(
       context,
       sheetType: SheetType.income,
       onSubmit: (result) async {
         if (result is! AddIncomeSheetResult) return false;
-        return dashCubit.addIncome(AddTransactionInputMapper.toIncomeInput(result));
+        return dashCubit.addIncome(
+          AddTransactionInputMapper.toIncomeInput(result),
+        );
       },
     );
     dashCubit.clearEffect();
   }
 
-  Future<void> _handleExpenseSheet(BuildContext context, DashboardCubit dashCubit) async {
+  Future<void> _handleExpenseSheet(
+    BuildContext context,
+    DashboardCubit dashCubit,
+  ) async {
     await showTransactionBottomSheet(
       context,
       sheetType: SheetType.expense,
       onSubmit: (result) async {
         if (result is! AddExpenseSheetResult) return false;
-        return dashCubit.addExpense(AddTransactionInputMapper.toExpenseInput(result));
+        return dashCubit.addExpense(
+          AddTransactionInputMapper.toExpenseInput(result),
+        );
       },
     );
     dashCubit.clearEffect();
@@ -91,11 +105,15 @@ class _DashboardContent extends StatelessWidget {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(state.errorMessage ?? 'Não foi possível carregar os dados.'),
+                      Text(
+                        state.errorMessage ??
+                            'Não foi possível carregar os dados.',
+                      ),
                       if (state.canRetry) ...[
                         const SizedBox(height: AppSpacing.md),
                         TextButton(
-                          onPressed: () => context.read<DashboardCubit>().loadOverview(),
+                          onPressed: () =>
+                              context.read<DashboardCubit>().loadOverview(),
                           child: const Text('Tentar novamente'),
                         ),
                       ],
@@ -119,7 +137,10 @@ class _DashboardContent extends StatelessWidget {
                       onAddExpensePressed: cubit.onAddExpensePressed,
                     ),
                     const SizedBox(height: AppSpacing.xxl),
-                    FinancialHealthScoreCard(data: state.financialHealthScore, onTap: () {}),
+                    FinancialHealthScoreCard(
+                      data: state.financialHealthScore,
+                      onTap: () {},
+                    ),
                     const SizedBox(height: AppSpacing.lg),
                     MetricsOverviewSection(
                       balance: state.balance,

@@ -1,9 +1,9 @@
-import 'package:financial_health_dashboard/src/shared/presentation/design/assets/icons.dart';
-import 'package:financial_health_dashboard/src/shared/presentation/design/components/svg_icons.dart';
-import 'package:financial_health_dashboard/src/shared/presentation/design/theme/app_theme_ext.dart';
-import 'package:financial_health_dashboard/src/shared/presentation/design/theme/month_summary_theme_ext.dart';
-import 'package:financial_health_dashboard/src/shared/presentation/design/tokens/app_radius.dart';
-import 'package:financial_health_dashboard/src/shared/presentation/design/tokens/app_spacing.dart';
+import 'package:financial_health_design_system/src/assets/icons.dart';
+import 'package:financial_health_design_system/src/components/svg_icon/app_svg_icon.dart';
+import 'package:financial_health_design_system/src/foundations/tokens/app_radius.dart';
+import 'package:financial_health_design_system/src/foundations/tokens/app_spacing.dart';
+import 'package:financial_health_design_system/src/theme/extensions/app_theme_ext.dart';
+import 'package:financial_health_design_system/src/theme/extensions/month_summary_theme_ext.dart';
 import 'package:flutter/material.dart';
 
 enum MonthSummaryType { balance, income, expense }
@@ -31,7 +31,9 @@ class MonthSummaryCard extends StatelessWidget {
     final theme = context.monthSummaryTheme;
 
     final isPositiveTrend = _isPositiveTrend(type, trendDirection);
-    final trendColor = isPositiveTrend ? theme.trendPositive : theme.trendNegative;
+    final trendColor = isPositiveTrend
+        ? theme.trendPositive
+        : theme.trendNegative;
 
     return Container(
       width: double.infinity,
@@ -41,7 +43,11 @@ class MonthSummaryCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppSpacing.xl),
         border: Border.all(color: theme.cardBorder, width: 0.5),
         boxShadow: [
-          BoxShadow(color: theme.cardShadow, blurRadius: 50, offset: const Offset(0, 25)),
+          BoxShadow(
+            color: theme.cardShadow,
+            blurRadius: 50,
+            offset: const Offset(0, 25),
+          ),
         ],
       ),
       child: Stack(
@@ -57,7 +63,13 @@ class MonthSummaryCard extends StatelessWidget {
                 height: 256,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  boxShadow: [BoxShadow(color: theme.glowColor, blurRadius: 80, spreadRadius: 0)],
+                  boxShadow: [
+                    BoxShadow(
+                      color: theme.glowColor,
+                      blurRadius: 80,
+                      spreadRadius: 0,
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -69,7 +81,12 @@ class MonthSummaryCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               spacing: AppSpacing.lg,
               children: [
-                _HeaderSection(label: _label, amount: amount, monthYear: monthYear, theme: theme),
+                _HeaderSection(
+                  label: _label,
+                  amount: amount,
+                  monthYear: monthYear,
+                  theme: theme,
+                ),
                 SizedBox(
                   width: double.infinity,
                   child: _ComparativeBadge(
@@ -102,7 +119,8 @@ class MonthSummaryCard extends StatelessWidget {
       // Expenses: going down = good, going up = bad
       MonthSummaryType.expense => dir == TrendDirection.down,
       // Income/Balance: going up = good, going down = bad
-      MonthSummaryType.income || MonthSummaryType.balance => dir == TrendDirection.up,
+      MonthSummaryType.income ||
+      MonthSummaryType.balance => dir == TrendDirection.up,
     };
   }
 }
@@ -183,7 +201,10 @@ class _ComparativeBadge extends StatelessWidget {
         : AppIcons.trendingUp;
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: 15),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: 15,
+      ),
       decoration: BoxDecoration(
         color: theme.badgeBackground,
         borderRadius: BorderRadius.circular(AppRadius.sm + 4),

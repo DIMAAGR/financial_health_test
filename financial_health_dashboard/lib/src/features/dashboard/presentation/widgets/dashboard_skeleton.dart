@@ -1,5 +1,4 @@
-import 'package:financial_health_dashboard/src/shared/presentation/design/components/shimmer_skeleton.dart';
-import 'package:financial_health_dashboard/src/shared/presentation/design/tokens/app_spacing.dart';
+import 'package:financial_health_design_system/financial_health_design_system.dart';
 import 'package:flutter/material.dart';
 
 class DashboardSkeleton extends StatelessWidget {

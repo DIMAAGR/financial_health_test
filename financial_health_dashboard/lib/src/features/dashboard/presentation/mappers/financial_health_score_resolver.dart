@@ -1,12 +1,14 @@
 import 'package:financial_health_dashboard/src/features/dashboard/domain/enum/financial_health_status.dart';
-import 'package:financial_health_dashboard/src/shared/presentation/design/theme/app_theme_ext.dart';
-import 'package:financial_health_dashboard/src/shared/presentation/design/theme/financial_health_score_theme_ext.dart';
+import 'package:financial_health_design_system/financial_health_design_system.dart';
 import 'package:flutter/material.dart';
 
 final class FinancialHealthCardStyleResolver {
   FinancialHealthCardStyleResolver._();
 
-  static FinancialHealthCardColors resolve(BuildContext context, FinancialHealthStatus status) {
+  static FinancialHealthCardColors resolve(
+    BuildContext context,
+    FinancialHealthStatus status,
+  ) {
     final theme = context.financialHealthScoreTheme;
     switch (status) {
       case FinancialHealthStatus.healthy:
