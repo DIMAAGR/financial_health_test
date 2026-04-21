@@ -3,7 +3,8 @@ import 'package:transaction_refactor/features/transactions/presentation/models/t
 import 'package:transaction_refactor/features/transactions/presentation/view_model/transaction_state.dart';
 import 'package:transaction_refactor/features/transactions/presentation/view_model/transaction_view_model.dart';
 import 'package:transaction_refactor/features/transactions/presentation/widgets/transaction_list_item.dart';
-import 'package:transaction_refactor/shared/presentation/formatters/currency_formatter.dart';
+import 'package:transaction_refactor/features/transactions/presentation/widgets/transaction_total_card.dart';
+import 'package:transaction_refactor/shared/presentation/design/transaction_colors.dart';
 
 /// Tela de transações refatorada.
 ///
@@ -39,11 +40,12 @@ class _TransactionPageState extends State<TransactionPage> {
           return switch (state) {
             TransactionLoadingState() => const _LoadingView(),
             TransactionEmptyState() => const _EmptyView(),
-            TransactionErrorState(:final message, :final canRetry) => _ErrorView(
-              message: message,
-              canRetry: canRetry,
-              onRetry: widget.viewModel.loadTransactions,
-            ),
+            TransactionErrorState(:final message, :final canRetry) =>
+              _ErrorView(
+                message: message,
+                canRetry: canRetry,
+                onRetry: widget.viewModel.loadTransactions,
+              ),
             TransactionSuccessState(:final items, :final total) => _SuccessView(
               items: items,
               total: total,
@@ -74,15 +76,22 @@ class _EmptyView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.transactionColors;
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.receipt_long_outlined, size: 64, color: Colors.grey.shade400),
+          Icon(
+            Icons.receipt_long_outlined,
+            size: 64,
+            color: colors.emptyIconColor,
+          ),
           const SizedBox(height: 16),
           Text(
             'Nenhuma transação encontrada.',
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.grey.shade600),
+            style: Theme.of(
+              context,
+            ).textTheme.bodyLarge?.copyWith(color: colors.mutedTextColor),
           ),
         ],
       ),
@@ -91,7 +100,11 @@ class _EmptyView extends StatelessWidget {
 }
 
 class _ErrorView extends StatelessWidget {
-  const _ErrorView({required this.message, required this.canRetry, required this.onRetry});
+  const _ErrorView({
+    required this.message,
+    required this.canRetry,
+    required this.onRetry,
+  });
 
   final String message;
   final bool canRetry;
@@ -99,13 +112,14 @@ class _ErrorView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.transactionColors;
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.error_outline, size: 48, color: Colors.red.shade400),
+            Icon(Icons.error_outline, size: 48, color: colors.errorColor),
             const SizedBox(height: 16),
             Text(
               message,
@@ -137,7 +151,7 @@ class _SuccessView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        _TotalCard(total: total),
+        TransactionTotalCard(total: total),
         Expanded(
           child: ListView.separated(
             itemCount: items.length,
@@ -146,45 +160,6 @@ class _SuccessView extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-}
-
-class _TotalCard extends StatelessWidget {
-  const _TotalCard({required this.total});
-
-  /// Saldo líquido em centavos.
-  final int total;
-
-  @override
-  Widget build(BuildContext context) {
-    final isPositive = total >= 0;
-    return Container(
-      width: double.infinity,
-      margin: const EdgeInsets.all(16),
-      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 24),
-      decoration: BoxDecoration(
-        color: isPositive ? Colors.green.shade50 : Colors.red.shade50,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: isPositive ? Colors.green.shade200 : Colors.red.shade200),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Saldo líquido',
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey.shade700),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            CurrencyFormatter.format(total),
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              color: isPositive ? Colors.green.shade700 : Colors.red.shade700,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

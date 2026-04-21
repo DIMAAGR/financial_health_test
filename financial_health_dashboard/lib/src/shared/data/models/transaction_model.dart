@@ -1,3 +1,4 @@
+import 'package:financial_health_dashboard/src/shared/data/parsers/json_parsers.dart';
 import 'package:financial_health_dashboard/src/shared/domain/entities/transaction_data.dart';
 
 final class TransactionModel {
@@ -11,12 +12,12 @@ final class TransactionModel {
   });
 
   factory TransactionModel.fromJson(Object? json) {
-    final map = _asMap(json);
+    final map = parseJsonMap(json);
     return TransactionModel(
       id: (map['id'] as String? ?? '').trim(),
       title: (map['title'] as String? ?? '').trim(),
       category: (map['category'] as String? ?? '').trim(),
-      value: _toDouble(map['value']),
+      value: parseJsonDouble(map['value']),
       type: (map['type'] as String? ?? '').toLowerCase() == 'expense'
           ? TransactionType.expense
           : TransactionType.income,
@@ -52,17 +53,5 @@ final class TransactionModel {
         .where((item) => item.isValid)
         .map((item) => item.toEntity())
         .toList(growable: false);
-  }
-
-  static Map<String, dynamic> _asMap(Object? value) {
-    if (value is Map<String, dynamic>) return value;
-    if (value is Map) return value.cast<String, dynamic>();
-    return <String, dynamic>{};
-  }
-
-  static double _toDouble(Object? value) {
-    if (value is num) return value.toDouble();
-    if (value is String) return double.tryParse(value) ?? 0;
-    return 0;
   }
 }

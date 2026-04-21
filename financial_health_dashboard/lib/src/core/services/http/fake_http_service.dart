@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:financial_health_dashboard/src/core/services/http/http_service.dart';
 import 'package:financial_health_dashboard/src/core/services/storage/key_value_wrapper.dart';
 import 'package:financial_health_dashboard/src/core/services/storage/storage_schema.dart';
+import 'package:financial_health_dashboard/src/shared/data/parsers/json_parsers.dart';
 
 class FakeHttpService implements HttpService {
   FakeHttpService({
@@ -203,7 +204,7 @@ class FakeHttpService implements HttpService {
       final decoded = jsonDecode(raw);
       if (decoded is! List) return null;
       return decoded
-          .map(_asMap)
+          .map(parseJsonMap)
           .map(_Transaction.fromJson)
           .where((item) => item.id.isNotEmpty)
           .toList(growable: true);
@@ -318,21 +319,21 @@ class _FakeFinancialState {
   factory _FakeFinancialState.fromFinancialOverviewJson(
     Map<String, dynamic> json,
   ) {
-    final liquidity = _asMap(json['liquidity']);
-    final monthlyGoal = _asMap(json['monthlyGoal']);
+    final liquidity = parseJsonMap(json['liquidity']);
+    final monthlyGoal = parseJsonMap(json['monthlyGoal']);
     final flowJson = (json['flow'] as List<dynamic>? ?? const [])
-        .map(_asMap)
+        .map(parseJsonMap)
         .toList(growable: false);
     final transactionsJson =
         (json['transactions'] as List<dynamic>? ?? const [])
-            .map(_asMap)
+            .map(parseJsonMap)
             .toList(growable: false);
 
     final flow = flowJson
         .map(
           (item) => _FlowMonth(
-            income: _toDouble(item['income']),
-            expense: _toDouble(item['expense']),
+            income: parseJsonDouble(item['income']),
+            expense: parseJsonDouble(item['expense']),
           ),
         )
         .toList(growable: false);
@@ -343,7 +344,7 @@ class _FakeFinancialState {
             id: (item['id'] as String? ?? '').trim(),
             title: (item['title'] as String? ?? '').trim(),
             category: (item['category'] as String? ?? '').trim(),
-            value: _toDouble(item['value']),
+            value: parseJsonDouble(item['value']),
             type: (item['type'] as String? ?? '').toLowerCase() == 'expense'
                 ? _TransactionType.expense
                 : _TransactionType.income,
@@ -361,15 +362,15 @@ class _FakeFinancialState {
       monthLabel:
           (monthlyGoal['monthLabel'] as String? ?? _ptBrMonth(now.month))
               .trim(),
-      balance: _toDouble(json['balance']),
-      income: _toDouble(json['income']),
-      expense: _toDouble(json['expense']),
-      previousLiquidityIndex: _toDouble(liquidity['previousIndex']),
-      currentLiquidityIndex: _toDouble(liquidity['currentIndex']),
-      goalTargetAmount: _toDouble(monthlyGoal['targetAmount']),
-      goalAchievedAmount: _toDouble(monthlyGoal['achievedAmount']),
-      goalDay: _toInt(monthlyGoal['day'], fallback: now.day),
-      goalDaysInMonth: _toInt(
+      balance: parseJsonDouble(json['balance']),
+      income: parseJsonDouble(json['income']),
+      expense: parseJsonDouble(json['expense']),
+      previousLiquidityIndex: parseJsonDouble(liquidity['previousIndex']),
+      currentLiquidityIndex: parseJsonDouble(liquidity['currentIndex']),
+      goalTargetAmount: parseJsonDouble(monthlyGoal['targetAmount']),
+      goalAchievedAmount: parseJsonDouble(monthlyGoal['achievedAmount']),
+      goalDay: parseJsonInt(monthlyGoal['day'], fallback: now.day),
+      goalDaysInMonth: parseJsonInt(
         monthlyGoal['daysInMonth'],
         fallback: DateTime(now.year, now.month + 1, 0).day,
       ),
@@ -567,22 +568,6 @@ class _FakeFinancialState {
   }
 }
 
-Map<String, dynamic> _asMap(dynamic value) {
-  if (value is Map<String, dynamic>) return value;
-  if (value is Map) return value.cast<String, dynamic>();
-  return <String, dynamic>{};
-}
-
-double _toDouble(dynamic value) {
-  if (value is num) return value.toDouble();
-  return 0;
-}
-
-int _toInt(dynamic value, {required int fallback}) {
-  if (value is num) return value.toInt();
-  return fallback;
-}
-
 double _randomInRange(
   Random random, {
   required double min,
@@ -650,7 +635,7 @@ class _Transaction {
       id: (json['id'] as String? ?? '').trim(),
       title: (json['title'] as String? ?? '').trim(),
       category: (json['category'] as String? ?? '').trim(),
-      value: _toDouble(json['value']),
+      value: parseJsonDouble(json['value']),
       type: (json['type'] as String? ?? '').toLowerCase() == 'expense'
           ? _TransactionType.expense
           : _TransactionType.income,

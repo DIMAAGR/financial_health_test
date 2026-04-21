@@ -29,15 +29,18 @@ class TransactionListItem extends StatelessWidget {
       ),
       subtitle: Text(
         item.typeLabel,
-        style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey.shade600),
+        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+          color: context.transactionColors.mutedTextColor,
+        ),
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
       ),
       trailing: Text(
         item.formattedAmount,
-        style: Theme.of(
-          context,
-        ).textTheme.bodyMedium?.copyWith(color: color, fontWeight: FontWeight.w600),
+        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+          color: color,
+          fontWeight: FontWeight.w600,
+        ),
       ),
     );
   }

@@ -1,7 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:transaction_refactor/core/failures/app_failure.dart';
-import 'package:transaction_refactor/core/use_cases/no_params.dart';
 import 'package:transaction_refactor/features/transactions/domain/entities/transaction_entity.dart';
 import 'package:transaction_refactor/features/transactions/domain/entities/transaction_report.dart';
 import 'package:transaction_refactor/features/transactions/domain/enums/transaction_type.dart';
@@ -23,13 +22,18 @@ class _MockGetTransactionsUseCase implements GetTransactionsUseCase {
   }
 
   @override
-  Future<Either<AppFailure, TransactionReport>> call(NoParams params) async => _result!;
+  Future<Either<AppFailure, TransactionReport>> call() async => _result!;
 }
 
 // ── Fixture ────────────────────────────────────────────────────────────────
 
 final _tEntities = [
-  TransactionEntity(id: '1', description: 'Salário', amount: 500000, type: TransactionType.income),
+  TransactionEntity(
+    id: '1',
+    description: 'Salário',
+    amount: 500000,
+    type: TransactionType.income,
+  ),
 ];
 
 void main() {
@@ -48,53 +52,68 @@ void main() {
       expect(sut.state.value, isA<TransactionLoadingState>());
     });
 
-    test('deve emitir TransactionSuccessState após loadTransactions com sucesso', () async {
-      useCase.mockSuccess(_tEntities);
+    test(
+      'deve emitir TransactionSuccessState após loadTransactions com sucesso',
+      () async {
+        useCase.mockSuccess(_tEntities);
 
-      await sut.loadTransactions();
+        await sut.loadTransactions();
 
-      expect(sut.state.value, isA<TransactionSuccessState>());
-      final success = sut.state.value as TransactionSuccessState;
-      expect(success.items.length, 1);
-      expect(success.total, 500000);
-    });
+        expect(sut.state.value, isA<TransactionSuccessState>());
+        final success = sut.state.value as TransactionSuccessState;
+        expect(success.items.length, 1);
+        expect(success.total, 500000);
+      },
+    );
 
-    test('deve emitir TransactionEmptyState quando use case retorna lista vazia', () async {
-      useCase.mockSuccess([]);
+    test(
+      'deve emitir TransactionEmptyState quando use case retorna lista vazia',
+      () async {
+        useCase.mockSuccess([]);
 
-      await sut.loadTransactions();
+        await sut.loadTransactions();
 
-      expect(sut.state.value, isA<TransactionEmptyState>());
-    });
+        expect(sut.state.value, isA<TransactionEmptyState>());
+      },
+    );
 
-    test('deve emitir TransactionErrorState com canRetry=true para NetworkFailure', () async {
-      useCase.mockFailure(const NetworkFailure());
+    test(
+      'deve emitir TransactionErrorState com canRetry=true para NetworkFailure',
+      () async {
+        useCase.mockFailure(const NetworkFailure());
 
-      await sut.loadTransactions();
+        await sut.loadTransactions();
 
-      expect(sut.state.value, isA<TransactionErrorState>());
-      final error = sut.state.value as TransactionErrorState;
-      expect(error.canRetry, isTrue);
-      expect(error.message, isNotEmpty);
-    });
+        expect(sut.state.value, isA<TransactionErrorState>());
+        final error = sut.state.value as TransactionErrorState;
+        expect(error.canRetry, isTrue);
+        expect(error.message, isNotEmpty);
+      },
+    );
 
-    test('deve emitir TransactionErrorState com canRetry=true para ServerFailure', () async {
-      useCase.mockFailure(const ServerFailure());
+    test(
+      'deve emitir TransactionErrorState com canRetry=true para ServerFailure',
+      () async {
+        useCase.mockFailure(const ServerFailure());
 
-      await sut.loadTransactions();
+        await sut.loadTransactions();
 
-      final error = sut.state.value as TransactionErrorState;
-      expect(error.canRetry, isTrue);
-    });
+        final error = sut.state.value as TransactionErrorState;
+        expect(error.canRetry, isTrue);
+      },
+    );
 
-    test('deve emitir TransactionErrorState com canRetry=false para ParseFailure', () async {
-      useCase.mockFailure(const ParseFailure());
+    test(
+      'deve emitir TransactionErrorState com canRetry=false para ParseFailure',
+      () async {
+        useCase.mockFailure(const ParseFailure());
 
-      await sut.loadTransactions();
+        await sut.loadTransactions();
 
-      final error = sut.state.value as TransactionErrorState;
-      expect(error.canRetry, isFalse);
-    });
+        final error = sut.state.value as TransactionErrorState;
+        expect(error.canRetry, isFalse);
+      },
+    );
 
     test(
       'deve emitir TransactionLoadingState no início de cada nova chamada a loadTransactions',

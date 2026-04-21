@@ -1,4 +1,5 @@
 import 'package:financial_health_dashboard/src/shared/data/models/transaction_model.dart';
+import 'package:financial_health_dashboard/src/shared/data/parsers/json_parsers.dart';
 import 'package:financial_health_dashboard/src/shared/domain/entities/transaction_data.dart';
 
 class ExpensesOverviewModel {
@@ -19,9 +20,9 @@ class ExpensesOverviewModel {
         .toList(growable: false);
 
     return ExpensesOverviewModel(
-      totalExpense: _toDouble(json['expense']),
+      totalExpense: parseJsonDouble(json['expense']),
       monthLabel: (monthlyGoal['monthLabel'] as String? ?? 'Mês').trim(),
-      expenseChangePercent: _toDouble(json['expenseChangePercent']),
+      expenseChangePercent: parseJsonDouble(json['expenseChangePercent']),
       transactions: transactions,
     );
   }
@@ -30,10 +31,4 @@ class ExpensesOverviewModel {
   final String monthLabel;
   final double expenseChangePercent;
   final List<TransactionData> transactions;
-
-  static double _toDouble(Object? value) {
-    if (value is num) return value.toDouble();
-    if (value is String) return double.tryParse(value) ?? 0;
-    return 0;
-  }
 }

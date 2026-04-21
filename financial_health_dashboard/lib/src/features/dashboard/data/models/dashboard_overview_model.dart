@@ -2,6 +2,7 @@ import 'package:financial_health_dashboard/src/features/dashboard/domain/entitie
 import 'package:financial_health_dashboard/src/features/dashboard/domain/entities/financial_health_score_data.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/domain/entities/flow_analysis_data.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/domain/entities/monthly_goal_data.dart';
+import 'package:financial_health_dashboard/src/shared/data/parsers/json_parsers.dart';
 
 class DashboardOverviewModel {
   const DashboardOverviewModel({
@@ -25,35 +26,37 @@ class DashboardOverviewModel {
   });
 
   factory DashboardOverviewModel.fromJson(Map<String, dynamic> json) {
-    final liquidity = _asMap(json['liquidity']);
-    final commitment = _asMap(json['commitment']);
-    final monthlyGoal = _asMap(json['monthlyGoal']);
+    final liquidity = parseJsonMap(json['liquidity']);
+    final commitment = parseJsonMap(json['commitment']);
+    final monthlyGoal = parseJsonMap(json['monthlyGoal']);
     final flow = (json['flow'] as List<dynamic>? ?? const [])
-        .map(_asMap)
+        .map(parseJsonMap)
         .map(
           (item) => FlowAnalysisPoint(
-            income: _toDouble(item['income']),
-            expense: _toDouble(item['expense']),
+            income: parseJsonDouble(item['income']),
+            expense: parseJsonDouble(item['expense']),
           ),
         )
         .toList(growable: false);
     return DashboardOverviewModel(
       userName: (json['userName'] as String? ?? 'Usuário').trim(),
-      balance: _toDouble(json['balance']),
-      income: _toDouble(json['income']),
-      expense: _toDouble(json['expense']),
-      incomeChangePercent: _toDouble(json['incomeChangePercent']),
-      expenseChangePercent: _toDouble(json['expenseChangePercent']),
-      balanceChangePercent: _toDouble(json['balanceChangePercent']),
-      previousLiquidityIndex: _toDouble(liquidity['previousIndex']),
-      currentLiquidityIndex: _toDouble(liquidity['currentIndex']),
-      commitmentPercent: _toDouble(commitment['percent']),
-      commitmentBenchmarkPercent: _toDouble(commitment['benchmarkPercent']),
+      balance: parseJsonDouble(json['balance']),
+      income: parseJsonDouble(json['income']),
+      expense: parseJsonDouble(json['expense']),
+      incomeChangePercent: parseJsonDouble(json['incomeChangePercent']),
+      expenseChangePercent: parseJsonDouble(json['expenseChangePercent']),
+      balanceChangePercent: parseJsonDouble(json['balanceChangePercent']),
+      previousLiquidityIndex: parseJsonDouble(liquidity['previousIndex']),
+      currentLiquidityIndex: parseJsonDouble(liquidity['currentIndex']),
+      commitmentPercent: parseJsonDouble(commitment['percent']),
+      commitmentBenchmarkPercent: parseJsonDouble(
+        commitment['benchmarkPercent'],
+      ),
       monthLabel: (monthlyGoal['monthLabel'] as String? ?? 'Mês').trim(),
-      goalTargetAmount: _toDouble(monthlyGoal['targetAmount']),
-      goalAchievedAmount: _toDouble(monthlyGoal['achievedAmount']),
-      goalDay: _toInt(monthlyGoal['day'], fallback: 1),
-      goalDaysInMonth: _toInt(monthlyGoal['daysInMonth'], fallback: 30),
+      goalTargetAmount: parseJsonDouble(monthlyGoal['targetAmount']),
+      goalAchievedAmount: parseJsonDouble(monthlyGoal['achievedAmount']),
+      goalDay: parseJsonInt(monthlyGoal['day'], fallback: 1),
+      goalDaysInMonth: parseJsonInt(monthlyGoal['daysInMonth'], fallback: 30),
       flowPoints: flow,
     );
   }
@@ -110,21 +113,5 @@ class DashboardOverviewModel {
         referenceDate: normalizedReferenceDate,
       ),
     );
-  }
-
-  static Map<String, dynamic> _asMap(dynamic value) {
-    if (value is Map<String, dynamic>) return value;
-    if (value is Map) return value.cast<String, dynamic>();
-    return <String, dynamic>{};
-  }
-
-  static double _toDouble(dynamic value) {
-    if (value is num) return value.toDouble();
-    return 0;
-  }
-
-  static int _toInt(dynamic value, {required int fallback}) {
-    if (value is num) return value.toInt();
-    return fallback;
   }
 }
