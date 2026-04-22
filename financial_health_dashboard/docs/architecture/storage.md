@@ -104,13 +104,26 @@ Cada request adiciona `latency` (padrão 1500ms) via `Future.delayed` — tornan
 
 ## Por que não usar um banco real agora
 
-| Critério | Posição |
-|---|---|
-| O MVP é descartável? | Não — mas a infraestrutura de dados pode evoluir independentemente da apresentação |
-| Offline-first é requisito do MVP? | Sim (mencionado no contexto do projeto), mas a demonstração das camadas de arquitetura é o foco principal desta entrega |
-| SQLite/Hive adicionam dependências nativas? | Sim — em contexto de teste técnico, dependências extras aumentam risco de setup sem demonstrar diferencial arquitetural |
+### O que um teste técnico avalia
 
-A decisão foi: **implementar a fronteira de storage como interface** (`KeyValueWrapper`) e deixar a implementação real como evolução natural. O contrato está definido; trocar `InMemoryKeyValueWrapper` por qualquer implementação real não muda nenhuma outra camada.
+Este é um projeto de teste técnico, não um produto em produção. Isso muda completamente o que vale a pena implementar.
+
+O que o teste avalia: separação de responsabilidades, arquitetura em camadas, testabilidade, uso de abstrações corretas, qualidade do código e das decisões. O que o teste **não** avalia: configuração de banco de dados nativo, migrations de schema, sincronização offline — essa infraestrutura não demonstra nada do que está sendo avaliado e adiciona complexidade operacional real (dependências nativas, CI mais complexo, setup de device mais frágil).
+
+O critério de decisão foi: **"implementar isso demonstra algo que o teste avalia?"**
+
+| O que foi implementado com cuidado | Por quê |
+|---|---|
+| Interface `KeyValueWrapper` | Demonstra conhecimento do padrão e garante que a troca de implementação é trivial |
+| `StorageSchema` com versão na chave | Demonstra raciocínio sobre schema evolution sem migrations formais |
+| `FakeHttpService` simulando latência real | Demonstra como a UI se comporta com dados assíncronos — o estado de loading, erro e success são o ponto do teste |
+
+| O que ficou fora | Por quê |
+|---|---|
+| `SharedPreferences` / SQLite / Hive reais | Persistência entre sessões não é avaliada; adicionaria dependência nativa sem demonstrar diferencial |
+| Offline-first completo | Ver seção abaixo |
+
+A decisão foi: **implementar a fronteira de storage como interface** (`KeyValueWrapper`) e documentar as alternativas. O contrato está definido; trocar `InMemoryKeyValueWrapper` por qualquer implementação real não muda nenhuma outra camada.
 
 ---
 
@@ -202,47 +215,55 @@ Alternativa ao Hive com suporte a índices, full-text search e queries complexas
 
 ---
 
-## Offline-first: o que significaria para este projeto
+## Offline-first: faz sentido para este tipo de app?
 
-O contexto do projeto menciona `Persistência offline` como requisito. A implementação atual persiste dados **na sessão** (in-memory). Offline-first de verdade exigiria:
+### Primeiro: de qual dado estamos falando?
+
+Um dashboard financeiro como este lê dados **gerados no servidor** (ou em conta bancária real): saldo, movimentações históricas, score calculado. O usuário não produz dados offline — ele apenas consulta. Isso muda fundamentalmente a equação do offline-first.
+
+Offline-first faz sentido quando o usuário **gera dados offline** que precisam ser sincronizados depois (ex: anotações, tarefas, formulários). Para consulta pura de dados de servidor, o que faz sentido é **cache do último estado conhecido** — que é uma versão mais simples do offline-first.
+
+### O que seria implementar para este app
+
+Para este app, offline-first significaria: se o usuário abre o app sem rede, ele vê os dados da última sessão em vez de uma tela de erro.
 
 ```
-[API real]  ←→  [Repositório]  ←→  [Cache local (Drift/Hive)]
-                                    ↑
-                              serve dados quando offline
-                              sincroniza quando voltar à rede
+[API simulada]  →  [Repositório]  →  [Cache local (SharedPreferences ou Hive)]
+                                      ↑
+                         serve dados quando offline
+                         atualiza quando voltar à rede
 ```
 
-### Fluxo de sincronização típico
+O repositório teria lógica read-through cache:
 
 ```dart
-// No repository — read-through cache
 @override
 Future<Either<AppFailure, DashboardOverviewData>> getOverview() async {
-  // 1. tenta rede
   if (await _network.isConnected) {
     final result = await _remoteDataSource.getOverview();
     return result.fold(
-      (failure) => _getCachedOrFail(failure),  // rede falhou → cache
+      (failure) => _getCachedOrFail(failure),      // rede falhou → tenta cache
       (data) async {
         await _localDataSource.saveOverview(data); // atualiza cache
         return Right(data);
       },
     );
   }
-  // 2. sem rede → cache direto
-  return _getCachedOrFail(NetworkFailure());
+  return _getCachedOrFail(NetworkFailure());        // sem rede → cache direto
 }
 ```
 
-### Packages do ecossistema BLoC para offline-first
+### Por que não foi implementado aqui
 
-| Package | O que faz |
-|---|---|
-| [`hydrated_bloc`](https://pub.dev/packages/hydrated_bloc) | Persiste e restaura automaticamente o estado do Cubit/BLoC entre sessões. Drop-in para `Cubit` — basta implementar `fromJson`/`toJson`. Usa `HydratedStorage` (padrão: `path_provider` + JSON) |
-| [`replay_bloc`](https://pub.dev/packages/replay_bloc) | Adiciona undo/redo ao estado do Cubit. Útil para apps com histórico de ações do usuário |
+Três razões concretas:
 
-**`hydrated_bloc` seria a adição mais natural aqui.** Bastaria estender `HydratedCubit<DashboardState>` em vez de `Cubit<DashboardState>` e implementar a serialização do state. O estado da dashboard seria restaurado automaticamente entre sessões sem mudar a lógica do cubit:
+1. **O app não tem backend real** — o `FakeHttpService` já é in-memory. Adicionar cache do cache não agrega nada.
+2. **O teste avalia arquitetura de apresentação e domínio** — a camada de dados é deliberadamente simplificada para não distrair do que está sendo avaliado.
+3. **A fronteira está preparada** — `KeyValueWrapper` existe exatamente para que quando houver backend real, o cache seja implementado trocando apenas a implementação, sem mudar repositórios, use cases ou cubits.
+
+### `hydrated_bloc` — a rota mais rápida para cache de estado
+
+Para caching do estado da UI entre sessões (restaurar o último estado conhecido ao abrir o app), o `hydrated_bloc` seria a adição mais natural. Basta estender `HydratedCubit` em vez de `Cubit` e implementar a serialização do state:
 
 ```dart
 // Antes
@@ -260,11 +281,16 @@ class DashboardCubit extends HydratedCubit<DashboardState> {
 }
 ```
 
-O custo: `freezed` + `hydrated_bloc` exige implementar `fromJson`/`toJson` no state (que com `freezed` pode ser gerado via `json_serializable`). A lógica de negócio não muda.
+O custo: `freezed` + `hydrated_bloc` exige implementar `fromJson`/`toJson` no state. Com `freezed` isso pode ser gerado via `json_serializable`. A lógica de negócio do cubit não muda — só a persistência do estado é adicionada.
 
 ---
 
-## Referências
+## Outros packages do ecossistema BLoC relacionados a storage
+
+| Package | O que faz | Quando usar |
+|---|---|---|
+| [`hydrated_bloc`](https://pub.dev/packages/hydrated_bloc) | Persiste e restaura o estado do Cubit/BLoC entre sessões | Cache do último estado da UI sem backend; app que deve mostrar dados offline imediatamente |
+| [`replay_bloc`](https://pub.dev/packages/replay_bloc) | Adiciona undo/redo ao estado do Cubit | Apps com histórico de ações do usuário (ex: editor, formulário multi-step) |
 
 - [`hydrated_bloc` — pub.dev](https://pub.dev/packages/hydrated_bloc)
 - [`Drift` — documentação oficial](https://drift.simonbinder.eu/)

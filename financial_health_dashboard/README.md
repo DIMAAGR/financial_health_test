@@ -164,6 +164,32 @@ Itens identificados que não foram resolvidos nesta entrega por decisão de esco
 
 ---
 
+## MCP Server no processo de desenvolvimento
+
+O repositório inclui um servidor MCP (`tools/mcp_server/`) que foi conectado ao VS Code Copilot durante o desenvolvimento deste app. O servidor expõe as regras do projeto, os learnings acumulados e um gerador de estrutura de feature diretamente para o assistente de IA.
+
+### O que funcionou bem
+
+**Contexto persistente entre sessões** — sem o MCP, cada conversa com a IA começava do zero. Com o MCP, `get_project_context` e `get_rules` carregavam as decisões já tomadas antes de qualquer prompt. Isso evitou sugestões conflitantes com a arquitetura já definida.
+
+**`generate_feature_structure`** — criar a estrutura de diretórios de uma feature nova (data/domain/presentation, DTOs, repositório, use case, cubit, tests) levava minutos de scaffolding manual. Com a ferramenta, o esqueleto era gerado com os nomes corretos e na organização esperada.
+
+**`add_learning`** — quando um erro foi identificado (ver `ia_in_process.md`), registrá-lo imediatamente no MCP garantia que a IA não repetia o mesmo equívoco na próxima sessão.
+
+### Onde o MCP não impediu problemas
+
+O MCP foi implementado durante o desenvolvimento — não desde o dia zero. Em um momento anterior, a IA gerou features com nomes incorretos (ex: nome de diretório que não seguia a convenção `snake_case` do projeto, import path errado). Quando o MCP estava ativo, esse padrão foi capturado e registrado como regra. Para as features já geradas com o nome errado, foi necessário renomear manualmente.
+
+**A lição:** o MCP é eficaz para manter consistência nas interações futuras, mas não corrige o passado. Configurar as regras antes de gerar qualquer código teria evitado o retrabalho de renomeação.
+
+### Limitações
+
+- O servidor não tem estado de contexto de sessão: ele serve o que está nos arquivos em disco, não o histórico da conversa ativa.
+- `generate_feature_structure` gera boilerplate — ainda era necessário revisar e ajustar cada arquivo gerado. Ele economiza o scaffolding, não a implementação.
+- Toda regra nova precisa ser registrada explicitamente via `add_learning` ou editando `rules.md`. A IA não aprende passivamente com as correções feitas fora do MCP.
+
+---
+
 ## Como executar
 
 **Pré-requisitos:**

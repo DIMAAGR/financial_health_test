@@ -1,5 +1,7 @@
 # Financial Health Test — Conta Azul
 
+> **Nota:** Esta documentação foi escrita com auxílio de IA (Claude Sonnet 4.6 via GitHub Copilot). Os textos, estrutura e decisões documentadas passaram por revisão manual — a IA acelerou a escrita, mas as escolhas técnicas e os julgamentos de qualidade foram feitos pelo desenvolvedor. Este disclaimer foi adicionado durante a sessão em que as docs foram construídas e revisadas iterativamente com o assistente.
+
 Teste técnico assíncrono de Flutter composto por três desafios e um bônus. O objetivo é avaliar capacidade de arquitetura, qualidade de código, pensamento de design system e uso crítico de IA como ferramenta de desenvolvimento.
 
 ---
@@ -41,26 +43,24 @@ financial_health_test/
 │   │               ├── data/         # repositórios, DTOs, HTTP fake
 │   │               ├── domain/       # entidades, casos de uso, políticas
 │   │               └── presentation/ # Cubit, states, widgets
+│   ├── docs/
+│   │   ├── architecture/             # arquitetura, estado, storage, IA no processo
+│   │   └── design/                   # design system, processo de design
 │   └── test/
+│
+├── transaction_refactor/             # Desafio 2 — projeto Flutter modernizado
+│   ├── docs/                         # análise, prompt log e checklist de correção
+│   └── lib/
 │
 ├── packages/
 │   └── financial_health_design_system/    # Desafio 3 — package de design system
 │       ├── lib/src/
 │       │   ├── foundations/          # tokens de espaço, radius e tipografia
 │       │   ├── components/           # FinancialSummaryCard e demais widgets
-│       │   ├── extensions/
 │       │   └── theme/
 │       └── test/
 │
-├── desafio_2/                        # Desafio 2 — refatoração de legado
-│   ├── docs/                         # análise, prompt log e checklist de correção
-│   └── transaction_refactor/         # projeto Flutter modernizado
-│
-├── desafio_3/
-│   └── README.md                     # contexto e decisões do componente
-│
-├── docs/                             # documentação técnica geral do projeto
-│   ├── assets/screenshots/           # screenshots do app
+├── docs/                             # documentação técnica geral do repositório
 │   ├── requirements/requirements.md
 │   ├── architecture/architecture.md
 │   └── ia/                           # regras, prompt log e learnings de IA
@@ -87,7 +87,7 @@ A tarefa foi: analisar, criticar e modernizar usando IA como ferramenta principa
 
 **IAs utilizadas:** Claude Sonnet 4.6 (GitHub Copilot) e GPT 5.4.
 
-Para a análise completa: [desafio_2/README.md](./desafio_2/README.md)
+Para a análise completa: [transaction_refactor/README.md](./transaction_refactor/README.md)
 
 ---
 
@@ -111,7 +111,7 @@ A extração também formalizou a fronteira entre "o que é do produto" (regras,
 - **`themePalette`** permite família de cores customizada sem acoplar o widget a nenhuma feature específica.
 - Estrutura `Foundations + Components` em vez de Atomic Design — decisão pragmática para o escopo de um componente financeiro reutilizável.
 
-Para detalhes, decisões e testes: [desafio_3/README.md](./desafio_3/README.md)
+Para detalhes, decisões e testes: [packages/financial_health_design_system/README.md](./packages/financial_health_design_system/README.md)
 
 ---
 
@@ -144,6 +144,24 @@ Documentação completa: [tools/mcp_server/README.md](./tools/mcp_server/README.
 
 ---
 
+## Gitflow adotado no projeto
+
+O repositório usou um fluxo de branches simples, adequado para um projeto individual mas que reflete as práticas que seriam usadas em time.
+
+**Branches principais:**
+- `main` — estado estável, só recebe via PR
+- `feature/*` — desenvolvimento de features (ex: `feature/financial-summary-card`)
+- `docs/*` — documentação (ex: `docs/general-documentation`)
+- `chore/*` — infra, setup, refatorações sem feature (ex: `chore/extract-design-system-package`)
+
+**Por que gitflow importa aqui mesmo sendo projeto solo:**
+
+O Desafio 3 envolveu extrair o design system de `shared/presentation` para um package local. Em um time, isso seria um risco alto: dois devs com branches abertas usando o caminho antigo teriam conflito de imports ao tentar mergear após a extração.
+
+A disciplina de criar a extração em uma branch isolada, não misturar com feature work, e mergear em um único PR atômico é a mesma que funcionaria em produção — e foi adotada aqui por essa razão. Ver detalhes em [docs/design/design_system.md](./financial_health_dashboard/docs/design/design_system.md#migração-para-package-em-produção--riscos-e-gitflow).
+
+---
+
 ## Uso de IA no projeto
 
 A IA foi usada como ferramenta de aceleração — não como substituto de decisão técnica.
@@ -156,11 +174,26 @@ O ciclo adotado em todas as entregas:
 4. O que faz sentido é adaptado ao contexto.
 5. A decisão final é documentada com trade-offs e evidências.
 
-Toda sugestão arquitetural relevante passou por validação manual. Erros identificados foram corrigidos e registrados como learnings — não escondidos. O histórico completo está em:
+Toda sugestão arquitetural relevante passou por validação manual. Erros identificados foram corrigidos e registrados como learnings — não escondidos.
+
+### Problemas causados pela IA que exigiram correção manual
+
+**Nomes de features incorretos:** em um momento de geração de scaffolding, a IA criou diretórios e arquivos com nomes que não seguiam a convenção `snake_case` do projeto (ex: `AddTransaction` em vez de `add_transaction`). Os imports gerados apontavam para os caminhos errados. A correção foi manual — renomear arquivos, atualizar imports e adicionar a regra de nomenclatura explicitamente no MCP para evitar recorrência.
+
+**Impacto do MCP neste problema:** antes do servidor MCP ser configurado, essa regra não estava documentada de forma acessível para o assistente. Após ser registrada via `add_learning`, a IA passou a respeitar a convenção. O MCP não corrigi o passado, mas evitou repetição.
+
+Outros erros documentados com causa raiz e código real: [docs/architecture/ia_in_process.md](./financial_health_dashboard/docs/architecture/ia_in_process.md)
+
+### MCP Server — contexto persistente para IA
+
+O servidor MCP (`tools/mcp_server/`) foi conectado ao VS Code Copilot durante o desenvolvimento. Ele resolve o problema de "perda de contexto entre sessões": as regras do projeto, os erros já cometidos e a estrutura esperada de uma feature estavam disponíveis para o assistente desde o primeiro prompt de cada sessão.
+
+O histórico completo está em:
 
 - Regras e guardrails: [docs/ia/rules.md](./docs/ia/rules.md)
 - Log de prompts e decisões: [docs/ia/prompt_log.md](./docs/ia/prompt_log.md)
 - Aprendizados acumulados: [docs/ia/learnings.md](./docs/ia/learnings.md)
+- Vantagens e limitações do MCP neste projeto: [financial_health_dashboard/README.md](./financial_health_dashboard/README.md#mcp-server-no-processo-de-desenvolvimento)
 
 ---
 
@@ -169,8 +202,7 @@ Toda sugestão arquitetural relevante passou por validação manual. Erros ident
 | Arquivo | Conteúdo |
 |---------|----------|
 | [financial_health_dashboard/README.md](./financial_health_dashboard/README.md) | App Flutter — estrutura, arquitetura, decisões e problemas encontrados |
-| [desafio_2/README.md](./desafio_2/README.md) | Refatoração — problemas, modernização, histórico de prompts |
-| [desafio_3/README.md](./desafio_3/README.md) | FinancialSummaryCard — decisões do componente e design system |
+| [transaction_refactor/README.md](./transaction_refactor/README.md) | Refatoração — problemas, modernização, histórico de prompts |
 | [packages/financial_health_design_system/README.md](./packages/financial_health_design_system/README.md) | Package local — organização, conteúdo e motivação da extração |
 | [docs/requirements/requirements.md](./docs/requirements/requirements.md) | Requisitos funcionais e não funcionais |
 | [docs/architecture/architecture.md](./docs/architecture/architecture.md) | Arquitetura, camadas e trade-offs técnicos |

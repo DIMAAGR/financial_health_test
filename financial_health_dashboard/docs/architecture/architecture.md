@@ -25,7 +25,7 @@ Antes de escolher, foram simuladas variáveis do projeto como entrada para anál
 
 A análise foi conduzida com assistência de IA — as variáveis acima foram usadas como entrada para uma comparação estruturada entre arquiteturas. O output foi filtrado criticamente antes de qualquer decisão: nem toda sugestão foi adotada e em alguns casos a IA errou.
 
-→ **[Como a IA participou do processo e onde ela falhou](./ia_in_process.md)**
+Saiba mais em: **[Como a IA participou do processo e onde ela falhou](./ia_in_process.md)**
 
 ---
 
@@ -114,7 +114,7 @@ lib/
 
 **Cada feature tem um `*_init.dart`** que centraliza o registro de DI. Isso mantém o `dependencies/` do core limpo e permite que uma feature seja removida sem deixar referências soltas.
 
-**`shared/` não é um depósito** — só entra o que é genuinamente compartilhado e semanticamente neutro. Código específico de uma feature que "reaproveita" outra feature é sinal de acoplamento, não de reuso. Os componentes visuais compartilhados migraram para o package `financial_health_design_system` — a decisão e o impacto dessa migração estão documentados em [Design System →](../design/design_system.md).
+**`shared/` não é um depósito** — só entra o que é genuinamente compartilhado e semanticamente neutro. Código específico de uma feature que "reaproveita" outra feature é sinal de acoplamento, não de reuso. Os componentes visuais compartilhados migraram para o package `financial_health_design_system` — a decisão e o impacto dessa migração estão documentados em: [Design System](../design/design_system.md).
 
 ---
 

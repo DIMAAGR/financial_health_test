@@ -202,6 +202,125 @@ O que a IA não fez: decidir quais componentes deveriam entrar no package. Essa 
 
 ---
 
+## O arquivo de cores é colossal — por que não usar `AppLightColors.ruby`?
+
+O arquivo de cores do projeto tem dezenas de constantes. A pergunta natural é: por que não criar uma paleta central (`AppLightColors`) com nomes semânticos como `ruby`, `emerald`, `slate50`, e referenciar esses nomes nas extensões?
+
+```dart
+// Abordagem de paleta central — não foi usada aqui
+abstract class AppLightColors {
+  static const ruby   = Color(0xFFEF4444);
+  static const emerald = Color(0xFF1D5C4A);
+  static const slate50 = Color(0xFFF8FAFC);
+}
+
+// ThemeExtension referenciando a paleta
+static const FinancialHealthCardColors criticalLight = FinancialHealthCardColors(
+  badgeBackground: AppLightColors.ruby,    // ← um lugar para mudar
+  backgroundStart: AppLightColors.slate50,
+  ...
+);
+```
+
+Com essa abordagem, mudar o tom de vermelho crítico seria uma linha em `AppLightColors.ruby` — e todos os componentes que a referenciam atualizariam automaticamente.
+
+### Por que não foi usada aqui
+
+A decisão foi priorizar **tokens semânticos por componente** em vez de paleta global. O raciocínio:
+
+- O design do projeto saiu diretamente de ferramentas de geração (Google Stitch + Figma), que entregam valores hexadecimais literais, não nomes semânticos. Criar `ruby`, `emerald` etc. exigiria um passo extra de curadoria que não estava no escopo desta entrega.
+- Em um componente financeiro com status (crítico, atenção, saudável), as cores mudam de família inteira entre status — não apenas de shade. `badgeBackground` no estado crítico tem nada a ver com `badgeBackground` no estado saudável, mesmo que em uma paleta teórica ambos existissem.
+- A ferramenta `figma.to.code` gerou os valores já nomeados como `backgroundColor`, `textColor` etc. — o custo de mapear para uma paleta nomeada era maior que o benefício para o escopo do projeto.
+
+### O que seria melhor em produção
+
+Em um design system de produto real, a prática correta é **dois níveis de tokens**:
+
+```
+Nível 1 — paleta (valores brutos com nome)
+  AppColors.ruby        = Color(0xFFEF4444)
+  AppColors.rubyDark    = Color(0xFFB91C1C)
+  AppColors.emerald     = Color(0xFF1D5C4A)
+
+Nível 2 — tokens semânticos (significado no produto)
+  AppSemanticColors.danger           = AppColors.ruby
+  AppSemanticColors.dangerElevated   = AppColors.rubyDark
+  AppSemanticColors.positive         = AppColors.emerald
+```
+
+Os `ThemeExtension`s dos componentes referenciam nível 2 — e nível 2 referencia nível 1. Mudar o tom de "danger" no produto inteiro é trocar `AppColors.ruby` por `Color(0xFFDC2626)` em um único lugar.
+
+O trade-off desta ausência neste projeto: se a especificação mudar o vermelho do badge crítico, é necessário atualizar em todos os lugares onde `Color(0xFFEF4444)` aparece no arquivo de temas. Isso é gerenciável com busca global, mas não é o padrão ideal.
+
+---
+
+## Migração para package em produção — riscos e gitflow
+
+### O problema de timing em times reais
+
+A extração de `shared/presentation` para um package local parece uma mudança interna, mas em um time com múltiplos devs ela tem o mesmo risco de uma mudança de API pública: **um dev pode estar à frente, outro atrasado**.
+
+**Cenário típico:**
+```
+main:       A ── B ── C ──────── [MERGE feature-auth] ──→ 💥 compile error
+                      │
+feature-auth: ───────────── D ── E ── F (imports de shared/presentation)
+                              ↑
+                           extração do DS aconteceu em main
+                           feature-auth ainda usa caminho antigo
+```
+
+O dev que extraiu o package atualizou todos os imports em `main`. O outro dev, que tinha uma branch de feature aberta com os imports antigos, mergea depois e a compilação quebra — todos os `import 'package:financial_health_dashboard/src/shared/presentation/...'` viraram `import 'package:financial_health_design_system/...'`.
+
+### Estratégias de mitigação
+
+**1. PR atômico — não fragmentar a migração**
+
+A extração do package deve ser feita em um único PR, com todos os imports atualizados, todos os testes passando e o PR aprovado e mergeado antes de qualquer outra branch avançar. Nunca migrar em partes ao longo de vários dias.
+
+**2. Comunicação antecipada no time**
+
+Antes de começar a migração, avisar o time: _"nos próximos X dias vou extrair o DS para package — quem tiver branch aberta que usa `shared/presentation/design` precisa dar rebase depois do merge."_
+
+**3. Facade temporária — zero breaking changes no dia do merge**
+
+Durante a transição, manter os imports antigos funcionando via re-exports:
+
+```dart
+// shared/presentation/widgets/metric_card.dart (temporário)
+// DEPRECATED — use financial_health_design_system
+export 'package:financial_health_design_system/src/components/metric_card/metric_card.dart';
+```
+
+Isso permite que branches com imports antigos ainda compilem. A remoção do facade é feita em um PR separado depois que todos os devs migraram.
+
+**4. Gitflow para a extração**
+
+```
+main (ou develop)
+  │
+  └── chore/extract-design-system-package
+        ├── Criar package com estrutura vazia
+        ├── Mover componentes um a um (com testes passando em cada commit)
+        ├── Atualizar imports do app
+        ├── Remover facades se foram criados
+        └── PR → squash merge em main
+```
+
+A branch de extração deve ser curta (idealmente 1-2 dias) e não ter outras features misturadas.
+
+**5. Semver e CHANGELOG para quando o package for publicado**
+
+Enquanto o package é `path: ../packages/...`, o versionamento é implícito (qualquer commit pode ser uma breaking change silenciosa). Se o package for publicado no pub.dev ou compartilhado entre repositórios, semver é obrigatório:
+
+- `BREAKING CHANGE:` no commit message → bump de versão major (`1.x.x` → `2.0.0`)
+- Nova feature → minor (`1.2.x` → `1.3.0`)
+- Bugfix → patch (`1.2.3` → `1.2.4`)
+
+CI deve bloquear merge se o package tem breaking changes e a versão não foi atualizada.
+
+---
+
 ## Referências
 
 - [Processo de design (Stitch → Figma → figma.to.code) →](./design_process.md)
