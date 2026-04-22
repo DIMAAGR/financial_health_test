@@ -1,12 +1,7 @@
 import 'package:financial_health_dashboard/src/features/dashboard/domain/entities/financial_health_score_data.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/presentation/mappers/financial_health_score_resolver.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/presentation/mappers/financial_health_score_text_mapper.dart';
-import 'package:financial_health_dashboard/src/shared/presentation/design/assets/icons.dart';
-import 'package:financial_health_dashboard/src/shared/presentation/design/components/svg_icons.dart';
-import 'package:financial_health_dashboard/src/shared/presentation/design/theme/financial_health_score_theme_ext.dart';
-import 'package:financial_health_dashboard/src/shared/presentation/design/tokens/app_radius.dart';
-import 'package:financial_health_dashboard/src/shared/presentation/design/tokens/app_spacing.dart';
-import 'package:financial_health_dashboard/src/shared/presentation/design/tokens/app_text_styles.dart';
+import 'package:financial_health_design_system/financial_health_design_system.dart';
 import 'package:flutter/material.dart';
 
 /// Card principal de score de saúde financeira.
@@ -38,7 +33,12 @@ import 'package:flutter/material.dart';
 /// )
 /// ```
 class FinancialHealthScoreCard extends StatelessWidget {
-  const FinancialHealthScoreCard({super.key, required this.data, this.onTap, this.iconAssetPath});
+  const FinancialHealthScoreCard({
+    super.key,
+    required this.data,
+    this.onTap,
+    this.iconAssetPath,
+  });
 
   /// Dados de apresentação do score financeiro.
   final FinancialHealthScoreData data;
@@ -55,10 +55,8 @@ class FinancialHealthScoreCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final FinancialHealthCardColors style = FinancialHealthCardStyleResolver.resolve(
-      context,
-      data.status,
-    );
+    final FinancialHealthCardColors style =
+        FinancialHealthCardStyleResolver.resolve(context, data.status);
 
     final borderRadius = BorderRadius.circular(AppRadius.lg);
 
@@ -73,7 +71,10 @@ class FinancialHealthScoreCard extends StatelessWidget {
               )
             : null,
         borderRadius: borderRadius,
-        border: Border.all(color: style.borderColor, width: style.borderColor.a == 0 ? 0 : 1),
+        border: Border.all(
+          color: style.borderColor,
+          width: style.borderColor.a == 0 ? 0 : 1,
+        ),
         boxShadow: [
           BoxShadow(
             color: style.shadowColor,
@@ -96,9 +97,17 @@ class FinancialHealthScoreCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _TopSection(data: data, style: style, iconAssetPath: iconAssetPath),
+                  _TopSection(
+                    data: data,
+                    style: style,
+                    iconAssetPath: iconAssetPath,
+                  ),
                   const SizedBox(height: AppSpacing.xl),
-                  Container(width: double.infinity, height: 1, color: style.divider),
+                  Container(
+                    width: double.infinity,
+                    height: 1,
+                    color: style.divider,
+                  ),
                   const SizedBox(height: AppSpacing.xl),
                   _BottomSection(data: data, style: style),
                 ],
@@ -112,7 +121,11 @@ class FinancialHealthScoreCard extends StatelessWidget {
 }
 
 class _TopSection extends StatelessWidget {
-  const _TopSection({required this.data, required this.style, this.iconAssetPath});
+  const _TopSection({
+    required this.data,
+    required this.style,
+    this.iconAssetPath,
+  });
 
   final FinancialHealthScoreData data;
   final FinancialHealthCardColors style;
@@ -138,7 +151,9 @@ class _TopSection extends StatelessWidget {
               ),
               child: Text(
                 label,
-                style: AppTextStyles.financialBadge.copyWith(color: style.badgeText),
+                style: AppTextStyles.financialBadge.copyWith(
+                  color: style.badgeText,
+                ),
               ),
             ),
             const Spacer(),
@@ -154,7 +169,9 @@ class _TopSection extends StatelessWidget {
           opacity: 0.8,
           child: Text(
             FinancialHealthScoreTextMapper.title,
-            style: AppTextStyles.financialCardTitle.copyWith(color: style.titleText),
+            style: AppTextStyles.financialCardTitle.copyWith(
+              color: style.titleText,
+            ),
           ),
         ),
         const SizedBox(height: AppSpacing.sm),
@@ -163,7 +180,9 @@ class _TopSection extends StatelessWidget {
           children: [
             Text(
               '${data.score}',
-              style: AppTextStyles.financialScore.copyWith(color: style.scoreText),
+              style: AppTextStyles.financialScore.copyWith(
+                color: style.scoreText,
+              ),
             ),
             const SizedBox(width: AppSpacing.sm),
             Padding(
@@ -172,7 +191,9 @@ class _TopSection extends StatelessWidget {
                 opacity: 0.6,
                 child: Text(
                   '/100',
-                  style: AppTextStyles.financialScoreSuffix.copyWith(color: style.scoreSuffixText),
+                  style: AppTextStyles.financialScoreSuffix.copyWith(
+                    color: style.scoreSuffixText,
+                  ),
                 ),
               ),
             ),
@@ -197,13 +218,20 @@ class _BottomSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(headline, style: AppTextStyles.financialHeadline.copyWith(color: style.headlineText)),
+        Text(
+          headline,
+          style: AppTextStyles.financialHeadline.copyWith(
+            color: style.headlineText,
+          ),
+        ),
         const SizedBox(height: AppSpacing.sm),
         Opacity(
           opacity: 0.7,
           child: Text(
             description,
-            style: AppTextStyles.financialDescription.copyWith(color: style.descriptionText),
+            style: AppTextStyles.financialDescription.copyWith(
+              color: style.descriptionText,
+            ),
           ),
         ),
       ],

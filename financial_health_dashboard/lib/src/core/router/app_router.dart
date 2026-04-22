@@ -1,6 +1,7 @@
 import 'package:financial_health_dashboard/src/core/dependencies/injection.dart';
 import 'package:financial_health_dashboard/src/core/router/app_routes.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/presentation/view/dashboard_view.dart';
+import 'package:financial_health_dashboard/src/features/dashboard/presentation/view/financial_summary_showcase_view.dart';
 import 'package:financial_health_dashboard/src/features/dashboard/presentation/view_model/dashboard/dashboard_cubit.dart';
 import 'package:financial_health_dashboard/src/features/expenses/presentation/view/expenses_view.dart';
 import 'package:financial_health_dashboard/src/features/expenses/presentation/view_model/expenses_cubit.dart';
@@ -45,6 +46,11 @@ GoRouter buildRoute() {
           create: (_) => getIt<ExpensesCubit>()..loadOverview(),
           child: const ExpensesView(),
         ),
+      ),
+      GoRoute(
+        path: AppRoutesPath.financialSummaryShowcase,
+        name: AppRouteName.financialSummaryShowcase,
+        builder: (context, state) => const FinancialSummaryShowcaseView(),
       ),
     ],
   );

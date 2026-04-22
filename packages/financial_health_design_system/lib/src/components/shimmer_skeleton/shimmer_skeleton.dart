@@ -1,4 +1,4 @@
-import 'package:financial_health_dashboard/src/shared/presentation/design/tokens/app_radius.dart';
+import 'package:financial_health_design_system/src/foundations/tokens/app_radius.dart';
 import 'package:flutter/material.dart';
 
 class ShimmerSkeleton extends StatefulWidget {
@@ -10,14 +10,17 @@ class ShimmerSkeleton extends StatefulWidget {
   State<ShimmerSkeleton> createState() => _ShimmerSkeletonState();
 }
 
-class _ShimmerSkeletonState extends State<ShimmerSkeleton> with SingleTickerProviderStateMixin {
+class _ShimmerSkeletonState extends State<ShimmerSkeleton>
+    with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 1200))
-      ..repeat();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    )..repeat();
   }
 
   @override
@@ -76,7 +79,8 @@ class ShimmerContext extends InheritedWidget {
   }
 
   @override
-  bool updateShouldNotify(ShimmerContext oldWidget) => progress != oldWidget.progress;
+  bool updateShouldNotify(ShimmerContext oldWidget) =>
+      progress != oldWidget.progress;
 }
 
 class SkeletonCard extends StatelessWidget {

@@ -1,5 +1,4 @@
-import 'package:financial_health_dashboard/src/shared/presentation/design/components/shimmer_skeleton.dart';
-import 'package:financial_health_dashboard/src/shared/presentation/design/tokens/app_spacing.dart';
+import 'package:financial_health_design_system/financial_health_design_system.dart';
 import 'package:flutter/material.dart';
 
 /// Skeleton loading placeholder for the Transactions detail screen.
@@ -17,7 +16,10 @@ class TransactionsSkeleton extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // MonthSummaryCard placeholder
-            const SkeletonCard(key: Key('transactions-skeleton-summary'), height: 254),
+            const SkeletonCard(
+              key: Key('transactions-skeleton-summary'),
+              height: 254,
+            ),
             const SizedBox(height: AppSpacing.xl),
             // "Histórico Detalhado" title row
             const SkeletonBlock(width: 180, height: 28),

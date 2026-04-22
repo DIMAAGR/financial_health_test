@@ -1,9 +1,4 @@
-import 'package:financial_health_dashboard/src/shared/presentation/design/components/svg_icons.dart';
-import 'package:financial_health_dashboard/src/shared/presentation/design/extensions/currency_format_extension.dart';
-import 'package:financial_health_dashboard/src/shared/presentation/design/theme/app_theme_ext.dart';
-import 'package:financial_health_dashboard/src/shared/presentation/design/tokens/app_radius.dart';
-import 'package:financial_health_dashboard/src/shared/presentation/design/tokens/app_spacing.dart';
-import 'package:financial_health_dashboard/src/shared/presentation/design/tokens/app_text_styles.dart';
+import 'package:financial_health_design_system/financial_health_design_system.dart';
 import 'package:flutter/material.dart';
 
 /// Card reutilizável para exibição de métricas financeiras.
@@ -64,7 +59,11 @@ class MetricCard extends StatelessWidget {
           width: colors.metricCardBorder.a == 0 ? 0 : 1,
         ),
         boxShadow: [
-          BoxShadow(color: colors.metricCardShadow, blurRadius: 20, offset: const Offset(0, 4)),
+          BoxShadow(
+            color: colors.metricCardShadow,
+            blurRadius: 20,
+            offset: const Offset(0, 4),
+          ),
         ],
       ),
       child: Material(
@@ -84,12 +83,16 @@ class MetricCard extends StatelessWidget {
                 const SizedBox(height: AppSpacing.sm),
                 Text(
                   label,
-                  style: AppTextStyles.metricLabelLarge.copyWith(color: colors.metricCardLabel),
+                  style: AppTextStyles.metricLabelLarge.copyWith(
+                    color: colors.metricCardLabel,
+                  ),
                 ),
                 const SizedBox(height: AppSpacing.xs),
                 Text(
                   value.toBRL(),
-                  style: AppTextStyles.metricValue.copyWith(color: colors.metricCardValue),
+                  style: AppTextStyles.metricValue.copyWith(
+                    color: colors.metricCardValue,
+                  ),
                 ),
               ],
             ),

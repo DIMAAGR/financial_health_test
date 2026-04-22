@@ -3,17 +3,15 @@ import 'package:financial_health_dashboard/src/shared/domain/entities/transactio
 import 'package:financial_health_dashboard/src/shared/domain/entities/transaction_date_group_data.dart';
 import 'package:financial_health_dashboard/src/shared/domain/extensions/date_time_grouping_extension.dart';
 import 'package:financial_health_dashboard/src/shared/domain/services/transaction_date_grouping_service.dart';
-import 'package:financial_health_dashboard/src/shared/presentation/design/components/transaction_list_section.dart';
-import 'package:financial_health_dashboard/src/shared/presentation/design/extensions/currency_format_extension.dart';
-import 'package:financial_health_dashboard/src/shared/presentation/design/extensions/transaction_group_label_extension.dart';
-import 'package:financial_health_dashboard/src/shared/presentation/design/helpers/category_helpers.dart';
+import 'package:financial_health_design_system/financial_health_design_system.dart';
 
 final class TransactionGroupMapper {
   const TransactionGroupMapper._();
 
   static List<TransactionGroup> toTransactionsGroups(
     List<TransactionData> transactions, {
-    TransactionDateGroupingService groupingService = const TransactionDateGroupingService(),
+    TransactionDateGroupingService groupingService =
+        const TransactionDateGroupingService(),
     Clock clock = const SystemClock(),
   }) {
     return _mapGroups(
@@ -36,7 +34,8 @@ final class TransactionGroupMapper {
 
   static List<TransactionGroup> toIncomeGroups(
     List<TransactionData> transactions, {
-    TransactionDateGroupingService groupingService = const TransactionDateGroupingService(),
+    TransactionDateGroupingService groupingService =
+        const TransactionDateGroupingService(),
     Clock clock = const SystemClock(),
   }) {
     return _mapGroups(
@@ -56,7 +55,8 @@ final class TransactionGroupMapper {
 
   static List<TransactionGroup> toExpenseGroups(
     List<TransactionData> transactions, {
-    TransactionDateGroupingService groupingService = const TransactionDateGroupingService(),
+    TransactionDateGroupingService groupingService =
+        const TransactionDateGroupingService(),
     Clock clock = const SystemClock(),
   }) {
     return _mapGroups(
@@ -77,16 +77,21 @@ final class TransactionGroupMapper {
   static List<TransactionGroup> _mapGroups(
     List<TransactionDateGroupData> groups, {
     required DateTime referenceDate,
-    required TransactionListItem Function(TransactionData transaction) itemMapper,
+    required TransactionListItem Function(TransactionData transaction)
+    itemMapper,
   }) {
     final normalizedReferenceDate = referenceDate.dateOnly;
 
     return groups
         .map((group) {
-          final isToday = group.date.isSameCalendarDateAs(normalizedReferenceDate);
+          final isToday = group.date.isSameCalendarDateAs(
+            normalizedReferenceDate,
+          );
 
           return TransactionGroup(
-            dateLabel: group.date.toTransactionGroupLabel(referenceDate: normalizedReferenceDate),
+            dateLabel: group.date.toTransactionGroupLabel(
+              referenceDate: normalizedReferenceDate,
+            ),
             isToday: isToday,
             items: group.transactions.map(itemMapper).toList(growable: false),
           );

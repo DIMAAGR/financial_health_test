@@ -1,8 +1,8 @@
-import 'package:financial_health_dashboard/src/shared/presentation/design/components/svg_icons.dart';
-import 'package:financial_health_dashboard/src/shared/presentation/design/theme/app_theme_ext.dart';
-import 'package:financial_health_dashboard/src/shared/presentation/design/theme/category_breakdown_theme_ext.dart';
-import 'package:financial_health_dashboard/src/shared/presentation/design/tokens/app_radius.dart';
-import 'package:financial_health_dashboard/src/shared/presentation/design/tokens/app_spacing.dart';
+import 'package:financial_health_design_system/src/components/svg_icon/app_svg_icon.dart';
+import 'package:financial_health_design_system/src/foundations/tokens/app_radius.dart';
+import 'package:financial_health_design_system/src/foundations/tokens/app_spacing.dart';
+import 'package:financial_health_design_system/src/theme/extensions/app_theme_ext.dart';
+import 'package:financial_health_design_system/src/theme/extensions/category_breakdown_theme_ext.dart';
 import 'package:flutter/material.dart';
 
 const int _maxCategories = 5;
@@ -22,7 +22,11 @@ class CategoryItem {
 }
 
 class CategoryBreakdownSection extends StatelessWidget {
-  const CategoryBreakdownSection({super.key, required this.categories, required this.totalAmount});
+  const CategoryBreakdownSection({
+    super.key,
+    required this.categories,
+    required this.totalAmount,
+  });
 
   final List<CategoryItem> categories;
   final double totalAmount;
@@ -44,8 +48,14 @@ class CategoryBreakdownSection extends StatelessWidget {
           const SizedBox(height: AppSpacing.md),
           ...rest.asMap().entries.map(
             (entry) => Padding(
-              padding: EdgeInsets.only(bottom: entry.key < rest.length - 1 ? AppSpacing.md : 0),
-              child: _ItemCard(item: entry.value, isAccent: entry.key == 0, theme: theme),
+              padding: EdgeInsets.only(
+                bottom: entry.key < rest.length - 1 ? AppSpacing.md : 0,
+              ),
+              child: _ItemCard(
+                item: entry.value,
+                isAccent: entry.key == 0,
+                theme: theme,
+              ),
             ),
           ),
         ],
@@ -55,7 +65,11 @@ class CategoryBreakdownSection extends StatelessWidget {
 }
 
 class _HeroCard extends StatelessWidget {
-  const _HeroCard({required this.item, required this.totalAmount, required this.theme});
+  const _HeroCard({
+    required this.item,
+    required this.totalAmount,
+    required this.theme,
+  });
 
   final CategoryItem item;
   final double totalAmount;
@@ -89,7 +103,11 @@ class _HeroCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(AppRadius.md),
                   ),
                   alignment: Alignment.center,
-                  child: AppSvgIcon(asset: item.icon, size: 24, color: theme.heroTitle),
+                  child: AppSvgIcon(
+                    asset: item.icon,
+                    size: 24,
+                    color: theme.heroTitle,
+                  ),
                 ),
                 Text(
                   '${item.percentage.toStringAsFixed(0)}% do total',
@@ -135,7 +153,11 @@ class _HeroCard extends StatelessWidget {
 }
 
 class _ItemCard extends StatelessWidget {
-  const _ItemCard({required this.item, required this.isAccent, required this.theme});
+  const _ItemCard({
+    required this.item,
+    required this.isAccent,
+    required this.theme,
+  });
 
   final CategoryItem item;
   final bool isAccent;
@@ -143,7 +165,9 @@ class _ItemCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final iconBg = isAccent ? theme.itemIconBackgroundAccent : theme.itemIconBackgroundNeutral;
+    final iconBg = isAccent
+        ? theme.itemIconBackgroundAccent
+        : theme.itemIconBackgroundNeutral;
 
     return Container(
       width: double.infinity,
@@ -164,7 +188,11 @@ class _ItemCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(AppRadius.sm + 4),
             ),
             alignment: Alignment.center,
-            child: AppSvgIcon(asset: item.icon, size: 20, color: theme.itemAmount),
+            child: AppSvgIcon(
+              asset: item.icon,
+              size: 20,
+              color: theme.itemAmount,
+            ),
           ),
           Expanded(
             child: Column(

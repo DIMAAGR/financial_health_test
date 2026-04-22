@@ -8,9 +8,7 @@ import 'package:financial_health_dashboard/src/shared/presentation/add_transacti
 import 'package:financial_health_dashboard/src/shared/presentation/add_transaction/widgets/sheets/components/transaction_sheet_fields.dart';
 import 'package:financial_health_dashboard/src/shared/presentation/add_transaction/widgets/sheets/components/transaction_sheet_scaffold.dart';
 import 'package:financial_health_dashboard/src/shared/presentation/add_transaction/widgets/sheets/components/transaction_submit_button.dart';
-import 'package:financial_health_dashboard/src/shared/presentation/design/assets/icons.dart';
-import 'package:financial_health_dashboard/src/shared/presentation/design/theme/app_theme_ext.dart';
-import 'package:financial_health_dashboard/src/shared/presentation/design/tokens/app_spacing.dart';
+import 'package:financial_health_design_system/financial_health_design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -34,13 +32,18 @@ Future<AddTransactionSheetResult?> showTransactionBottomSheet(
 class _AddTransactionBottomSheet extends StatefulWidget {
   final SheetType type;
   final Future<bool> Function(AddTransactionSheetResult result) onSubmit;
-  const _AddTransactionBottomSheet({required this.type, required this.onSubmit});
+  const _AddTransactionBottomSheet({
+    required this.type,
+    required this.onSubmit,
+  });
 
   @override
-  State<_AddTransactionBottomSheet> createState() => _AddTransactionBottomSheetState();
+  State<_AddTransactionBottomSheet> createState() =>
+      _AddTransactionBottomSheetState();
 }
 
-class _AddTransactionBottomSheetState extends State<_AddTransactionBottomSheet> {
+class _AddTransactionBottomSheetState
+    extends State<_AddTransactionBottomSheet> {
   late final TextEditingController _amountController;
   late final TextEditingController _descriptionController;
 
@@ -52,10 +55,14 @@ class _AddTransactionBottomSheetState extends State<_AddTransactionBottomSheet> 
     _descriptionController = TextEditingController();
 
     _amountController.addListener(() {
-      context.read<AddTransactionCubit>().onAmountChanged(_amountController.text);
+      context.read<AddTransactionCubit>().onAmountChanged(
+        _amountController.text,
+      );
     });
     _descriptionController.addListener(() {
-      context.read<AddTransactionCubit>().onDescriptionChanged(_descriptionController.text);
+      context.read<AddTransactionCubit>().onDescriptionChanged(
+        _descriptionController.text,
+      );
     });
   }
 
@@ -95,7 +102,9 @@ class _AddTransactionBottomSheetState extends State<_AddTransactionBottomSheet> 
                   ? _incomeCategoryOptions
                   : _expenseCategoryOptions,
               selected: state.category,
-              onSelected: context.read<AddTransactionCubit>().onCategorySelected,
+              onSelected: context
+                  .read<AddTransactionCubit>()
+                  .onCategorySelected,
               theme: theme,
             );
           },

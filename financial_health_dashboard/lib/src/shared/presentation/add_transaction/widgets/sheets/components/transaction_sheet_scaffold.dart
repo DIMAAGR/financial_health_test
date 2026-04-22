@@ -1,9 +1,4 @@
-import 'package:financial_health_dashboard/src/shared/presentation/design/assets/icons.dart';
-import 'package:financial_health_dashboard/src/shared/presentation/design/components/svg_icons.dart';
-import 'package:financial_health_dashboard/src/shared/presentation/design/theme/add_income_sheet_theme_ext.dart';
-import 'package:financial_health_dashboard/src/shared/presentation/design/tokens/app_radius.dart';
-import 'package:financial_health_dashboard/src/shared/presentation/design/tokens/app_spacing.dart';
-import 'package:financial_health_dashboard/src/shared/presentation/design/tokens/app_text_styles.dart';
+import 'package:financial_health_design_system/financial_health_design_system.dart';
 import 'package:flutter/material.dart';
 
 class TransactionSheetScaffold extends StatelessWidget {
@@ -39,7 +34,11 @@ class TransactionSheetScaffold extends StatelessWidget {
                   topRight: Radius.circular(40),
                 ),
                 boxShadow: [
-                  BoxShadow(color: theme.sheetShadow, blurRadius: 40, offset: const Offset(0, -10)),
+                  BoxShadow(
+                    color: theme.sheetShadow,
+                    blurRadius: 40,
+                    offset: const Offset(0, -10),
+                  ),
                 ],
               ),
               child: Padding(
@@ -90,7 +89,11 @@ class TransactionSheetDragHandle extends StatelessWidget {
 }
 
 class TransactionSheetHeader extends StatelessWidget {
-  const TransactionSheetHeader({super.key, required this.title, required this.theme});
+  const TransactionSheetHeader({
+    super.key,
+    required this.title,
+    required this.theme,
+  });
 
   final String title;
   final AddIncomeSheetTheme theme;
@@ -100,7 +103,10 @@ class TransactionSheetHeader extends StatelessWidget {
     return Row(
       children: [
         Expanded(
-          child: Text(title, style: AppTextStyles.sheetTitle.copyWith(color: theme.title)),
+          child: Text(
+            title,
+            style: AppTextStyles.sheetTitle.copyWith(color: theme.title),
+          ),
         ),
         Material(
           color: theme.closeButtonBackground,
@@ -113,7 +119,11 @@ class TransactionSheetHeader extends StatelessWidget {
               width: 40,
               height: 40,
               child: Center(
-                child: AppSvgIcon(asset: AppIcons.close, size: 16, color: theme.closeIcon),
+                child: AppSvgIcon(
+                  asset: AppIcons.close,
+                  size: 16,
+                  color: theme.closeIcon,
+                ),
               ),
             ),
           ),

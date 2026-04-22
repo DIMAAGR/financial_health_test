@@ -15,11 +15,12 @@ dependencies:
   get_it: ^9.2.1
   go_router: ^17.2.1
   flutter_bloc: ^9.1.1
-  flutter_svg: ^2.2.4
   intl: ^0.20.2
   dartz: ^0.10.1
   connectivity_plus: ^7.1.1
   freezed_annotation: ^3.1.0
+  financial_health_design_system:
+    path: ../packages/financial_health_design_system
 
 dev_dependencies:
   flutter_test:
@@ -32,10 +33,6 @@ dev_dependencies:
 flutter:
 
   uses-material-design: true
-
-
-  assets:
-    - assets/icons/
 
   # fonts:
   #   - family: Schyler

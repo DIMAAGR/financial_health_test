@@ -1,7 +1,5 @@
 import 'package:financial_health_dashboard/src/features/dashboard/presentation/widgets/metric_card.dart';
-import 'package:financial_health_dashboard/src/shared/presentation/design/assets/icons.dart';
-import 'package:financial_health_dashboard/src/shared/presentation/design/theme/app_theme_ext.dart';
-import 'package:financial_health_dashboard/src/shared/presentation/design/tokens/app_spacing.dart';
+import 'package:financial_health_design_system/financial_health_design_system.dart';
 import 'package:flutter/material.dart';
 
 class MetricsOverviewSection extends StatelessWidget {

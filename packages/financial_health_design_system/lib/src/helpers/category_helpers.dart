@@ -1,4 +1,4 @@
-import 'package:financial_health_dashboard/src/shared/presentation/design/assets/icons.dart';
+import 'package:financial_health_design_system/src/assets/icons.dart';
 
 const _categoryLabels = <String, String>{
   'salary': 'Salário',

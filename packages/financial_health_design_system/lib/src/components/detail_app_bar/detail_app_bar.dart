@@ -1,8 +1,8 @@
-import 'package:financial_health_dashboard/src/shared/presentation/design/assets/icons.dart';
-import 'package:financial_health_dashboard/src/shared/presentation/design/components/svg_icons.dart';
-import 'package:financial_health_dashboard/src/shared/presentation/design/theme/app_theme_ext.dart';
-import 'package:financial_health_dashboard/src/shared/presentation/design/tokens/app_radius.dart';
-import 'package:financial_health_dashboard/src/shared/presentation/design/tokens/app_spacing.dart';
+import 'package:financial_health_design_system/src/assets/icons.dart';
+import 'package:financial_health_design_system/src/components/svg_icon/app_svg_icon.dart';
+import 'package:financial_health_design_system/src/foundations/tokens/app_radius.dart';
+import 'package:financial_health_design_system/src/foundations/tokens/app_spacing.dart';
+import 'package:financial_health_design_system/src/theme/extensions/app_theme_ext.dart';
 import 'package:flutter/material.dart';
 
 class DetailAppBar extends StatelessWidget {
@@ -35,7 +35,8 @@ class DetailAppBar extends StatelessWidget {
               _BackButton(
                 backgroundColor: colors.headerActionBackground,
                 iconColor: colors.headerActionIcon,
-                onPressed: onBackPressed ?? () => Navigator.of(context).maybePop(),
+                onPressed:
+                    onBackPressed ?? () => Navigator.of(context).maybePop(),
               ),
               Text(
                 title,
@@ -72,7 +73,11 @@ class DetailAppBar extends StatelessWidget {
 }
 
 class _BackButton extends StatelessWidget {
-  const _BackButton({required this.backgroundColor, required this.iconColor, this.onPressed});
+  const _BackButton({
+    required this.backgroundColor,
+    required this.iconColor,
+    this.onPressed,
+  });
 
   final Color backgroundColor;
   final Color iconColor;
@@ -87,17 +92,27 @@ class _BackButton extends StatelessWidget {
         height: AppSpacing.xxl,
         decoration: ShapeDecoration(
           color: backgroundColor,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.sm + 4)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppRadius.sm + 4),
+          ),
         ),
         alignment: Alignment.center,
-        child: AppSvgIcon(asset: AppIcons.arrowBack, size: 20, color: iconColor),
+        child: AppSvgIcon(
+          asset: AppIcons.arrowBack,
+          size: 20,
+          color: iconColor,
+        ),
       ),
     );
   }
 }
 
 class _ActionButton extends StatelessWidget {
-  const _ActionButton({required this.icon, required this.iconColor, this.onPressed});
+  const _ActionButton({
+    required this.icon,
+    required this.iconColor,
+    this.onPressed,
+  });
 
   final String icon;
   final Color iconColor;
@@ -110,7 +125,9 @@ class _ActionButton extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(AppSpacing.sm),
         decoration: ShapeDecoration(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.sm + 4)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppRadius.sm + 4),
+          ),
         ),
         child: AppSvgIcon(asset: icon, size: 20, color: iconColor),
       ),

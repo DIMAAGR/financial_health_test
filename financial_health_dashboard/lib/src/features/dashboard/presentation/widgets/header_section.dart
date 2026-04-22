@@ -1,7 +1,4 @@
-import 'package:financial_health_dashboard/src/shared/presentation/design/assets/icons.dart';
-import 'package:financial_health_dashboard/src/shared/presentation/design/components/svg_icons.dart';
-import 'package:financial_health_dashboard/src/shared/presentation/design/theme/app_theme_ext.dart';
-import 'package:financial_health_dashboard/src/shared/presentation/design/tokens/app_text_styles.dart';
+import 'package:financial_health_design_system/financial_health_design_system.dart';
 import 'package:flutter/material.dart';
 
 /// Header section used in the dashboard screen.
@@ -55,13 +52,17 @@ class HeaderSection extends StatelessWidget {
             children: [
               Text(
                 'Bem-vindo de volta,',
-                style: AppTextStyles.headerSubtitle.copyWith(color: colors.headerSubtitle),
+                style: AppTextStyles.headerSubtitle.copyWith(
+                  color: colors.headerSubtitle,
+                ),
               ),
               Text(
                 userName,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: AppTextStyles.headerTitle.copyWith(color: colors.headerTitle),
+                style: AppTextStyles.headerTitle.copyWith(
+                  color: colors.headerTitle,
+                ),
               ),
             ],
           ),
@@ -160,7 +161,9 @@ class HeaderSection extends StatelessWidget {
             const SizedBox(width: 12),
             Text(
               label,
-              style: AppTextStyles.financialCardTitle.copyWith(color: colors.headerMenuText),
+              style: AppTextStyles.financialCardTitle.copyWith(
+                color: colors.headerMenuText,
+              ),
             ),
           ],
         ),

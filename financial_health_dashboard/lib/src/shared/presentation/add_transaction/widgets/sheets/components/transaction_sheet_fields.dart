@@ -1,12 +1,13 @@
-import 'package:financial_health_dashboard/src/shared/presentation/design/input_formatters/brl_currency_input_formatter.dart';
-import 'package:financial_health_dashboard/src/shared/presentation/design/theme/add_income_sheet_theme_ext.dart';
-import 'package:financial_health_dashboard/src/shared/presentation/design/tokens/app_radius.dart';
-import 'package:financial_health_dashboard/src/shared/presentation/design/tokens/app_text_styles.dart';
+import 'package:financial_health_design_system/financial_health_design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class TransactionFieldLabel extends StatelessWidget {
-  const TransactionFieldLabel({super.key, required this.text, required this.theme});
+  const TransactionFieldLabel({
+    super.key,
+    required this.text,
+    required this.theme,
+  });
 
   final String text;
   final AddIncomeSheetTheme theme;
@@ -15,13 +16,20 @@ class TransactionFieldLabel extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(left: 4),
-      child: Text(text, style: AppTextStyles.sheetFieldLabel.copyWith(color: theme.fieldLabel)),
+      child: Text(
+        text,
+        style: AppTextStyles.sheetFieldLabel.copyWith(color: theme.fieldLabel),
+      ),
     );
   }
 }
 
 class TransactionAmountField extends StatelessWidget {
-  const TransactionAmountField({super.key, required this.controller, required this.theme});
+  const TransactionAmountField({
+    super.key,
+    required this.controller,
+    required this.theme,
+  });
 
   final TextEditingController controller;
   final AddIncomeSheetTheme theme;
@@ -57,7 +65,9 @@ class TransactionAmountField extends StatelessWidget {
                 isCollapsed: true,
                 border: InputBorder.none,
                 hintText: '0,00',
-                hintStyle: AppTextStyles.sheetAmount.copyWith(color: theme.fieldPlaceholder),
+                hintStyle: AppTextStyles.sheetAmount.copyWith(
+                  color: theme.fieldPlaceholder,
+                ),
               ),
             ),
           ),
@@ -94,7 +104,9 @@ class TransactionDescriptionField extends StatelessWidget {
           isCollapsed: true,
           border: InputBorder.none,
           hintText: hintText,
-          hintStyle: AppTextStyles.sheetInput.copyWith(color: theme.fieldPlaceholder),
+          hintStyle: AppTextStyles.sheetInput.copyWith(
+            color: theme.fieldPlaceholder,
+          ),
         ),
       ),
     );
