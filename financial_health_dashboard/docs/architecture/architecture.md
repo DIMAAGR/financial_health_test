@@ -35,11 +35,11 @@ A análise foi conduzida com assistência de IA — as variáveis acima foram us
 
 | Arquitetura | Setup | Testabilidade | Onboarding | Acoplamento cross-feature | Custo a longo prazo |
 |---|:---:|:---:|:---:|:---:|:---:|
-| Monolítica (tudo em `lib/`) | ✅ muito baixo | ❌ difícil | ✅ imediato | ❌ invisível e alto | ❌ cresce rápido |
-| Feature-first sem camadas | ✅ baixo | ⚠️ parcial | ✅ simples | ⚠️ médio | ⚠️ cresce com o tempo |
-| Clean Arch global (`data/domain/presentation` raiz) | ⚠️ médio | ✅ boa | ❌ exige visão global | ⚠️ visível mas presente | ⚠️ médio |
-| Feature Sliced Design (FSD) | ❌ alto | ✅ boa | ❌ curva longa | ✅ baixo | ✅ estável, mas overengineered aqui |
-| **Feature-first + Clean interna (adotada)** | ⚠️ médio | ✅ ótima | ⚠️ médio | ✅ baixo | ✅ cresce devagar |
+| Monolítica (tudo em `lib/`) | ✅ | ❌ | ✅ | ❌ | ❌ |
+| Feature-first sem camadas | ✅ | ⚠️ | ✅ | ⚠️ | ⚠️ |
+| Clean Arch global (`data/domain/presentation` raiz) | ⚠️ | ✅ | ❌ | ⚠️ | ⚠️ |
+| Feature Sliced Design (FSD) | ❌ | ✅ | ❌ | ✅ | ✅ |
+| **Feature-first + Clean interna (adotada)** | ⚠️ | ✅ | ⚠️ | ✅ | ✅ |
 
 ---
 
@@ -56,10 +56,20 @@ xychart-beta
     line "Feature-first s/ camadas" [2, 3, 5, 6, 7, 8, 9]
     line "Clean Arch global" [4, 4, 5, 6, 6, 7, 8]
     line "FSD" [7, 7, 6, 6, 6, 6, 6]
-    line "Feature-first + Clean (adotada)" [4, 4, 4, 4, 5, 5, 5]
+    line "★ Feature-first + Clean (ADOTADA)" [4, 4, 4, 4, 5, 5, 5]
 ```
 
-**Leitura:** a arquitetura monolítica começa mais simples — e isso é real, não é percepção. O problema aparece a partir do mês 6, quando o acoplamento acumulado torna cada mudança arriscada. A abordagem adotada tem custo inicial similar ao Clean Arch global, mas se mantém estável porque cada feature é uma unidade autônoma e o domínio é testável sem UI.
+**Referência de linhas** — as cores são atribuídas por ordem de declaração no gráfico:
+
+| Ordem | Arquitetura | Mês 1 | Mês 24 | Tendência |
+|:---:|---|:---:|:---:|---|
+| 1 | Monolítica | 1 | 10 | ↗ piora rápido |
+| 2 | Feature-first sem camadas | 2 | 9 | ↗ piora |
+| 3 | Clean Arch global | 4 | 8 | ↗ piora devagar |
+| 4 | FSD | 7 | 6 | → estável, mas começa alto |
+| 5 ★ | **Feature-first + Clean (ADOTADA)** | 4 | 5 | → estável, começa baixo |
+
+**Leitura:** a arquitetura monolítica começa mais simples — e isso é real, não é percepção. O problema aparece a partir do mês 6, quando o acoplamento acumulado torna cada mudança arriscada. A abordagem adotada (linha 5 ★) tem custo inicial similar ao Clean Arch global, mas se mantém estável porque cada feature é uma unidade autônoma e o domínio é testável sem UI.
 
 ---
 
@@ -76,12 +86,22 @@ xychart-beta
     line "Feature-first s/ camadas" [2, 3, 4, 6, 7, 8, 9]
     line "Clean Arch global" [3, 4, 5, 5, 5, 6, 6]
     line "FSD" [6, 6, 5, 5, 5, 5, 5]
-    line "Feature-first + Clean (adotada)" [4, 3, 3, 3, 3, 4, 4]
+    line "★ Feature-first + Clean (ADOTADA)" [4, 3, 3, 3, 3, 4, 4]
 ```
 
-**Leitura:** o custo de manutenção da abordagem adotada começa ligeiramente mais alto porque exige disciplina de camadas desde o dia 1, mas **cai** após os primeiros meses — quando o padrão é internalizado. A partir do mês 6, é consistentemente o mais baixo entre as abordagens não triviais. A manutenção na monolítica é inversamente proporcional: começa fácil e se torna progressivamente inviável.
+**Referência de linhas** — as cores são atribuídas por ordem de declaração no gráfico:
 
-> **Ponto de cruzamento real:** por volta do mês 4–5, a abordagem adotada já custa menos que a monolítica em manutenção. Em implementação de novas features, esse cruzamento acontece por volta do mês 7–8.
+| Ordem | Arquitetura | Mês 1 | Mês 24 | Tendência |
+|:---:|---|:---:|:---:|---|
+| 1 | Monolítica | 1 | 10 | ↗ piora rápido |
+| 2 | Feature-first sem camadas | 2 | 9 | ↗ piora |
+| 3 | Clean Arch global | 3 | 6 | ↗ piora devagar |
+| 4 | FSD | 6 | 5 | → estável, mas começa alto |
+| 5 ★ | **Feature-first + Clean (ADOTADA)** | 4 | 4 | → estável, começa e termina baixo |
+
+**Leitura:** o custo de manutenção da abordagem adotada (linha 5 ★) começa ligeiramente mais alto porque exige disciplina de camadas desde o dia 1, mas **cai** após os primeiros meses — quando o padrão é internalizado. A partir do mês 6, é consistentemente o mais baixo. A manutenção na monolítica é inversamente proporcional: começa fácil e se torna progressivamente inviável.
+
+> **Ponto de cruzamento:** por volta do mês 4–5, a abordagem adotada já custa menos que a monolítica em manutenção. Em implementação de novas features, esse cruzamento acontece por volta do mês 7–8.
 
 ---
 
@@ -92,7 +112,7 @@ xychart-beta
 | Monolítica | Acoplamento invisível cresce com cada feature; remoção de feature exige busca manual em toda a codebase |
 | Feature-first sem camadas | `FinancialHealthScorePolicy` é regra de negócio real — sem separação de domínio ela vaza para o widget sem contrato testável |
 | Clean Arch global | Adicionar ou remover uma feature toca três diretórios distintos; acoplamento entre features é invisível pela estrutura de pastas |
-| FSD | Custo de aprendizado alto sem retorno claro para Flutter mobile com 5 features e time pequeno |
+| FSD | Melhor steady-state do que Clean Arch global, mas começa com custo 7 (vs 4 da adotada). Para um time de 2 devs com 3 meses de prazo, a curva de aprendizado do FSD consumiria a janela inteira do projeto antes de qualquer retorno — FSD foi projetado para apps web de larga escala, e o mapeamento para Flutter mobile não é natural. Nos gráficos, a linha do FSD **começa mais cara** e só estabiliza no nível da adotada no mês 12+; a adotada chega lá no mês 3. |
 
 ---
 
