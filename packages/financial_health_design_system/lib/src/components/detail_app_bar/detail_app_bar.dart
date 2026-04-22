@@ -5,7 +5,24 @@ import 'package:financial_health_design_system/src/foundations/tokens/app_spacin
 import 'package:financial_health_design_system/src/theme/extensions/app_theme_ext.dart';
 import 'package:flutter/material.dart';
 
+/// App bar for detail / secondary screens.
+///
+/// Shows a back button on the left, the screen [title] in the center-left, and
+/// optional calendar + filter action buttons on the right. The back button
+/// calls [onBackPressed] if provided, or falls back to `Navigator.maybePop`.
+///
+/// Colors are resolved from [AppSemanticColors] via [BuildContext].
+///
+/// ## Usage
+/// ```dart
+/// DetailAppBar(
+///   title: 'Transações',
+///   onBackPressed: () => Navigator.pop(context),
+///   onFilterPressed: () => showFilterSheet(context),
+/// )
+/// ```
 class DetailAppBar extends StatelessWidget {
+  /// Creates a [DetailAppBar].
   const DetailAppBar({
     super.key,
     required this.title,
@@ -14,9 +31,18 @@ class DetailAppBar extends StatelessWidget {
     this.onFilterPressed,
   });
 
+  /// Title text shown in the app bar.
   final String title;
+
+  /// Callback for the back button. Defaults to `Navigator.maybePop` when null.
   final VoidCallback? onBackPressed;
+
+  /// Callback for the calendar icon button. The button is rendered disabled
+  /// (but still visible) when null.
   final VoidCallback? onCalendarPressed;
+
+  /// Callback for the filter icon button. The button is rendered disabled
+  /// (but still visible) when null.
   final VoidCallback? onFilterPressed;
 
   @override

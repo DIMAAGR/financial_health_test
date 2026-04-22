@@ -7,7 +7,11 @@ import 'package:flutter/material.dart';
 
 const int _maxCategories = 5;
 
+/// Immutable data class that represents a single spending or income category.
+///
+/// Pass a list of these to [CategoryBreakdownSection.categories].
 class CategoryItem {
+  /// Creates a [CategoryItem].
   const CategoryItem({
     required this.name,
     required this.amount,
@@ -15,20 +19,57 @@ class CategoryItem {
     required this.percentage,
   });
 
+  /// Human-readable category name (e.g., "Alimentação").
   final String name;
+
+  /// Pre-formatted monetary amount (e.g., "R$ 1.240,50").
   final String amount;
+
+  /// Asset path for the category icon. Use [AppIcons] constants or
+  /// [categoryIcon] from `category_helpers.dart` to resolve the correct path.
   final String icon;
+
+  /// Percentage of the total that this category represents (0–100).
   final double percentage;
 }
 
+/// Displays a breakdown of spending or income categories.
+///
+/// The first [CategoryItem] in [categories] is rendered as a large hero card.
+/// The remaining items (up to 4 more) are shown as smaller item cards below it.
+/// A maximum of 5 categories is displayed.
+///
+/// Colors are resolved from [CategoryBreakdownTheme] via [BuildContext].
+///
+/// ## Usage
+/// ```dart
+/// CategoryBreakdownSection(
+///   categories: [
+///     CategoryItem(
+///       name: 'Alimentação',
+///       amount: 'R$ 840,00',
+///       icon: AppIcons.bag,
+///       percentage: 34.0,
+///     ),
+///     // ...
+///   ],
+///   totalAmount: 2470.00,
+/// )
+/// ```
 class CategoryBreakdownSection extends StatelessWidget {
+  /// Creates a [CategoryBreakdownSection].
   const CategoryBreakdownSection({
     super.key,
     required this.categories,
     required this.totalAmount,
   });
 
+  /// Ordered list of categories to display. The first entry becomes the hero
+  /// card. At most 5 categories are rendered.
   final List<CategoryItem> categories;
+
+  /// The total amount (income or expense) that [categories] are broken down
+  /// from. Used to compute relative percentages if needed.
   final double totalAmount;
 
   @override

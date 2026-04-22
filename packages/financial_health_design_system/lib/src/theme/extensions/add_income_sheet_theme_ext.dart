@@ -1,7 +1,18 @@
 import 'package:flutter/material.dart';
 
+/// [ThemeExtension] that carries the color scheme for the add-income /
+/// add-expense bottom sheet.
+///
+/// Registered on [ThemeData] by [FinancialHealthDesignTheme] and accessed
+/// in widgets via [AppThemeExtension.addIncomeSheetTheme]:
+///
+/// ```dart
+/// final theme = context.addIncomeSheetTheme;
+/// Container(color: theme.background)
+/// ```
 @immutable
 class AddIncomeSheetTheme extends ThemeExtension<AddIncomeSheetTheme> {
+  /// Creates an [AddIncomeSheetTheme] with all color roles required.
   const AddIncomeSheetTheme({
     required this.background,
     required this.dragHandle,
@@ -27,31 +38,70 @@ class AddIncomeSheetTheme extends ThemeExtension<AddIncomeSheetTheme> {
     required this.sheetShadow,
   });
 
+  /// Background fill for the sheet container.
   final Color background;
+
+  /// Color of the drag-handle indicator at the top of the sheet.
   final Color dragHandle;
+
+  /// Color of the sheet's heading text.
   final Color title;
+
+  /// Background fill for the circular close button.
   final Color closeButtonBackground;
+
+  /// Tint for the X icon inside the close button.
   final Color closeIcon;
 
+  /// Color of the uppercase field labels (e.g., "VALOR", "DESCRIÇÃO").
   final Color fieldLabel;
+
+  /// Background fill for text input fields.
   final Color fieldBackground;
+
+  /// Color of the typed text inside input fields.
   final Color fieldText;
+
+  /// Placeholder/hint text color in input fields.
   final Color fieldPlaceholder;
+
+  /// Color of the currency symbol prefix ("R$") in the amount field.
   final Color currencySymbol;
 
+  /// Background fill for the currently selected category chip.
   final Color categorySelectedBackground;
+
+  /// Label color for the currently selected category chip.
   final Color categorySelectedText;
+
+  /// Icon tint for the currently selected category chip.
   final Color categorySelectedIcon;
+
+  /// Background fill for unselected category chips.
   final Color categoryUnselectedBackground;
+
+  /// Label color for unselected category chips.
   final Color categoryUnselectedText;
+
+  /// Icon tint for unselected category chips.
   final Color categoryUnselectedIcon;
+
+  /// Background of the "+" add-category chip.
   final Color categoryAddBackground;
+
+  /// Icon tint for the "+" add-category chip.
   final Color categoryAddIcon;
 
+  /// Start color of the primary button gradient (left edge).
   final Color primaryButtonStart;
+
+  /// End color of the primary button gradient (right edge).
   final Color primaryButtonEnd;
+
+  /// Text color on the primary action button.
   final Color primaryButtonText;
 
+  /// Drop-shadow color for the sheet container.
   final Color sheetShadow;
 
   @override

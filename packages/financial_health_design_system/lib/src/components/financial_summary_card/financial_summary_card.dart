@@ -77,8 +77,7 @@ class FinancialSummaryCard extends StatelessWidget {
         (Theme.of(context).brightness == Brightness.dark
             ? FinancialHealthDesignTheme.financialSummaryDark
             : FinancialHealthDesignTheme.financialSummaryLight);
-    final palette =
-        themePalette ?? (_isPositive ? theme.positive : theme.negative);
+    final palette = themePalette ?? (_isPositive ? theme.positive : theme.negative);
     final borderRadius = BorderRadius.circular(FhRadius.lg);
 
     return Semantics(
@@ -90,16 +89,9 @@ class FinancialSummaryCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: palette.background,
           borderRadius: borderRadius,
-          border: Border.all(
-            color: palette.border,
-            width: palette.border.a == 0 ? 0 : 1,
-          ),
+          border: Border.all(color: palette.border, width: palette.border.a == 0 ? 0 : 1),
           boxShadow: [
-            BoxShadow(
-              color: palette.shadow,
-              blurRadius: FhSpacing.xs,
-              offset: const Offset(0, 1),
-            ),
+            BoxShadow(color: palette.shadow, blurRadius: FhSpacing.xs, offset: const Offset(0, 1)),
           ],
         ),
         child: Material(
@@ -119,10 +111,7 @@ class FinancialSummaryCard extends StatelessWidget {
                     children: [
                       _IconBadge(palette: palette, icon: icon),
                       const Spacer(),
-                      _VariationPill(
-                        palette: palette,
-                        variationPercent: variationPercent,
-                      ),
+                      _VariationPill(palette: palette, variationPercent: variationPercent),
                     ],
                   ),
                   const SizedBox(height: FhSpacing.xxl),
@@ -130,9 +119,7 @@ class FinancialSummaryCard extends StatelessWidget {
                     title,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: FhTextStyles.financialSummaryTitle.copyWith(
-                      color: palette.foreground,
-                    ),
+                    style: FhTextStyles.financialSummaryTitle.copyWith(color: palette.foreground),
                   ),
                   const SizedBox(height: FhSpacing.xs),
                   FittedBox(
@@ -141,9 +128,7 @@ class FinancialSummaryCard extends StatelessWidget {
                     child: Text(
                       value,
                       maxLines: 1,
-                      style: FhTextStyles.financialSummaryValue.copyWith(
-                        color: palette.foreground,
-                      ),
+                      style: FhTextStyles.financialSummaryValue.copyWith(color: palette.foreground),
                     ),
                   ),
                 ],
@@ -165,18 +150,12 @@ class _IconBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DecoratedBox(
-      decoration: BoxDecoration(
-        color: palette.accentBackground,
-        shape: BoxShape.circle,
-      ),
+      decoration: BoxDecoration(color: palette.accentBackground, shape: BoxShape.circle),
       child: SizedBox.square(
         dimension: FhSpacing.xxxl,
         child: Center(
           child: IconTheme.merge(
-            data: IconThemeData(
-              color: palette.accentForeground,
-              size: FhSpacing.lg,
-            ),
+            data: IconThemeData(color: palette.accentForeground, size: FhSpacing.lg),
             child: icon,
           ),
         ),
@@ -199,15 +178,10 @@ class _VariationPill extends StatelessWidget {
         borderRadius: BorderRadius.circular(FhRadius.pill),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: FhSpacing.md,
-          vertical: FhSpacing.xs,
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: FhSpacing.md, vertical: FhSpacing.xs),
         child: Text(
           _formatVariation(variationPercent),
-          style: FhTextStyles.financialSummaryVariation.copyWith(
-            color: palette.accentForeground,
-          ),
+          style: FhTextStyles.financialSummaryVariation.copyWith(color: palette.accentForeground),
         ),
       ),
     );

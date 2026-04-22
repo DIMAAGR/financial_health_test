@@ -1,14 +1,29 @@
 import 'package:flutter/material.dart';
 
+/// [ThemeExtension] that carries the color scheme for [ContextualFab].
+///
+/// Registered on [ThemeData] by [FinancialHealthDesignTheme] and accessed
+/// in widgets via [AppThemeExtension.contextualFabTheme]:
+///
+/// ```dart
+/// final theme = context.contextualFabTheme;
+/// Container(color: theme.background)
+/// ```
 class ContextualFabTheme extends ThemeExtension<ContextualFabTheme> {
+  /// Creates a [ContextualFabTheme] with all color roles specified.
   const ContextualFabTheme({
     required this.background,
     required this.foreground,
     required this.shadow,
   });
 
+  /// Background fill for the pill-shaped FAB container.
   final Color background;
+
+  /// Foreground color for the icon and label text inside the FAB.
   final Color foreground;
+
+  /// Drop-shadow color for the FAB.
   final Color shadow;
 
   @override
