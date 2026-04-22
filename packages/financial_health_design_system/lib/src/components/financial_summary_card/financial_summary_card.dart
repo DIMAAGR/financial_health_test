@@ -1,7 +1,8 @@
-import 'package:financial_health_design_system/src/components/financial_summary_card/financial_summary_card_theme.dart';
-import 'package:financial_health_design_system/src/components/financial_summary_card/financial_summary_card_tokens.dart';
 import 'package:financial_health_design_system/src/foundations/theme/financial_health_design_theme.dart';
+import 'package:financial_health_design_system/src/foundations/tokens/fh_radius.dart';
+import 'package:financial_health_design_system/src/foundations/tokens/fh_spacing.dart';
 import 'package:financial_health_design_system/src/foundations/tokens/fh_text_styles.dart';
+import 'package:financial_health_design_system/src/theme/extensions/financial_summary_card_theme_ext.dart';
 import 'package:flutter/material.dart';
 
 /// Reusable financial summary card for design-system surfaces.
@@ -78,9 +79,7 @@ class FinancialSummaryCard extends StatelessWidget {
             : FinancialHealthDesignTheme.financialSummaryLight);
     final palette =
         themePalette ?? (_isPositive ? theme.positive : theme.negative);
-    final borderRadius = BorderRadius.circular(
-      FinancialSummaryCardTokens.radius,
-    );
+    final borderRadius = BorderRadius.circular(FhRadius.lg);
 
     return Semantics(
       button: onTap != null,
@@ -93,15 +92,13 @@ class FinancialSummaryCard extends StatelessWidget {
           borderRadius: borderRadius,
           border: Border.all(
             color: palette.border,
-            width: palette.border.a == 0
-                ? 0
-                : FinancialSummaryCardTokens.borderWidth,
+            width: palette.border.a == 0 ? 0 : 1,
           ),
           boxShadow: [
             BoxShadow(
               color: palette.shadow,
-              blurRadius: FinancialSummaryCardTokens.shadowBlur,
-              offset: FinancialSummaryCardTokens.shadowOffset,
+              blurRadius: FhSpacing.xs,
+              offset: const Offset(0, 1),
             ),
           ],
         ),
@@ -112,7 +109,7 @@ class FinancialSummaryCard extends StatelessWidget {
             borderRadius: borderRadius,
             onTap: onTap,
             child: Padding(
-              padding: FinancialSummaryCardTokens.contentPadding,
+              padding: const EdgeInsets.all(FhSpacing.xl),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -128,9 +125,7 @@ class FinancialSummaryCard extends StatelessWidget {
                       ),
                     ],
                   ),
-                  const SizedBox(
-                    height: FinancialSummaryCardTokens.headerContentGap,
-                  ),
+                  const SizedBox(height: FhSpacing.xxl),
                   Text(
                     title,
                     maxLines: 1,
@@ -139,9 +134,7 @@ class FinancialSummaryCard extends StatelessWidget {
                       color: palette.foreground,
                     ),
                   ),
-                  const SizedBox(
-                    height: FinancialSummaryCardTokens.titleValueGap,
-                  ),
+                  const SizedBox(height: FhSpacing.xs),
                   FittedBox(
                     fit: BoxFit.scaleDown,
                     alignment: Alignment.centerLeft,
@@ -177,12 +170,12 @@ class _IconBadge extends StatelessWidget {
         shape: BoxShape.circle,
       ),
       child: SizedBox.square(
-        dimension: FinancialSummaryCardTokens.iconContainerSize,
+        dimension: FhSpacing.xxxl,
         child: Center(
           child: IconTheme.merge(
             data: IconThemeData(
               color: palette.accentForeground,
-              size: FinancialSummaryCardTokens.iconSize,
+              size: FhSpacing.lg,
             ),
             child: icon,
           ),
@@ -203,12 +196,13 @@ class _VariationPill extends StatelessWidget {
     return DecoratedBox(
       decoration: BoxDecoration(
         color: palette.accentBackground,
-        borderRadius: BorderRadius.circular(
-          FinancialSummaryCardTokens.pillRadius,
-        ),
+        borderRadius: BorderRadius.circular(FhRadius.pill),
       ),
       child: Padding(
-        padding: FinancialSummaryCardTokens.variationPadding,
+        padding: const EdgeInsets.symmetric(
+          horizontal: FhSpacing.md,
+          vertical: FhSpacing.xs,
+        ),
         child: Text(
           _formatVariation(variationPercent),
           style: FhTextStyles.financialSummaryVariation.copyWith(

@@ -66,11 +66,7 @@ lib/
       theme/
       tokens/                           # FhSpacing, FhRadius, FhTextStyles, App*
     components/
-      financial_summary_card/           # widget + tokens + theme — co-locados (ver abaixo)
-        financial_summary_card.dart
-        financial_summary_card_tokens.dart
-        financial_summary_card_theme.dart
-        README.md
+      financial_summary_card/           # widget + README com contrato e decisões
       month_summary_card/
       category_breakdown/
       transaction_list/
@@ -82,20 +78,10 @@ lib/
     helpers/
     input_formatters/                   # BRL input formatter
     theme/
-      extensions/                       # ThemeExtension dos demais componentes
+      extensions/                       # ThemeExtension de todos os componentes
     assets/
       icons/                            # SVGs
 ```
-
-### Por que `financial_summary_card/` tem 3 arquivos — e os outros componentes não
-
-O `FinancialSummaryCard` tem dois arquivos extras além do widget:
-
-- **`financial_summary_card_tokens.dart`** — constantes de layout específicas do componente: `iconContainerSize`, `headerContentGap`, `contentPadding`, etc. Esses valores **não são tokens globais do design system** (que ficam em `foundations/tokens/` como escalas de espaçamento e radius). São decisões internas do componente — se o card mudar de design, só este arquivo muda.
-
-- **`financial_summary_card_theme.dart`** — a `ThemeExtension` com a paleta light/dark do card. Nos outros componentes do package, as `ThemeExtension`s ficam em `theme/extensions/`. Aqui está co-localizada porque o `FinancialSummaryCard` foi construído como o componente exemplar do Desafio 3: a intenção é que tudo necessário para entender, copiar ou mover o componente esteja em uma pasta.
-
-**A inconsistência com os outros componentes é real.** Em um design system de produção, você escolheria um padrão e aplicaria a todos — provavelmente: `ThemeExtension` em `theme/extensions/` (para manter a edição de tema em um lugar só) e tokens de componente co-locados (porque são internos, não globais). O que está aqui é uma decisão de documentação para o avaliador, não o padrão que seguiria em produção em larga escala.
 
 ---
 

@@ -111,18 +111,6 @@ A extração também formalizou a fronteira entre "o que é do produto" (regras,
 - **`themePalette`** permite família de cores customizada sem acoplar o widget a nenhuma feature específica.
 - Estrutura `Foundations + Components` em vez de Atomic Design — decisão pragmática para o escopo de um componente financeiro reutilizável.
 
-### Onde estão os arquivos
-
-O componente tem 3 arquivos co-locados em `packages/financial_health_design_system/lib/src/components/financial_summary_card/`:
-
-| Arquivo | Conteúdo |
-|---|---|
-| `financial_summary_card.dart` | Widget público com contrato documentado em `///` |
-| `financial_summary_card_tokens.dart` | Constantes de layout internas (padding, tamanhos, bordas) |
-| `financial_summary_card_theme.dart` | `ThemeExtension` com paleta light/dark |
-
-Os outros componentes do package têm suas `ThemeExtension`s em `theme/extensions/`. O `FinancialSummaryCard` tem tudo co-localizado intencionalmente — a razão e a inconsistência estão documentadas em [packages/financial_health_design_system/README.md](./packages/financial_health_design_system/README.md#por-que-financial_summary_card-tem-3-arquivos--e-os-outros-componentes-não).
-
 Para detalhes, decisões e testes: [packages/financial_health_design_system/README.md](./packages/financial_health_design_system/README.md)
 
 ---

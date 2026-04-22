@@ -1,4 +1,4 @@
-import 'package:financial_health_design_system/src/components/financial_summary_card/financial_summary_card_theme.dart';
+import 'package:financial_health_design_system/src/theme/extensions/financial_summary_card_theme_ext.dart';
 import 'package:flutter/material.dart';
 
 abstract final class FinancialHealthDesignTheme {
