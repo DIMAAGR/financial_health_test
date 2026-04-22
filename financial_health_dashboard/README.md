@@ -21,154 +21,31 @@ A tela principal exibe um **score de saúde financeira** calculado com base no q
 
 ---
 
-## Estrutura de pastas
+## Arquitetura
 
-### Por que essa estrutura foi escolhida
+Feature-first com separação interna `data / domain / presentation`, DDD pragmático no domínio, Cubit para estado, `get_it` para DI e `go_router` para navegação.
 
-A decisão de arquitetura não partiu de preferência pessoal — ela foi simulada antes da implementação com a IA, usando o contexto real do projeto como entrada.
-
-**Prompt de exploração arquitetural:**
-
-```
-Imagine que estamos iniciando o desenvolvimento de um novo aplicativo.
-Nesse MVP temos 5 telas que se conectam a uma API REST.
-A linguagem e framework adotados são Dart e Flutter.
-Precisamos decidir a arquitetura do projeto.
-
-Contexto:
-- Quantos desenvolvedores? 2 front-end
-- Quanto tempo? 3 meses
-- Quantas funcionalidades? 5
-- Tipo de projeto? Overview (Dashboard) de saúde financeira
-- Conexão com API externa? Sim
-- Persistência offline + Offline First? Sim
-- O MVP é POC que será refatorado depois? Não
-- Reutilização de funcionalidades em outro app no futuro? Não
-```
-
-A partir das respostas, foram analisadas comparativamente:
-
-- **DDD completo vs DDD pragmático** — DDD completo traz isolamento forte mas exige camadas extras (application, value objects, aggregates) sem retorno claro para 5 features em 3 meses com 2 devs. DDD pragmático mantém entidades e políticas de negócio no domínio sem a cerimônia desnecessária.
-- **Clean Architecture vs FSD vs monolítica** — Clean Architecture com separação `data/domain/presentation` por feature garante testabilidade sem o custo de micro-frontends ou feature-sliced design para esse escopo.
-- **Feature-first vs camadas globais** — Feature-first (agrupar por contexto funcional) foi escolhido sobre camadas globais (agrupar por tipo: todos os repositories juntos, todos os cubits juntos). Razão: menor acoplamento entre contextos, remoção de feature sem impacto transversal, onboarding mais localizado.
-- **MVVM vs MVP vs MVC** — MVVM com Cubit foi escolhido sobre MVP (mais boilerplate de interface) e MVC (acoplamento entre controller e view difícil de testar). Cubit mantém estados mutuamente exclusivos (`loading`, `success`, `error`) sem a verbosidade de BLoC puro.
-
-**Resultado:** feature-first com separação interna `data / domain / presentation`, Cubit para estado, `get_it` para DI e `go_router` para navegação.
-
-### Estrutura adotada
-
-```
-lib/
-└── src/
-    ├── core/                         # infraestrutura compartilhada por todo o app
-    │   ├── app/                      # MaterialApp, configuração de tema
-    │   ├── dependencies/             # setup do get_it (injeção de dependências)
-    │   ├── failures/                 # AppFailure sealed class — erros tipados
-    │   ├── router/                   # configuração do go_router
-    │   └── services/
-    │       ├── clock/                # abstração de tempo (evita DateTime.now() espalhado)
-    │       ├── http/                 # HttpService + FakeHttpService
-    │       ├── network/              # verificação de conectividade
-    │       └── storage/              # key-value storage (persistência da sessão)
-    │
-    ├── shared/                       # código de negócio compartilhado entre features
-    │   ├── data/                     # modelos e parsers neutros (ex: TransactionModel)
-    │   ├── domain/                   # entidades e enums sem dono de feature
-    │   │   └── enum/                 # IncomeCategory, ExpenseCategory
-    │   └── presentation/             # (vazio nesta versão — componentes migraram para o design system)
-    │
-    └── features/
-        ├── dashboard/                # tela principal
-        │   ├── dashboard_init.dart   # registro de DI desta feature
-        │   ├── data/
-        │   │   ├── datasources/      # chamadas HTTP
-        │   │   ├── mappers/          # JSON → modelo
-        │   │   ├── models/           # DTOs de rede
-        │   │   └── repositories/     # implementações concretas
-        │   ├── domain/
-        │   │   ├── entities/         # DashboardOverviewData, FinancialHealthScoreData,
-        │   │   │                     # FlowAnalysisData, MonthlyGoalData
-        │   │   ├── enum/             # FinancialHealthStatus, MonthlyGoalStatus
-        │   │   ├── policies/         # FinancialHealthScorePolicy, MonthlyGoalStatusPolicy
-        │   │   ├── repositories/     # contratos (interfaces)
-        │   │   └── use_cases/        # casos de uso
-        │   └── presentation/
-        │       ├── mappers/          # entidade → texto de UI (sem strings no domínio)
-        │       ├── models/           # AddTransactionSheetResult e inputs de UI
-        │       ├── view/             # DashboardView, FinancialSummaryShowcaseView
-        │       ├── view_model/       # DashboardCubit, AddTransactionCubit
-        │       └── widgets/          # widgets específicos desta feature
-        │
-        ├── expenses/                 # tela de detalhe de despesas (estrutura espelhada)
-        ├── incomes/                  # tela de detalhe de receitas (estrutura espelhada)
-        └── transactions/             # lista completa de transações (estrutura espelhada)
-```
-
-**Cada feature tem um `*_init.dart`** que centraliza o registro de DI. Isso mantém o `dependencies/` do core limpo e permite que uma feature seja removida sem deixar referências soltas.
-
-**`shared/` não é um depósito** — só entra o que é genuinamente compartilhado e semanticamente neutro. Código específico de uma feature que "reaproveita" outra feature é sinal de acoplamento, não de reuso.
-
----
-
-## Arquitetura e decisões técnicas
-
-### DDD pragmático
-
-DDD foi aplicado sem cerimônia — entidades com regras reais, sem value objects e aggregates artificiais para escopo pequeno.
-
-**O que ficou no domínio:**
-- `FinancialHealthScorePolicy` — calcula score com base em comprometimento de renda e variação de liquidez.
-- `MonthlyGoalStatusPolicy` — classifica status da meta com base em `% atingido` e ritmo do mês.
-- Entidades (`FinancialHealthScoreData`, `MonthlyGoalData`, `FlowAnalysisData`) encapsulam dados do negócio sem depender de UI.
-
-**O que ficou fora do domínio:**
-- Textos de exibição (`"Você está gastando X% da sua renda"`, labels de status) ficam em mappers de apresentação (`FinancialHealthScoreTextMapper`, `MonthlyGoalTextMapper`). Isso mantém o domínio agnóstico de i18n e de qualquer detalhe de copy.
-- Cores e estados visuais são resolvidos na presentation a partir dos enums do domínio.
-
-### Cubit e estados explícitos
-
-A UI modela o estado com classes seladas mutuamente exclusivas:
-
-```dart
-sealed class DashboardState {
-  const DashboardState();
-}
-
-class DashboardLoading extends DashboardState { ... }
-class DashboardSuccess extends DashboardState { ... }
-class DashboardError extends DashboardState { ... }
-```
-
-Isso elimina condições impossíveis como `isLoading: true` + `data: non-null` simultaneamente. O widget reconstrói com base no tipo — sem flags paralelas, sem `if (isLoading && !hasError && data != null)`.
-
-### `get_it` e cubits parametrizados
-
-O `AddTransactionCubit` é criado a cada abertura do bottom sheet via `registerFactoryParam`. Isso garante que o estado do formulário começa limpo toda vez e não vaza entre sessões do modal.
-
-```dart
-getIt.registerFactoryParam<AddTransactionCubit, SheetType, void>(
-  (type, _) => AddTransactionCubit(type: type, ...),
-);
-```
-
-### Separação entre resultado de UI e input de domínio
-
-O bottom sheet retorna um `AddTransactionSheetResult` (objeto de apresentação). A conversão para o input do caso de uso fica em `AddTransactionInputMapper`. A UI não conhece o contrato do domínio — só coleta dados e devolve o resultado.
+→ **[Arquitetura completa, alternativas e trade-offs](./docs/architecture/architecture.md)**
+→ **[Gerenciamento de estado — por que Cubit](./docs/architecture/state_management.md)**
+→ **[Eventos efêmeros e desacoplamento de bottom sheets](./docs/architecture/ephemeral_events.md)**
+→ **[Storage — FakeHttpService, KeyValueWrapper e alternativas reais](./docs/architecture/storage.md)**
+→ **[Design system — ThemeExtensions, light/dark e extração de package](./docs/design/design_system.md)**
+→ **[IA no processo — onde ajudou e onde errou](./docs/architecture/ia_in_process.md)**
 
 ---
 
 ## Stack
 
-| Dependência | Por que foi escolhida |
-|-------------|----------------------|
-| `flutter_bloc` (Cubit) | Estados mutuamente exclusivos sem ambiguidade de flags |
-| `freezed` | Imutabilidade real, `copyWith` e igualdade estrutural nos states |
-| `get_it` | DI com suporte a `registerFactoryParam` para cubits parametrizados |
-| `go_router` | Roteamento declarativo, deep link, guards de navegação |
-| `dartz` | `Either` para tratamento funcional de erros no domínio |
-| `intl` | Formatação de moeda e datas |
-| `connectivity_plus` | Verificação de conectividade para estado de erro de rede |
-| `financial_health_design_system` | Package local com componentes visuais e tokens |
+| Dependência | Papel | Trade-off principal |
+|---|---|---|
+| `flutter_bloc` (Cubit) | Estado explícito e mutuamente exclusivo | Mais arquivos que `setState`; compensa em testabilidade e legibilidade |
+| `freezed` | Imutabilidade e `copyWith` nos states | Geração de código (`build_runner`); elimina erros de cópia parcial de estado |
+| `get_it` | DI com `registerFactoryParam` para cubits parametrizados | Global mutable; trocado por DI com escopo se o app crescer |
+| `go_router` | Roteamento declarativo com guards | Mais verboso que `Navigator.push` direto; necessário para deep link e guards |
+| `dartz` | `Either<AppFailure, T>` para erros tipados no domínio | Curva de aprendizado; elimina exceções não tratadas no fluxo de negócio |
+| `connectivity_plus` | Verificação de rede antes de requests | Depende de permissão de rede no Android/iOS; falso positivo em VPN |
+| `intl` | Formatação de moeda e datas | Adiciona ~300KB ao bundle; sem alternativa prática para BRL |
+| `financial_health_design_system` | Componentes visuais e tokens desacoplados de feature | Overhead de path dependency; impede consumo implícito de estado de feature no widget |
 
 ---
 
@@ -322,14 +199,18 @@ flutter analyze
 
 | Arquivo | Conteúdo |
 |---------|----------|
-| [docs/architecture/architecture.md](./docs/architecture/architecture.md) | Por que essa arquitetura, alternativas descartadas, SOLID aplicado, curva de complexidade |
-| [docs/architecture/state_management.md](./docs/architecture/state_management.md) | Por que Cubit e não ValueNotifier, MobX, BLoC ou Riverpod — com trade-offs de cada um |
-| [docs/architecture/ephemeral_events.md](./docs/architecture/ephemeral_events.md) | Eventos efêmeros com `effectVersion`, desacoplamento entre dashboard e bottom sheet |
+| [docs/architecture/architecture.md](./docs/architecture/architecture.md) | Por que essa arquitetura, alternativas descartadas, SOLID, o que ficou fora de escopo |
+| [docs/architecture/state_management.md](./docs/architecture/state_management.md) | Por que Cubit — trade-offs vs ValueNotifier, MobX, BLoC, Riverpod |
+| [docs/architecture/ephemeral_events.md](./docs/architecture/ephemeral_events.md) | Eventos efêmeros com `effectVersion`, desacoplamento de bottom sheet |
+| [docs/architecture/storage.md](./docs/architecture/storage.md) | FakeHttpService, KeyValueWrapper, StorageSchema e alternativas reais de banco |
+| [docs/architecture/ia_in_process.md](./docs/architecture/ia_in_process.md) | IA no processo — onde ajudou, onde errou (com código real) |
+| [docs/design/design_process.md](./docs/design/design_process.md) | Google Stitch, Figma e figma.to.code no fluxo de design |
+| [docs/design/design_system.md](./docs/design/design_system.md) | ThemeExtensions, light/dark, migração shared → package |
 
 ### Documentação geral do repositório
 
 | Arquivo | Conteúdo |
 |---------|----------|
 | [../docs/requirements/requirements.md](../docs/requirements/requirements.md) | Requisitos funcionais e não funcionais |
-| [../docs/architecture/architecture.md](../docs/architecture/architecture.md) | Visão geral arquitetural do repositório |
 | [../docs/ia/README.md](../docs/ia/README.md) | IA no processo — regras, log e learnings |
+
