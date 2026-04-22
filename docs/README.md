@@ -1,15 +1,12 @@
 # Documentação
 
-Índice da documentação do projeto.
+Índice da documentação do projeto. Esta pasta cobre o Desafio 1 (financial_health_dashboard) em profundidade — cada subpasta tem escopo único e sem duplicação deliberada.
 
-## Arquivos principais
+## Arquivos
 
-- Requisitos funcionais e não funcionais: [requirements/requirements.md](./requirements/requirements.md)
-- Arquitetura e decisões técnicas: [architecture/architecture.md](./architecture/architecture.md)
-- Processo de IA (regras, log e learnings): [ia/README.md](./ia/README.md)
-
-## Critérios de organização
-
-- Cada arquivo tem uma responsabilidade única.
-- Evitar repetir blocos inteiros de texto entre documentos.
-- Quando um assunto depender de outro, usar link em vez de duplicar conteúdo.
+| Arquivo | Conteúdo |
+|---|---|
+| [requirements/requirements.md](./requirements/requirements.md) | Requisitos funcionais e não funcionais do Desafio 1 |
+| [architecture/architecture.md](./architecture/architecture.md) | Decisões arquiteturais, trade-offs e organização de camadas |
+| [ia/prompt_log.md](./ia/prompt_log.md) | Log de interações com IA que influenciaram decisões do projeto |
+| [ia/learnings.md](./ia/learnings.md) | Memória de erros identificados, causas raiz e correções aplicadas |

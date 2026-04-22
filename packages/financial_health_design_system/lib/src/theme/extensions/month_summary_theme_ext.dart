@@ -1,20 +1,58 @@
 import 'package:flutter/material.dart';
 
+/// [ThemeExtension] that carries the color scheme for [MonthSummaryCard].
+///
+/// Registered on [ThemeData] by [FinancialHealthDesignTheme] and accessed
+/// in widgets via [AppThemeExtension.monthSummaryTheme]:
+///
+/// ```dart
+/// final theme = context.monthSummaryTheme;
+/// Container(
+///   decoration: BoxDecoration(
+///     color: theme.cardBackground,
+///     boxShadow: [BoxShadow(color: theme.glowColor)],
+///   ),
+/// )
+/// ```
 @immutable
 class MonthSummaryTheme extends ThemeExtension<MonthSummaryTheme> {
+  /// Background fill for the summary card container.
   final Color cardBackground;
+
+  /// Border / outline color for the summary card container.
   final Color cardBorder;
+
+  /// Drop-shadow color for the summary card.
   final Color cardShadow;
+
+  /// Ambient glow color rendered behind the card (a soft colored halo).
   final Color glowColor;
+
+  /// Color of the metric label (e.g., "SALDO", "RECEITA", "DESPESA").
   final Color label;
+
+  /// Color of the primary monetary amount displayed on the card.
   final Color amount;
+
+  /// Color of the month-year text (e.g., "ABR 2026").
   final Color monthYear;
+
+  /// Background fill for the trend-percentage badge.
   final Color badgeBackground;
+
+  /// Border color for the trend-percentage badge.
   final Color badgeBorder;
+
+  /// Text color inside the trend-percentage badge.
   final Color badgeLabel;
+
+  /// Icon / text tint for a positive trend arrow (value went up).
   final Color trendPositive;
+
+  /// Icon / text tint for a negative trend arrow (value went down).
   final Color trendNegative;
 
+  /// Creates a [MonthSummaryTheme] with all color roles specified.
   const MonthSummaryTheme({
     required this.cardBackground,
     required this.cardBorder,

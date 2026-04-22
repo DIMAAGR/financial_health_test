@@ -1,50 +1,69 @@
-import 'package:financial_health_design_system/src/components/financial_summary_card/financial_summary_card_theme.dart';
+import 'package:financial_health_design_system/src/theme/extensions/financial_summary_card_theme_ext.dart';
 import 'package:flutter/material.dart';
 
+/// Central registry of all pre-defined [ThemeExtension] instances for the
+/// design system.
+///
+/// Provides ready-to-use `const` extension instances for both light and dark
+/// modes. Wire them into your [ThemeData] via [lightExtensions] and
+/// [darkExtensions]:
+///
+/// ```dart
+/// ThemeData.light().copyWith(
+///   extensions: FinancialHealthDesignTheme.lightExtensions,
+/// )
+/// ```
+///
+/// Access colors at runtime via the typed getters on [AppThemeExtension]
+/// (e.g., `context.appColors`, `context.financialSummaryCardTheme`).
 abstract final class FinancialHealthDesignTheme {
-  static const FinancialSummaryCardTheme financialSummaryLight =
-      FinancialSummaryCardTheme(
-        positive: FinancialSummaryCardPalette(
-          background: Color(0xFFB1EFD8),
-          foreground: Color(0xFF1D5C4A),
-          accentBackground: Color(0xFF2D6957),
-          accentForeground: Color(0xFFE4FFF3),
-          border: Color(0x00000000),
-          shadow: Color(0x0C000000),
-        ),
-        negative: FinancialSummaryCardPalette(
-          background: Color(0xFFFA746F),
-          foreground: Color(0xFF6E0A12),
-          accentBackground: Color(0xFFA83836),
-          accentForeground: Color(0xFFFFF7F6),
-          border: Color(0x00000000),
-          shadow: Color(0x0C000000),
-        ),
-      );
+  /// Light-mode color scheme for [FinancialSummaryCard].
+  static const FinancialSummaryCardTheme financialSummaryLight = FinancialSummaryCardTheme(
+    positive: FinancialSummaryCardPalette(
+      background: Color(0xFFB1EFD8),
+      foreground: Color(0xFF1D5C4A),
+      accentBackground: Color(0xFF2D6957),
+      accentForeground: Color(0xFFE4FFF3),
+      border: Color(0x00000000),
+      shadow: Color(0x0C000000),
+    ),
+    negative: FinancialSummaryCardPalette(
+      background: Color(0xFFFA746F),
+      foreground: Color(0xFF6E0A12),
+      accentBackground: Color(0xFFA83836),
+      accentForeground: Color(0xFFFFF7F6),
+      border: Color(0x00000000),
+      shadow: Color(0x0C000000),
+    ),
+  );
 
-  static const FinancialSummaryCardTheme financialSummaryDark =
-      FinancialSummaryCardTheme(
-        positive: FinancialSummaryCardPalette(
-          background: Color(0xFF1D5C4A),
-          foreground: Color(0xFFB1EFD8),
-          accentBackground: Color(0xFFB1EFD8),
-          accentForeground: Color(0xFF00382B),
-          border: Color(0x33B1EFD8),
-          shadow: Color(0x00000000),
-        ),
-        negative: FinancialSummaryCardPalette(
-          background: Color(0xFF450A0A),
-          foreground: Color(0xFFFFE2E2),
-          accentBackground: Color(0xFFFFB4AB),
-          accentForeground: Color(0xFF410002),
-          border: Color(0x7F7F1D1D),
-          shadow: Color(0x00000000),
-        ),
-      );
+  /// Dark-mode color scheme for [FinancialSummaryCard].
+  static const FinancialSummaryCardTheme financialSummaryDark = FinancialSummaryCardTheme(
+    positive: FinancialSummaryCardPalette(
+      background: Color(0xFF1D5C4A),
+      foreground: Color(0xFFB1EFD8),
+      accentBackground: Color(0xFFB1EFD8),
+      accentForeground: Color(0xFF00382B),
+      border: Color(0x33B1EFD8),
+      shadow: Color(0x00000000),
+    ),
+    negative: FinancialSummaryCardPalette(
+      background: Color(0xFF450A0A),
+      foreground: Color(0xFFFFE2E2),
+      accentBackground: Color(0xFFFFB4AB),
+      accentForeground: Color(0xFF410002),
+      border: Color(0x7F7F1D1D),
+      shadow: Color(0x00000000),
+    ),
+  );
 
-  static const List<ThemeExtension<dynamic>> lightExtensions =
-      <ThemeExtension<dynamic>>[financialSummaryLight];
+  /// All light-mode [ThemeExtension] instances to pass to [ThemeData.extensions].
+  static const List<ThemeExtension<dynamic>> lightExtensions = <ThemeExtension<dynamic>>[
+    financialSummaryLight,
+  ];
 
-  static const List<ThemeExtension<dynamic>> darkExtensions =
-      <ThemeExtension<dynamic>>[financialSummaryDark];
+  /// All dark-mode [ThemeExtension] instances to pass to [ThemeData.extensions].
+  static const List<ThemeExtension<dynamic>> darkExtensions = <ThemeExtension<dynamic>>[
+    financialSummaryDark,
+  ];
 }

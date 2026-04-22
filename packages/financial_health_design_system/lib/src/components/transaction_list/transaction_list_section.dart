@@ -5,7 +5,9 @@ import 'package:financial_health_design_system/src/theme/extensions/app_theme_ex
 import 'package:financial_health_design_system/src/theme/extensions/transaction_list_theme_ext.dart';
 import 'package:flutter/material.dart';
 
+/// Immutable data class representing a single transaction row.
 class TransactionListItem {
+  /// Creates a [TransactionListItem].
   const TransactionListItem({
     required this.name,
     required this.subtitle,
@@ -15,27 +17,67 @@ class TransactionListItem {
     this.isExpense,
   });
 
+  /// Primary label for the transaction (e.g., "iFood", "Salário").
   final String name;
+
+  /// Secondary label, typically the category name (e.g., "Alimentação").
   final String subtitle;
+
+  /// Pre-formatted monetary amount (e.g., `"R$ 84,50"`).
   final String amount;
+
+  /// Optional payment method label (e.g., `"Crédito"`, `"Débito"`).
   final String? paymentMethod;
+
+  /// Asset path for the category icon. Use [AppIcons] or [categoryIcon] to
+  /// resolve the correct path from a category code.
   final String icon;
+
+  /// Whether this transaction is an expense.
+  ///
+  /// - `true` — renders the amount in [TransactionListTheme.itemAmountExpense].
+  /// - `false` — renders in [TransactionListTheme.itemAmountIncome].
+  /// - `null` — renders in [TransactionListTheme.itemAmount] (neutral).
   final bool? isExpense;
 }
 
+/// Groups a set of [TransactionListItem]s under a single date label.
 class TransactionGroup {
-  const TransactionGroup({
-    required this.dateLabel,
-    required this.items,
-    this.isToday = false,
-  });
+  /// Creates a [TransactionGroup].
+  const TransactionGroup({required this.dateLabel, required this.items, this.isToday = false});
 
+  /// The formatted date label shown above the group
+  /// (e.g., `"HOJE, 22 ABR"` or `"19 ABR"`). Use
+  /// [TransactionGroupLabelExtension.toTransactionGroupLabel] to build this
+  /// string from a [DateTime].
   final String dateLabel;
+
+  /// Transactions belonging to this date group.
   final List<TransactionListItem> items;
+
+  /// When `true`, the date label pill is styled using
+  /// [TransactionListTheme.dateBorderToday] to visually highlight today.
   final bool isToday;
 }
 
+/// Displays a full section of transactions grouped by date.
+///
+/// The section has a heading with [title] and a [totalItems] count badge,
+/// followed by one or more [TransactionGroup]s each with their date pill and
+/// transaction rows.
+///
+/// Colors are resolved from [TransactionListTheme] via [BuildContext].
+///
+/// ## Usage
+/// ```dart
+/// TransactionListSection(
+///   title: 'Transações',
+///   totalItems: groups.fold(0, (acc, g) => acc + g.items.length),
+///   groups: groups,
+/// )
+/// ```
 class TransactionListSection extends StatelessWidget {
+  /// Creates a [TransactionListSection].
   const TransactionListSection({
     super.key,
     required this.title,
@@ -43,8 +85,14 @@ class TransactionListSection extends StatelessWidget {
     required this.groups,
   });
 
+  /// Section heading text (e.g., `"Transações"`).
   final String title;
+
+  /// Total number of transactions across all groups. Displayed as a badge
+  /// next to the title (e.g., `"12 itens"`).
   final int totalItems;
+
+  /// Ordered list of transaction groups to display.
   final List<TransactionGroup> groups;
 
   @override
@@ -95,9 +143,7 @@ class _DateGroup extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = context.transactionListTheme;
-    final borderColor = group.isToday
-        ? theme.dateBorderToday
-        : theme.dateBorderOther;
+    final borderColor = group.isToday ? theme.dateBorderToday : theme.dateBorderOther;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
@@ -174,16 +220,9 @@ class _TransactionTile extends StatelessWidget {
           Container(
             width: 48,
             height: 48,
-            decoration: BoxDecoration(
-              color: theme.iconBackground,
-              shape: BoxShape.circle,
-            ),
+            decoration: BoxDecoration(color: theme.iconBackground, shape: BoxShape.circle),
             child: Center(
-              child: AppSvgIcon(
-                asset: item.icon,
-                size: 24,
-                color: theme.itemTitle,
-              ),
+              child: AppSvgIcon(asset: item.icon, size: 24, color: theme.itemTitle),
             ),
           ),
           const SizedBox(width: 20),

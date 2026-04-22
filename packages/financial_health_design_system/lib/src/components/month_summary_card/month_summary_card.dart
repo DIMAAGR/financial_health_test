@@ -6,11 +6,58 @@ import 'package:financial_health_design_system/src/theme/extensions/app_theme_ex
 import 'package:financial_health_design_system/src/theme/extensions/month_summary_theme_ext.dart';
 import 'package:flutter/material.dart';
 
-enum MonthSummaryType { balance, income, expense }
+/// The metric type shown on a [MonthSummaryCard].
+///
+/// Determines the card label and how the trend direction is interpreted:
+/// - [balance] — net balance (income minus expenses).
+/// - [income] — total income received.
+/// - [expense] — total expenses paid.
+enum MonthSummaryType {
+  /// Net monthly balance.
+  balance,
 
-enum TrendDirection { up, down, neutral }
+  /// Total monthly income.
+  income,
 
+  /// Total monthly expenses.
+  expense,
+}
+
+/// Direction of the month-over-month trend shown on a [MonthSummaryCard].
+enum TrendDirection {
+  /// Value increased compared to the previous period.
+  up,
+
+  /// Value decreased compared to the previous period.
+  down,
+
+  /// No significant change from the previous period.
+  neutral,
+}
+
+/// Compact card displaying a monthly financial metric with a trend indicator.
+///
+/// Shows the metric label, the formatted monetary [amount], the [monthYear],
+/// and a percentage badge ([changePercent] + [trendDirection] arrow).
+///
+/// The trend badge color is semantics-aware: for [MonthSummaryType.expense],
+/// a downward trend (`down`) is positive (spending less); for `income` and
+/// `balance`, an upward trend (`up`) is positive.
+///
+/// Colors are resolved from [MonthSummaryTheme] via [BuildContext].
+///
+/// ## Usage
+/// ```dart
+/// MonthSummaryCard(
+///   type: MonthSummaryType.income,
+///   amount: 'R$ 12.400,00',
+///   monthYear: 'ABR 2026',
+///   changePercent: 8.5,
+///   trendDirection: TrendDirection.up,
+/// )
+/// ```
 class MonthSummaryCard extends StatelessWidget {
+  /// Creates a [MonthSummaryCard].
   const MonthSummaryCard({
     super.key,
     required this.type,
@@ -20,10 +67,21 @@ class MonthSummaryCard extends StatelessWidget {
     required this.trendDirection,
   });
 
+  /// The metric this card represents (balance, income or expense).
   final MonthSummaryType type;
+
+  /// Pre-formatted monetary amount string (e.g., `"R$ 12.400,00"`).
   final String amount;
+
+  /// Month and year label displayed below the amount (e.g., `"ABR 2026"`).
   final String monthYear;
+
+  /// Month-over-month percentage change. Always displayed as a positive number
+  /// — the [trendDirection] communicates the sign.
   final double changePercent;
+
+  /// Direction of the change. Determines which trend arrow icon is shown and
+  /// whether the badge uses the positive or negative trend color.
   final TrendDirection trendDirection;
 
   @override
@@ -31,9 +89,7 @@ class MonthSummaryCard extends StatelessWidget {
     final theme = context.monthSummaryTheme;
 
     final isPositiveTrend = _isPositiveTrend(type, trendDirection);
-    final trendColor = isPositiveTrend
-        ? theme.trendPositive
-        : theme.trendNegative;
+    final trendColor = isPositiveTrend ? theme.trendPositive : theme.trendNegative;
 
     return Container(
       width: double.infinity,
@@ -43,11 +99,7 @@ class MonthSummaryCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppSpacing.xl),
         border: Border.all(color: theme.cardBorder, width: 0.5),
         boxShadow: [
-          BoxShadow(
-            color: theme.cardShadow,
-            blurRadius: 50,
-            offset: const Offset(0, 25),
-          ),
+          BoxShadow(color: theme.cardShadow, blurRadius: 50, offset: const Offset(0, 25)),
         ],
       ),
       child: Stack(
@@ -63,13 +115,7 @@ class MonthSummaryCard extends StatelessWidget {
                 height: 256,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: theme.glowColor,
-                      blurRadius: 80,
-                      spreadRadius: 0,
-                    ),
-                  ],
+                  boxShadow: [BoxShadow(color: theme.glowColor, blurRadius: 80, spreadRadius: 0)],
                 ),
               ),
             ),
@@ -81,12 +127,7 @@ class MonthSummaryCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               spacing: AppSpacing.lg,
               children: [
-                _HeaderSection(
-                  label: _label,
-                  amount: amount,
-                  monthYear: monthYear,
-                  theme: theme,
-                ),
+                _HeaderSection(label: _label, amount: amount, monthYear: monthYear, theme: theme),
                 SizedBox(
                   width: double.infinity,
                   child: _ComparativeBadge(
@@ -119,8 +160,7 @@ class MonthSummaryCard extends StatelessWidget {
       // Expenses: going down = good, going up = bad
       MonthSummaryType.expense => dir == TrendDirection.down,
       // Income/Balance: going up = good, going down = bad
-      MonthSummaryType.income ||
-      MonthSummaryType.balance => dir == TrendDirection.up,
+      MonthSummaryType.income || MonthSummaryType.balance => dir == TrendDirection.up,
     };
   }
 }
@@ -201,10 +241,7 @@ class _ComparativeBadge extends StatelessWidget {
         : AppIcons.trendingUp;
 
     return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.md,
-        vertical: 15,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: 15),
       decoration: BoxDecoration(
         color: theme.badgeBackground,
         borderRadius: BorderRadius.circular(AppRadius.sm + 4),

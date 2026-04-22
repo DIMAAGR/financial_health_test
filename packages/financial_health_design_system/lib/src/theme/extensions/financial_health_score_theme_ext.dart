@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
 
+/// Immutable color set for a single health-status variant of the financial
+/// health score card.
+///
+/// A [FinancialHealthScoreTheme] holds three instances of this class —
+/// [healthy], [attention], and [critical] — one per status level.
 @immutable
 class FinancialHealthCardColors {
+  /// Creates an immutable color set for one health-status variant.
   const FinancialHealthCardColors({
     required this.backgroundStart,
     required this.backgroundEnd,
@@ -20,20 +26,50 @@ class FinancialHealthCardColors {
     required this.useGradient,
   });
 
+  /// Start color of the card background gradient (top / left).
   final Color backgroundStart;
+
+  /// End color of the card background gradient (bottom / right).
   final Color backgroundEnd;
+
+  /// Solid fallback background color used when [useGradient] is `false`.
   final Color backgroundSolid;
+
+  /// Background fill of the status badge (e.g., the "SAUDÁVEL" chip).
   final Color badgeBackground;
+
+  /// Text color inside the status badge.
   final Color badgeText;
+
+  /// Color of the card's title text (e.g., "Saúde Financeira").
   final Color titleText;
+
+  /// Color of the large numeric score.
   final Color scoreText;
+
+  /// Color of the score suffix text (e.g., "/100").
   final Color scoreSuffixText;
+
+  /// Color of the headline text below the score (e.g., "Boa saúde financeira").
   final Color headlineText;
+
+  /// Color of the description body text.
   final Color descriptionText;
+
+  /// Color of the horizontal divider between the score and description.
   final Color divider;
+
+  /// Tint for the decorative icon in the card.
   final Color iconColor;
+
+  /// Border / outline color of the card container.
   final Color borderColor;
+
+  /// Drop-shadow color of the card.
   final Color shadowColor;
+
+  /// When `true`, the card renders [backgroundStart] → [backgroundEnd] as a
+  /// gradient fill. When `false`, [backgroundSolid] is used instead.
   final bool useGradient;
 
   FinancialHealthCardColors copyWith({
@@ -97,17 +133,35 @@ class FinancialHealthCardColors {
   }
 }
 
+/// [ThemeExtension] that carries the color schemes for the financial health
+/// score card across all three health-status levels.
+///
+/// Registered on [ThemeData] by [FinancialHealthDesignTheme] and accessed in
+/// widgets via [AppThemeExtension.financialHealthScoreTheme]:
+///
+/// ```dart
+/// final theme = context.financialHealthScoreTheme;
+/// // Select the correct palette based on the user's score:
+/// final colors = score >= 75 ? theme.healthy
+///              : score >= 40 ? theme.attention
+///              : theme.critical;
+/// ```
 @immutable
-class FinancialHealthScoreTheme
-    extends ThemeExtension<FinancialHealthScoreTheme> {
+class FinancialHealthScoreTheme extends ThemeExtension<FinancialHealthScoreTheme> {
+  /// Creates a [FinancialHealthScoreTheme] with color sets for each status.
   const FinancialHealthScoreTheme({
     required this.healthy,
     required this.attention,
     required this.critical,
   });
 
+  /// Colors applied when the user's financial health score is healthy (high).
   final FinancialHealthCardColors healthy;
+
+  /// Colors applied when the score is in the attention / warning range.
   final FinancialHealthCardColors attention;
+
+  /// Colors applied when the score is critical (low).
   final FinancialHealthCardColors critical;
 
   @override
@@ -124,10 +178,7 @@ class FinancialHealthScoreTheme
   }
 
   @override
-  FinancialHealthScoreTheme lerp(
-    ThemeExtension<FinancialHealthScoreTheme>? other,
-    double t,
-  ) {
+  FinancialHealthScoreTheme lerp(ThemeExtension<FinancialHealthScoreTheme>? other, double t) {
     if (other is! FinancialHealthScoreTheme) return this;
     return FinancialHealthScoreTheme(
       healthy: FinancialHealthCardColors.lerp(healthy, other.healthy, t),
