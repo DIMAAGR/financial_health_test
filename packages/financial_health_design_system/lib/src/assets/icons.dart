@@ -12,8 +12,7 @@
 /// )
 /// ```
 abstract class AppIcons {
-  static const _basePath =
-      'packages/financial_health_design_system/assets/icons';
+  static const _basePath = 'packages/financial_health_design_system/assets/icons';
 
   /// Financial health score icon.
   static const financialScore = '$_basePath/ic_financial_score.svg';

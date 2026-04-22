@@ -147,8 +147,7 @@ class FinancialHealthCardColors {
 ///              : theme.critical;
 /// ```
 @immutable
-class FinancialHealthScoreTheme
-    extends ThemeExtension<FinancialHealthScoreTheme> {
+class FinancialHealthScoreTheme extends ThemeExtension<FinancialHealthScoreTheme> {
   /// Creates a [FinancialHealthScoreTheme] with color sets for each status.
   const FinancialHealthScoreTheme({
     required this.healthy,
@@ -179,10 +178,7 @@ class FinancialHealthScoreTheme
   }
 
   @override
-  FinancialHealthScoreTheme lerp(
-    ThemeExtension<FinancialHealthScoreTheme>? other,
-    double t,
-  ) {
+  FinancialHealthScoreTheme lerp(ThemeExtension<FinancialHealthScoreTheme>? other, double t) {
     if (other is! FinancialHealthScoreTheme) return this;
     return FinancialHealthScoreTheme(
       healthy: FinancialHealthCardColors.lerp(healthy, other.healthy, t),

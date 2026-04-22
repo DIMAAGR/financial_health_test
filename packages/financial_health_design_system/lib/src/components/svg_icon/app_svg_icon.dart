@@ -19,12 +19,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 /// ```
 class AppSvgIcon extends StatelessWidget {
   /// Creates an [AppSvgIcon].
-  const AppSvgIcon({
-    super.key,
-    required this.asset,
-    this.size = 24,
-    this.color,
-  });
+  const AppSvgIcon({super.key, required this.asset, this.size = 24, this.color});
 
   /// Path to the SVG asset. Use [AppIcons] constants for built-in icons.
   final String asset;
@@ -45,9 +40,7 @@ class AppSvgIcon extends StatelessWidget {
       asset,
       width: size,
       height: size,
-      colorFilter: iconColor != null
-          ? ColorFilter.mode(iconColor, BlendMode.srcIn)
-          : null,
+      colorFilter: iconColor != null ? ColorFilter.mode(iconColor, BlendMode.srcIn) : null,
     );
   }
 }

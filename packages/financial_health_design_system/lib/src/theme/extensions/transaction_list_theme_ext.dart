@@ -106,10 +106,7 @@ class TransactionListTheme extends ThemeExtension<TransactionListTheme> {
   }
 
   @override
-  TransactionListTheme lerp(
-    covariant ThemeExtension<TransactionListTheme>? other,
-    double t,
-  ) {
+  TransactionListTheme lerp(covariant ThemeExtension<TransactionListTheme>? other, double t) {
     if (other is! TransactionListTheme) return this;
     return TransactionListTheme(
       sectionTitle: Color.lerp(sectionTitle, other.sectionTitle, t)!,
@@ -123,21 +120,9 @@ class TransactionListTheme extends ThemeExtension<TransactionListTheme> {
       itemTitle: Color.lerp(itemTitle, other.itemTitle, t)!,
       itemSubtitle: Color.lerp(itemSubtitle, other.itemSubtitle, t)!,
       itemAmount: Color.lerp(itemAmount, other.itemAmount, t)!,
-      itemAmountExpense: Color.lerp(
-        itemAmountExpense,
-        other.itemAmountExpense,
-        t,
-      )!,
-      itemAmountIncome: Color.lerp(
-        itemAmountIncome,
-        other.itemAmountIncome,
-        t,
-      )!,
-      itemPaymentMethod: Color.lerp(
-        itemPaymentMethod,
-        other.itemPaymentMethod,
-        t,
-      )!,
+      itemAmountExpense: Color.lerp(itemAmountExpense, other.itemAmountExpense, t)!,
+      itemAmountIncome: Color.lerp(itemAmountIncome, other.itemAmountIncome, t)!,
+      itemPaymentMethod: Color.lerp(itemPaymentMethod, other.itemPaymentMethod, t)!,
     );
   }
 }

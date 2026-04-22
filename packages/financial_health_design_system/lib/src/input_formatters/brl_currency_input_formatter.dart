@@ -26,16 +26,12 @@ import 'package:intl/intl.dart';
 /// ```
 class BrlCurrencyInputFormatter extends TextInputFormatter {
   /// Creates a formatter that renders currency in the `pt_BR` locale.
-  BrlCurrencyInputFormatter()
-    : _decimalFormatter = NumberFormat.decimalPattern('pt_BR');
+  BrlCurrencyInputFormatter() : _decimalFormatter = NumberFormat.decimalPattern('pt_BR');
 
   final NumberFormat _decimalFormatter;
 
   @override
-  TextEditingValue formatEditUpdate(
-    TextEditingValue oldValue,
-    TextEditingValue newValue,
-  ) {
+  TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
     final digits = newValue.text.replaceAll(RegExp(r'\D'), '');
     final cents = int.tryParse(digits.isEmpty ? '0' : digits) ?? 0;
     final formatted = formatFromCents(cents);

@@ -34,10 +34,7 @@ extension TransactionGroupLabelExtension on DateTime {
         : normalizedDate._isSameCalendarDateAs(yesterday)
         ? 'ONTEM'
         : '';
-    final formattedDate = DateFormat(
-      'dd MMM',
-      'pt_BR',
-    ).format(this).toUpperCase();
+    final formattedDate = DateFormat('dd MMM', 'pt_BR').format(this).toUpperCase();
 
     return prefix.isEmpty ? formattedDate : '$prefix, $formattedDate';
   }

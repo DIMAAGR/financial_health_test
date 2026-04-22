@@ -58,11 +58,7 @@ class CategoryItem {
 /// ```
 class CategoryBreakdownSection extends StatelessWidget {
   /// Creates a [CategoryBreakdownSection].
-  const CategoryBreakdownSection({
-    super.key,
-    required this.categories,
-    required this.totalAmount,
-  });
+  const CategoryBreakdownSection({super.key, required this.categories, required this.totalAmount});
 
   /// Ordered list of categories to display. The first entry becomes the hero
   /// card. At most 5 categories are rendered.
@@ -89,14 +85,8 @@ class CategoryBreakdownSection extends StatelessWidget {
           const SizedBox(height: AppSpacing.md),
           ...rest.asMap().entries.map(
             (entry) => Padding(
-              padding: EdgeInsets.only(
-                bottom: entry.key < rest.length - 1 ? AppSpacing.md : 0,
-              ),
-              child: _ItemCard(
-                item: entry.value,
-                isAccent: entry.key == 0,
-                theme: theme,
-              ),
+              padding: EdgeInsets.only(bottom: entry.key < rest.length - 1 ? AppSpacing.md : 0),
+              child: _ItemCard(item: entry.value, isAccent: entry.key == 0, theme: theme),
             ),
           ),
         ],
@@ -106,11 +96,7 @@ class CategoryBreakdownSection extends StatelessWidget {
 }
 
 class _HeroCard extends StatelessWidget {
-  const _HeroCard({
-    required this.item,
-    required this.totalAmount,
-    required this.theme,
-  });
+  const _HeroCard({required this.item, required this.totalAmount, required this.theme});
 
   final CategoryItem item;
   final double totalAmount;
@@ -144,11 +130,7 @@ class _HeroCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(AppRadius.md),
                   ),
                   alignment: Alignment.center,
-                  child: AppSvgIcon(
-                    asset: item.icon,
-                    size: 24,
-                    color: theme.heroTitle,
-                  ),
+                  child: AppSvgIcon(asset: item.icon, size: 24, color: theme.heroTitle),
                 ),
                 Text(
                   '${item.percentage.toStringAsFixed(0)}% do total',
@@ -194,11 +176,7 @@ class _HeroCard extends StatelessWidget {
 }
 
 class _ItemCard extends StatelessWidget {
-  const _ItemCard({
-    required this.item,
-    required this.isAccent,
-    required this.theme,
-  });
+  const _ItemCard({required this.item, required this.isAccent, required this.theme});
 
   final CategoryItem item;
   final bool isAccent;
@@ -206,9 +184,7 @@ class _ItemCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final iconBg = isAccent
-        ? theme.itemIconBackgroundAccent
-        : theme.itemIconBackgroundNeutral;
+    final iconBg = isAccent ? theme.itemIconBackgroundAccent : theme.itemIconBackgroundNeutral;
 
     return Container(
       width: double.infinity,
@@ -229,11 +205,7 @@ class _ItemCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(AppRadius.sm + 4),
             ),
             alignment: Alignment.center,
-            child: AppSvgIcon(
-              asset: item.icon,
-              size: 20,
-              color: theme.itemAmount,
-            ),
+            child: AppSvgIcon(asset: item.icon, size: 20, color: theme.itemAmount),
           ),
           Expanded(
             child: Column(

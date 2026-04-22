@@ -61,8 +61,7 @@ class DetailAppBar extends StatelessWidget {
               _BackButton(
                 backgroundColor: colors.headerActionBackground,
                 iconColor: colors.headerActionIcon,
-                onPressed:
-                    onBackPressed ?? () => Navigator.of(context).maybePop(),
+                onPressed: onBackPressed ?? () => Navigator.of(context).maybePop(),
               ),
               Text(
                 title,
@@ -99,11 +98,7 @@ class DetailAppBar extends StatelessWidget {
 }
 
 class _BackButton extends StatelessWidget {
-  const _BackButton({
-    required this.backgroundColor,
-    required this.iconColor,
-    this.onPressed,
-  });
+  const _BackButton({required this.backgroundColor, required this.iconColor, this.onPressed});
 
   final Color backgroundColor;
   final Color iconColor;
@@ -118,27 +113,17 @@ class _BackButton extends StatelessWidget {
         height: AppSpacing.xxl,
         decoration: ShapeDecoration(
           color: backgroundColor,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppRadius.sm + 4),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.sm + 4)),
         ),
         alignment: Alignment.center,
-        child: AppSvgIcon(
-          asset: AppIcons.arrowBack,
-          size: 20,
-          color: iconColor,
-        ),
+        child: AppSvgIcon(asset: AppIcons.arrowBack, size: 20, color: iconColor),
       ),
     );
   }
 }
 
 class _ActionButton extends StatelessWidget {
-  const _ActionButton({
-    required this.icon,
-    required this.iconColor,
-    this.onPressed,
-  });
+  const _ActionButton({required this.icon, required this.iconColor, this.onPressed});
 
   final String icon;
   final Color iconColor;
@@ -151,9 +136,7 @@ class _ActionButton extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(AppSpacing.sm),
         decoration: ShapeDecoration(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppRadius.sm + 4),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.sm + 4)),
         ),
         child: AppSvgIcon(asset: icon, size: 20, color: iconColor),
       ),

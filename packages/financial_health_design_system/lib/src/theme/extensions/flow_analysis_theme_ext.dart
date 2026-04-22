@@ -97,11 +97,7 @@ class FlowAnalysisTheme extends ThemeExtension<FlowAnalysisTheme> {
       incomeBase: Color.lerp(incomeBase, other.incomeBase, t)!,
       incomeHighlight: Color.lerp(incomeHighlight, other.incomeHighlight, t)!,
       expenseBase: Color.lerp(expenseBase, other.expenseBase, t)!,
-      expenseHighlight: Color.lerp(
-        expenseHighlight,
-        other.expenseHighlight,
-        t,
-      )!,
+      expenseHighlight: Color.lerp(expenseHighlight, other.expenseHighlight, t)!,
     );
   }
 }

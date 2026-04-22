@@ -91,42 +91,25 @@ class CategoryBreakdownTheme extends ThemeExtension<CategoryBreakdownTheme> {
       heroAmount: heroAmount ?? this.heroAmount,
       itemCardBackground: itemCardBackground ?? this.itemCardBackground,
       itemCardBorder: itemCardBorder ?? this.itemCardBorder,
-      itemIconBackgroundAccent:
-          itemIconBackgroundAccent ?? this.itemIconBackgroundAccent,
-      itemIconBackgroundNeutral:
-          itemIconBackgroundNeutral ?? this.itemIconBackgroundNeutral,
+      itemIconBackgroundAccent: itemIconBackgroundAccent ?? this.itemIconBackgroundAccent,
+      itemIconBackgroundNeutral: itemIconBackgroundNeutral ?? this.itemIconBackgroundNeutral,
       itemLabel: itemLabel ?? this.itemLabel,
       itemAmount: itemAmount ?? this.itemAmount,
     );
   }
 
   @override
-  CategoryBreakdownTheme lerp(
-    ThemeExtension<CategoryBreakdownTheme>? other,
-    double t,
-  ) {
+  CategoryBreakdownTheme lerp(ThemeExtension<CategoryBreakdownTheme>? other, double t) {
     if (other is! CategoryBreakdownTheme) return this;
 
     return CategoryBreakdownTheme(
-      heroCardBackground: Color.lerp(
-        heroCardBackground,
-        other.heroCardBackground,
-        t,
-      )!,
+      heroCardBackground: Color.lerp(heroCardBackground, other.heroCardBackground, t)!,
       heroCardBorder: Color.lerp(heroCardBorder, other.heroCardBorder, t)!,
-      heroIconBackground: Color.lerp(
-        heroIconBackground,
-        other.heroIconBackground,
-        t,
-      )!,
+      heroIconBackground: Color.lerp(heroIconBackground, other.heroIconBackground, t)!,
       heroPercent: Color.lerp(heroPercent, other.heroPercent, t)!,
       heroTitle: Color.lerp(heroTitle, other.heroTitle, t)!,
       heroAmount: Color.lerp(heroAmount, other.heroAmount, t)!,
-      itemCardBackground: Color.lerp(
-        itemCardBackground,
-        other.itemCardBackground,
-        t,
-      )!,
+      itemCardBackground: Color.lerp(itemCardBackground, other.itemCardBackground, t)!,
       itemCardBorder: Color.lerp(itemCardBorder, other.itemCardBorder, t)!,
       itemIconBackgroundAccent: Color.lerp(
         itemIconBackgroundAccent,

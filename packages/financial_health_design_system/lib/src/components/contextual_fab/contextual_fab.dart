@@ -21,11 +21,7 @@ import 'package:flutter/material.dart';
 /// ```
 class ContextualFab extends StatelessWidget {
   /// Creates a [ContextualFab].
-  const ContextualFab({
-    super.key,
-    required this.label,
-    required this.onPressed,
-  });
+  const ContextualFab({super.key, required this.label, required this.onPressed});
 
   /// Text displayed next to the add icon inside the FAB.
   final String label;
@@ -40,20 +36,11 @@ class ContextualFab extends StatelessWidget {
     return GestureDetector(
       onTap: onPressed,
       child: Container(
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.lg,
-          vertical: AppSpacing.md,
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.md),
         decoration: BoxDecoration(
           color: theme.background,
           borderRadius: BorderRadius.circular(AppRadius.pill),
-          boxShadow: [
-            BoxShadow(
-              color: theme.shadow,
-              blurRadius: 32,
-              offset: const Offset(0, 8),
-            ),
-          ],
+          boxShadow: [BoxShadow(color: theme.shadow, blurRadius: 32, offset: const Offset(0, 8))],
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,

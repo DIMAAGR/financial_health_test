@@ -27,11 +27,7 @@ class ContextualFabTheme extends ThemeExtension<ContextualFabTheme> {
   final Color shadow;
 
   @override
-  ContextualFabTheme copyWith({
-    Color? background,
-    Color? foreground,
-    Color? shadow,
-  }) {
+  ContextualFabTheme copyWith({Color? background, Color? foreground, Color? shadow}) {
     return ContextualFabTheme(
       background: background ?? this.background,
       foreground: foreground ?? this.foreground,
@@ -40,10 +36,7 @@ class ContextualFabTheme extends ThemeExtension<ContextualFabTheme> {
   }
 
   @override
-  ContextualFabTheme lerp(
-    covariant ThemeExtension<ContextualFabTheme>? other,
-    double t,
-  ) {
+  ContextualFabTheme lerp(covariant ThemeExtension<ContextualFabTheme>? other, double t) {
     if (other is! ContextualFabTheme) return this;
     return ContextualFabTheme(
       background: Color.lerp(background, other.background, t)!,

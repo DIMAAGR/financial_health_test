@@ -36,11 +36,7 @@ class MonthlyGoalCardColors {
   final Color iconColor;
 
   /// Linearly interpolates between two [MonthlyGoalCardColors].
-  static MonthlyGoalCardColors lerp(
-    MonthlyGoalCardColors a,
-    MonthlyGoalCardColors b,
-    double t,
-  ) {
+  static MonthlyGoalCardColors lerp(MonthlyGoalCardColors a, MonthlyGoalCardColors b, double t) {
     return MonthlyGoalCardColors(
       background: Color.lerp(a.background, b.background, t)!,
       border: Color.lerp(a.border, b.border, t)!,
@@ -75,10 +71,7 @@ class MonthlyGoalTheme extends ThemeExtension<MonthlyGoalTheme> {
   final MonthlyGoalCardColors negative;
 
   @override
-  MonthlyGoalTheme copyWith({
-    MonthlyGoalCardColors? positive,
-    MonthlyGoalCardColors? negative,
-  }) {
+  MonthlyGoalTheme copyWith({MonthlyGoalCardColors? positive, MonthlyGoalCardColors? negative}) {
     return MonthlyGoalTheme(
       positive: positive ?? this.positive,
       negative: negative ?? this.negative,

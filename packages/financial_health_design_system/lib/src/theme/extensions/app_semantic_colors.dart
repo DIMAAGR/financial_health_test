@@ -109,8 +109,7 @@ class AppSemanticColors extends ThemeExtension<AppSemanticColors> {
       backgroundPrimary: backgroundPrimary ?? this.backgroundPrimary,
       headerTitle: headerTitle ?? this.headerTitle,
       headerSubtitle: headerSubtitle ?? this.headerSubtitle,
-      headerActionBackground:
-          headerActionBackground ?? this.headerActionBackground,
+      headerActionBackground: headerActionBackground ?? this.headerActionBackground,
       headerActionIcon: headerActionIcon ?? this.headerActionIcon,
       headerMenuBackground: headerMenuBackground ?? this.headerMenuBackground,
       headerMenuBorder: headerMenuBorder ?? this.headerMenuBorder,
@@ -132,61 +131,21 @@ class AppSemanticColors extends ThemeExtension<AppSemanticColors> {
     if (other is! AppSemanticColors) return this;
 
     return AppSemanticColors(
-      backgroundPrimary: Color.lerp(
-        backgroundPrimary,
-        other.backgroundPrimary,
-        t,
-      )!,
+      backgroundPrimary: Color.lerp(backgroundPrimary, other.backgroundPrimary, t)!,
       headerTitle: Color.lerp(headerTitle, other.headerTitle, t)!,
       headerSubtitle: Color.lerp(headerSubtitle, other.headerSubtitle, t)!,
-      headerActionBackground: Color.lerp(
-        headerActionBackground,
-        other.headerActionBackground,
-        t,
-      )!,
-      headerActionIcon: Color.lerp(
-        headerActionIcon,
-        other.headerActionIcon,
-        t,
-      )!,
-      headerMenuBackground: Color.lerp(
-        headerMenuBackground,
-        other.headerMenuBackground,
-        t,
-      )!,
-      headerMenuBorder: Color.lerp(
-        headerMenuBorder,
-        other.headerMenuBorder,
-        t,
-      )!,
+      headerActionBackground: Color.lerp(headerActionBackground, other.headerActionBackground, t)!,
+      headerActionIcon: Color.lerp(headerActionIcon, other.headerActionIcon, t)!,
+      headerMenuBackground: Color.lerp(headerMenuBackground, other.headerMenuBackground, t)!,
+      headerMenuBorder: Color.lerp(headerMenuBorder, other.headerMenuBorder, t)!,
       headerMenuText: Color.lerp(headerMenuText, other.headerMenuText, t)!,
       headerMenuIcon: Color.lerp(headerMenuIcon, other.headerMenuIcon, t)!,
-      headerMenuShadow: Color.lerp(
-        headerMenuShadow,
-        other.headerMenuShadow,
-        t,
-      )!,
-      metricCardBackground: Color.lerp(
-        metricCardBackground,
-        other.metricCardBackground,
-        t,
-      )!,
-      metricCardBorder: Color.lerp(
-        metricCardBorder,
-        other.metricCardBorder,
-        t,
-      )!,
-      metricCardShadow: Color.lerp(
-        metricCardShadow,
-        other.metricCardShadow,
-        t,
-      )!,
+      headerMenuShadow: Color.lerp(headerMenuShadow, other.headerMenuShadow, t)!,
+      metricCardBackground: Color.lerp(metricCardBackground, other.metricCardBackground, t)!,
+      metricCardBorder: Color.lerp(metricCardBorder, other.metricCardBorder, t)!,
+      metricCardShadow: Color.lerp(metricCardShadow, other.metricCardShadow, t)!,
       metricCardIcon: Color.lerp(metricCardIcon, other.metricCardIcon, t)!,
-      metricCardIconRed: Color.lerp(
-        metricCardIconRed,
-        other.metricCardIconRed,
-        t,
-      )!,
+      metricCardIconRed: Color.lerp(metricCardIconRed, other.metricCardIconRed, t)!,
       metricCardLabel: Color.lerp(metricCardLabel, other.metricCardLabel, t)!,
       metricCardValue: Color.lerp(metricCardValue, other.metricCardValue, t)!,
     );

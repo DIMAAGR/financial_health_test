@@ -44,11 +44,7 @@ class TransactionListItem {
 /// Groups a set of [TransactionListItem]s under a single date label.
 class TransactionGroup {
   /// Creates a [TransactionGroup].
-  const TransactionGroup({
-    required this.dateLabel,
-    required this.items,
-    this.isToday = false,
-  });
+  const TransactionGroup({required this.dateLabel, required this.items, this.isToday = false});
 
   /// The formatted date label shown above the group
   /// (e.g., `"HOJE, 22 ABR"` or `"19 ABR"`). Use
@@ -147,9 +143,7 @@ class _DateGroup extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = context.transactionListTheme;
-    final borderColor = group.isToday
-        ? theme.dateBorderToday
-        : theme.dateBorderOther;
+    final borderColor = group.isToday ? theme.dateBorderToday : theme.dateBorderOther;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
@@ -226,16 +220,9 @@ class _TransactionTile extends StatelessWidget {
           Container(
             width: 48,
             height: 48,
-            decoration: BoxDecoration(
-              color: theme.iconBackground,
-              shape: BoxShape.circle,
-            ),
+            decoration: BoxDecoration(color: theme.iconBackground, shape: BoxShape.circle),
             child: Center(
-              child: AppSvgIcon(
-                asset: item.icon,
-                size: 24,
-                color: theme.itemTitle,
-              ),
+              child: AppSvgIcon(asset: item.icon, size: 24, color: theme.itemTitle),
             ),
           ),
           const SizedBox(width: 20),
