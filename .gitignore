@@ -1,0 +1,4 @@
+# Local development artifacts
+.DS_Store
+financial_health_dashboard/devtools_options.yaml
+tools/mcp_server/.dart_tool/

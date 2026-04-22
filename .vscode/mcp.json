@@ -1,0 +1,19 @@
+{
+  "inputs": [],
+  "servers": {
+    "financial-health-mcp": {
+      "type": "stdio",
+      "command": "dart",
+      "args": [
+        "run",
+        "bin/main.dart",
+        "--project-root",
+        "${workspaceFolder:financial_health_test}"
+      ],
+      "cwd": "${workspaceFolder:financial_health_test}/tools/mcp_server",
+      "env": {
+        "PROJECT_ROOT": "${workspaceFolder:financial_health_test}"
+      }
+    }
+  }
+}

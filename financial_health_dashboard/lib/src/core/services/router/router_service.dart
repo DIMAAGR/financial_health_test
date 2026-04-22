@@ -111,8 +111,11 @@ class RouterServiceImpl implements RouterService {
 
   /// Pushes a new route onto the navigation stack.
   @override
-  void push(String path, {Object? extra, Future<void> Function(Object?)? then}) =>
-      router.push(path, extra: extra).then(then ?? (_) {});
+  void push(
+    String path, {
+    Object? extra,
+    Future<void> Function(Object?)? then,
+  }) => router.push(path, extra: extra).then(then ?? (_) {});
 
   /// Pushes a named route onto the navigation stack.
   @override
@@ -124,7 +127,12 @@ class RouterServiceImpl implements RouterService {
     Object? extra,
   }) {
     router
-        .pushNamed(name, pathParameters: params, queryParameters: queryParams, extra: extra)
+        .pushNamed(
+          name,
+          pathParameters: params,
+          queryParameters: queryParams,
+          extra: extra,
+        )
         .then(then ?? (_) {});
   }
 

@@ -1,5 +1,15 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:financial_health_dashboard/src/core/router/app_router.dart';
+import 'package:financial_health_dashboard/src/core/services/clock/clock.dart';
+import 'package:financial_health_dashboard/src/core/services/http/fake_http_service.dart';
+import 'package:financial_health_dashboard/src/core/services/http/http_service.dart';
+import 'package:financial_health_dashboard/src/core/services/network/network_info.dart';
 import 'package:financial_health_dashboard/src/core/services/router/router_service.dart';
+import 'package:financial_health_dashboard/src/core/services/storage/key_value_wrapper.dart';
+import 'package:financial_health_dashboard/src/features/dashboard/dashboard_init.dart';
+import 'package:financial_health_dashboard/src/features/expenses/expenses_init.dart';
+import 'package:financial_health_dashboard/src/features/incomes/incomes_init.dart';
+import 'package:financial_health_dashboard/src/features/transactions/transactions_init.dart';
 import 'package:get_it/get_it.dart';
 
 final GetIt getIt = GetIt.instance;
@@ -9,34 +19,43 @@ final GetIt getIt = GetIt.instance;
 /// by each module's injection (client or admin).
 void setupCoreInjection() {
   _registerCore();
-  _registerSession();
   _registerStorage();
   _registerNetwork();
-  _registerServices();
   _registerRoute();
+  _registerFeatures();
 }
 
 // ---------------- CORE ----------------
 
-void _registerCore() {}
+void _registerCore() {
+  getIt.registerLazySingleton<Clock>(() => const SystemClock());
+}
+
+// ---------------- FEATURES ----------------
+
+void _registerFeatures() {
+  DashboardFeatureDependencies(getIt);
+  TransactionsFeatureDependencies(getIt);
+  IncomesFeatureDependencies(getIt);
+  ExpensesFeatureDependencies(getIt);
+}
 
 // ---------------- ROUTER ----------------------
 void _registerRoute() {
   getIt.registerLazySingleton<RouterService>(() => RouterServiceImpl(buildRoute()));
 }
 
-// ---------------- SESSION & AUTH ----------------
-
-void _registerSession() {}
-
 // ---------------- STORAGE ----------------
 
-void _registerStorage() {}
+void _registerStorage() {
+  getIt.registerLazySingleton<KeyValueWrapper>(InMemoryKeyValueWrapper.new);
+}
 
 // ---------------- NETWORK / DIO ----------------
 
-void _registerNetwork() {}
-
-// ---------------- SERVICES ----------------
-
-void _registerServices() {}
+void _registerNetwork() {
+  getIt
+    ..registerLazySingleton<Connectivity>(Connectivity.new)
+    ..registerLazySingleton<NetworkInfo>(() => NetworkInfoImpl(getIt<Connectivity>()))
+    ..registerLazySingleton<HttpService>(() => FakeHttpService(storage: getIt<KeyValueWrapper>()));
+}
