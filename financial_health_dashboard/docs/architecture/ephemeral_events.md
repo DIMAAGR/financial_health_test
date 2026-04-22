@@ -278,3 +278,10 @@ Sem `registerFactoryParam`, a alternativa seria um cubit singleton com um métod
 
 - [Arquitetura e estrutura de pastas →](./architecture.md)
 - [Gerenciamento de estado →](./state_management.md)
+
+### Leitura externa
+
+- **[BLoC — Side Effects](https://bloclibrary.dev/architecture/#bloc-side-effects)** — documentação oficial da biblioteca `flutter_bloc` explicando o problema de eventos efêmeros (side effects) e as abordagens para tratá-los. O `effectVersion` usado aqui é uma variante do padrão `Event Transformer`.
+- **[One-time events in Bloc](https://medium.com/flutter-community/one-time-events-in-flutter-bloc-a-definitive-guide-22e5c45f5c15)** — artigo prático que discute exatamente o problema descrito neste documento: como evitar que um evento seja processado mais de uma vez por `BlocListener`, comparando as abordagens de flag booleana, nullable + clear e `sealed class` com versão.
+- **[Command pattern in state management](https://verygood.ventures/blog/flutter-state-management)** — discussão do Very Good Ventures sobre o padrão de "comando" em state management, onde o estado carrega tanto dados quanto intenções de UI de forma isolada — base conceitual do `DashboardEffect`.
+- **[Flutter BlocListener vs BlocConsumer](https://bloclibrary.dev/flutter-bloc-concepts/#bloclistener)** — documentação do `listenWhen` e quando usá-lo vs `buildWhen`, que é exatamente o mecanismo que o `effectVersion` aciona.

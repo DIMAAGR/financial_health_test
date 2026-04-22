@@ -29,6 +29,95 @@ A análise foi conduzida com assistência de IA — as variáveis acima foram us
 
 ---
 
+### Por que essa estrutura foi escolhida
+
+A decisão não partiu de preferência pessoal — foi simulada antes da implementação, usando o contexto real do projeto como entrada para análise comparativa.
+
+**Prompt de exploração arquitetural:**
+
+```
+Imagine que estamos iniciando o desenvolvimento de um novo aplicativo.
+Nesse MVP temos 5 telas que se conectam a uma API REST.
+A linguagem e framework adotados são Dart e Flutter.
+Precisamos decidir a arquitetura do projeto.
+
+Contexto:
+- Quantos desenvolvedores? 2 front-end
+- Quanto tempo? 3 meses
+- Quantas funcionalidades? 5
+- Tipo de projeto? Overview (Dashboard) de saúde financeira
+- Conexão com API externa? Sim
+- Persistência offline + Offline First? Sim
+- O MVP é POC que será refatorado depois? Não
+- Reutilização de funcionalidades em outro app no futuro? Não
+```
+
+A partir dessas variáveis, foram analisadas comparativamente:
+
+- **DDD completo vs DDD pragmático** — DDD completo traz isolamento forte mas exige camadas extras (application, value objects, aggregates) sem retorno claro para 5 features em 3 meses com 2 devs. DDD pragmático mantém entidades e políticas de negócio no domínio sem a cerimônia desnecessária.
+- **Clean Architecture vs FSD vs monolítica** — Clean Architecture com separação `data/domain/presentation` por feature garante testabilidade sem o custo de micro-frontends ou feature-sliced design para esse escopo.
+- **Feature-first vs camadas globais** — Feature-first (agrupar por contexto funcional) foi escolhido sobre camadas globais (agrupar por tipo: todos os repositories juntos, todos os cubits juntos). Razão: menor acoplamento entre contextos, remoção de feature sem impacto transversal, onboarding mais localizado.
+- **MVVM vs MVP vs MVC** — MVVM com Cubit foi escolhido sobre MVP (mais boilerplate de interface) e MVC (acoplamento entre controller e view difícil de testar). Cubit mantém estados mutuamente exclusivos (`loading`, `success`, `error`) sem a verbosidade de BLoC puro.
+
+**Resultado:** feature-first com separação interna `data / domain / presentation`, Cubit para estado, `get_it` para DI e `go_router` para navegação.
+
+---
+
+### Estrutura adotada
+
+```
+lib/
+└── src/
+    ├── core/                         # infraestrutura compartilhada por todo o app
+    │   ├── app/                      # MaterialApp, configuração de tema
+    │   ├── dependencies/             # setup do get_it (injeção de dependências)
+    │   ├── failures/                 # AppFailure sealed class — erros tipados
+    │   ├── router/                   # configuração do go_router
+    │   └── services/
+    │       ├── clock/                # abstração de tempo (evita DateTime.now() espalhado)
+    │       ├── http/                 # HttpService + FakeHttpService
+    │       ├── network/              # verificação de conectividade
+    │       └── storage/              # key-value storage (persistência da sessão)
+    │
+    ├── shared/                       # código de negócio compartilhado entre features
+    │   ├── data/                     # modelos e parsers neutros
+    │   ├── domain/                   # entidades e enums sem dono de feature
+    │   │   └── enum/                 # IncomeCategory, ExpenseCategory
+    │   └── presentation/             # componentes de UI compartilhados (migrados para o design system)
+    │
+    └── features/
+        ├── dashboard/                # tela principal
+        │   ├── dashboard_init.dart   # registro de DI desta feature
+        │   ├── data/
+        │   │   ├── datasources/      # chamadas HTTP
+        │   │   ├── mappers/          # JSON → modelo
+        │   │   ├── models/           # DTOs de rede
+        │   │   └── repositories/     # implementações concretas
+        │   ├── domain/
+        │   │   ├── entities/         # DashboardOverviewData, FinancialHealthScoreData,
+        │   │   │                     # FlowAnalysisData, MonthlyGoalData
+        │   │   ├── enum/             # FinancialHealthStatus, MonthlyGoalStatus
+        │   │   ├── policies/         # FinancialHealthScorePolicy, MonthlyGoalStatusPolicy
+        │   │   ├── repositories/     # contratos (interfaces)
+        │   │   └── use_cases/        # casos de uso
+        │   └── presentation/
+        │       ├── mappers/          # entidade → texto de UI (sem strings no domínio)
+        │       ├── models/           # AddTransactionSheetResult e inputs de UI
+        │       ├── view/             # DashboardView
+        │       ├── view_model/       # DashboardCubit, AddTransactionCubit
+        │       └── widgets/          # widgets específicos desta feature
+        │
+        ├── expenses/                 # tela de detalhe de despesas (estrutura espelhada)
+        ├── incomes/                  # tela de detalhe de receitas (estrutura espelhada)
+        └── transactions/             # lista completa de transações (estrutura espelhada)
+```
+
+**Cada feature tem um `*_init.dart`** que centraliza o registro de DI. Isso mantém o `dependencies/` do core limpo e permite que uma feature seja removida sem deixar referências soltas.
+
+**`shared/` não é um depósito** — só entra o que é genuinamente compartilhado e semanticamente neutro. Código específico de uma feature que "reaproveita" outra feature é sinal de acoplamento, não de reuso. Os componentes visuais compartilhados migraram para o package `financial_health_design_system` — a decisão e o impacto dessa migração estão documentados em [Design System →](../design/design_system.md).
+
+---
+
 ## Alternativas consideradas
 
 ### Comparação rápida
