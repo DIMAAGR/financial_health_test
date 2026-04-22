@@ -54,3 +54,26 @@ Arquivo de memória para consulta antes de novas mudanças.
 - O componente está desacoplado de regra de negócio?
 - Existe teste ou validação mínima para a mudança?
 - Payload/storage usa `code` estável em vez de `label` de UI?
+- MCP está ativo antes do primeiro prompt de código?
+- Valores monetários são `int` (centavos), não `double`?
+
+### [2026-04-22] MCP configurado no meio do projeto
+
+- Erro: features geradas antes do MCP estar ativo usavam naming inconsistente com as convenções definidas depois.
+- Causa raiz: regras de `get_rules` foram registradas depois que o scaffolding inicial já havia sido gerado.
+- Correção: renomeação manual das features afetadas.
+- Prevenção: em projetos novos, popular `get_rules` com convenções de naming antes de qualquer geração de código.
+
+### [2026-04-22] generate_cubit_test sem estado inicial
+
+- Erro: scaffold de teste gerado pela ferramenta MCP não incluía assertion para o estado inicial do Cubit.
+- Causa raiz: template da ferramenta focava nos métodos de ação, não no estado após construção.
+- Correção: assertion de estado inicial adicionada manualmente; template da ferramenta atualizado.
+- Prevenção: todo scaffold de teste de Cubit deve incluir o estado inicial como primeiro caso.
+
+### [2026-04-22] get_rules ativo não garantiu int para valor monetário
+
+- Erro: a IA sugeriu `double` para valor monetário mesmo com a regra de `int em centavos` documentada em `get_rules`.
+- Causa raiz: o prompt não explicitou contexto de dinheiro — a IA não conectou a regra ao código gerado.
+- Correção: substituição manual para `int`; learning adicionado; prompts seguintes passaram a mencionar explicitamente a restrição.
+- Prevenção: quando a IA gerar qualquer campo de valor monetário, verificar o tipo antes de aceitar o output.

@@ -69,6 +69,26 @@ O que o MCP **não** faz: não impede que a IA gere código errado — ele garan
 
 ---
 
+## Casos concretos
+
+### Onde o MCP acertou
+
+**`generate_feature_structure` gerou scaffold correto de primeira** — antes do MCP estar ativo, a IA gerou diretórios com `camelCase` e imports apontando para caminhos inexistentes. Depois de registrar a convenção `snake_case` em `get_rules`, a ferramenta gerou os 14+ diretórios e arquivos de uma feature nova sem erros de naming — sem retrabalho de renomeação.
+
+**`get_learnings` impediu repetição do erro de parâmetro sem efeito** — depois que o bug de `MetricCardSize` (parâmetro público que não alterava layout) foi registrado, a sessão seguinte com a IA gerou o `FinancialSummaryCard` com todos os parâmetros produzindo efeito observável. A IA citou a restrição ao propor a API do widget.
+
+**`add_learning` para o padrão de bottom sheet** — o bug onde o sheet fechava antes de confirmar sucesso foi registrado via `add_learning` imediatamente após a correção. O callback `Future<bool>` foi reusado corretamente no sheet de despesas, construído depois. Sem o registro, repetir o padrão errado era provável.
+
+### Onde precisou de ajuste — e o que foi aprendido
+
+**MCP configurado no meio do projeto, não do zero** — features geradas antes do MCP estar ativo usavam naming inconsistente. Quando `get_rules` foi configurado com a convenção `snake_case`, as features já existentes precisaram ser renomeadas manualmente. Em um próximo projeto, o MCP terá `get_rules` populado antes do primeiro prompt de código. Ver [docs/ia/learnings.md](../../docs/ia/learnings.md).
+
+**`generate_cubit_test` não incluía o estado inicial** — o primeiro scaffold de teste gerado pela ferramenta não cobria o estado do Cubit após construção. Foi necessário adicionar manualmente a assertion de estado inicial. O template da ferramenta foi corrigido.
+
+**`get_rules` ativo não impediu `double` em valor monetário** — a IA sugeriu `double` para um campo de valor mesmo com a regra de `int em centavos` documentada. O prompt não explicitou contexto monetário suficiente para a IA conectar a regra ao código gerado. Correção manual + learning adicionado. O MCP aumenta a probabilidade de acerto — não substitui prompt com contexto explícito.
+
+---
+
 ## Estrutura
 
 ```
