@@ -1,16 +1,23 @@
 # Transaction Refactor — Desafio 2
 
+Desafio estratégico do teste técnico da ContaAzul (Flutter Pleno, abril/2026). O contexto do teste é que a ContaAzul está em processo de modernização arquitetural com meta de ter 100% do código gerado de forma assistida por IA, com uso de ferramentas como MCP integrado ao Figma — o desafio simula um cenário real do time.
+
 O enunciado apresenta um trecho de código Flutter com tudo acoplado na UI — HTTP direto no widget, token lido de `SharedPrefs` na camada de apresentação, estado representado por três flags booleanas independentes, cálculo de total no `build`. Padrão comum em codebases legadas.
 
 A tarefa: analisar, criticar e modernizar usando IA como ferramenta principal, documentando cada etapa com evidências.
 
+**Tempo estimado pelo enunciado:** ~2h  
 **IAs utilizadas:** Claude Sonnet 4.6 (GitHub Copilot) e GPT 5.4.
+
+**O que é avaliado neste desafio:** capacidade de guiar a IA com contexto arquitetural (não apenas descrever o problema genericamente), pensamento crítico sobre o que aceitar e rejeitar do output, e coerência entre o código entregue e as decisões explicadas.
 
 ---
 
 ## Resultado
 
 **25 problemas identificados**, categorizados por causa raiz em 6 grupos de correção. Código modernizado com Clean Architecture e MVVM. **75 testes unitários — 0 falhas.**
+
+**Cobertura de linha: ~81%** (97/120 linhas). Não é 100% — a cobertura completa não foi priorizada dentro do tempo disponível. O que foi priorizado: cobertura intencional da lógica de negócio (`UseCase`, `Repository`, `ViewModel`, `Failure`) e das transformações de dados (`Dto`, `Mapper`, `Formatter`). O que ficou sem cobertura: a `TransactionPage` em si (widget test) e casos extremos de parsing que não mudam o comportamento observável. Em um projeto com mais tempo, a `TransactionPage` teria ao menos um widget test de estado inicial e estado de erro.
 
 ```
 lib/
@@ -135,6 +142,8 @@ flutter run
 flutter test
 flutter test --coverage
 ```
+
+> Cobertura atual: **~81%** (97/120 linhas). Ver nota na seção [Resultado](#resultado) sobre o que foi e não foi coberto intencionalmente.
 
 ---
 
