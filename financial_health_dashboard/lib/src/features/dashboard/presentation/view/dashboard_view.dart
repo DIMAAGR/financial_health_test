@@ -169,6 +169,17 @@ class _DashboardContent extends StatelessWidget {
                     FlowAnalysisSection(data: state.flowAnalysis, onTap: () {}),
                     const SizedBox(height: AppSpacing.xl),
                     MonthlyGoalCard(data: state.monthlyGoal, onTap: () {}),
+                    const SizedBox(height: AppSpacing.xxl),
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton.icon(
+                        onPressed: () => context.pushNamed(
+                          AppRouteName.financialSummaryShowcase,
+                        ),
+                        icon: const Icon(Icons.credit_card),
+                        label: const Text('Cartões de Resumo'),
+                      ),
+                    ),
                   ],
                 ),
               ),
